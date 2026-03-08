@@ -11,25 +11,36 @@
     margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: #fafafa;
   }
 
   select option {
-    background: #0f172a;
-    color: #f1f5f9;
+    background: white;
+    color: #0f172a;
   }
 
   input::placeholder {
-    color: #334155;
+    color: #cbd5e1;
   }
 
   ::-webkit-scrollbar {
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #e2e8f0;
     border-radius: 3px;
+  }
+
+  /* Hide number input spinners for cleaner look */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 }

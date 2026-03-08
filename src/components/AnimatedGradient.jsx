@@ -14,7 +14,6 @@ export default function AnimatedGradient({ colors, speed = 5, blur = "light" }) 
   const blurClass =
     blur === "light" ? "blur-2xl" : blur === "medium" ? "blur-3xl" : "blur-[100px]";
 
-  // Memoize all random values so they don't change on re-render
   const circles = useMemo(
     () =>
       colors.map(() => ({
@@ -58,7 +57,7 @@ export default function AnimatedGradient({ colors, speed = 5, blur = "light" }) 
             height={circleSize * circles[i].sizeMult}
             viewBox="0 0 100 100"
           >
-            <circle cx="50" cy="50" r="50" fill={color} className="opacity-30 dark:opacity-[0.15]" />
+            <circle cx="50" cy="50" r="50" fill={color} opacity="0.30" />
           </svg>
         ))}
       </div>

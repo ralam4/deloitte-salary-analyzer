@@ -46,7 +46,6 @@ const PORTFOLIOS = ["Strategy & Analytics", "Core Business Operations", "Cyber &
 const GPS_COMM = ["Commercial", "GPS"];
 const RATINGS = ["Exceptional", "Strong", "Meets Expectations"];
 
-// BUG FIX 1: Handle negative numbers properly
 export const fmt = (n) => {
   if (n == null) return "N/A";
   const abs = Math.abs(Math.round(n));
@@ -64,14 +63,14 @@ function getPercentile(value, level) {
   if (value <= s.p50) return Math.round(25 + 25 * (value - s.p25) / (s.p50 - s.p25));
   if (value <= s.p75) return Math.round(50 + 25 * (value - s.p50) / (s.p75 - s.p50));
   if (value <= s.p90) return Math.round(75 + 15 * (value - s.p75) / (s.p90 - s.p75));
-  // BUG FIX 2: Cap percentile at 99
   return Math.min(99, 90 + Math.round(10 * (value - s.p90) / (s.p90 - s.p75)));
 }
 
-const GRADIENT_COLORS = ["#6366f1", "#8b5cf6", "#06b6d4", "#22c55e", "#6366f1"];
+// Soft pastel colors for light theme gradient
+const GRADIENT_COLORS = ["#c7d2fe", "#e9d5ff", "#fbcfe8", "#bae6fd", "#ddd6fe"];
 
-const inputClasses = "w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-slate-100 text-sm outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition-colors placeholder:text-slate-600";
-const labelClasses = "text-[11px] text-slate-500 uppercase tracking-wider mb-1.5 block";
+const inputClasses = "w-full bg-white/70 border border-black/[0.08] rounded-xl px-4 py-3 text-slate-900 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-300";
+const labelClasses = "text-[11px] text-slate-400 uppercase tracking-wider mb-1.5 block font-medium";
 
 export default function DeloitteSalaryAnalyzer() {
   const [step, setStep] = useState(0);
@@ -120,7 +119,6 @@ export default function DeloitteSalaryAnalyzer() {
       if (yl >= 3 && pct < 60) insights.push({ text: `${yl} yrs at level — consider promotion timeline`, type: "warn" });
     }
 
-    // BUG FIX 3: Only show AIP insight if user actually entered one
     if (aip > 0 && form.aip) {
       const aipVsMedian = aip - stats.aip.p50;
       if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(aip)} — +${fmt(aipVsMedian)} above median bonus`, type: "good" });
@@ -134,25 +132,27 @@ export default function DeloitteSalaryAnalyzer() {
   const totalRespondents = Object.values(LEVEL_STATS).reduce((s, v) => s + v.count, 0);
 
   return (
-    <div className="relative min-h-screen font-sans text-slate-100">
+    <div className="relative min-h-screen font-sans text-slate-900">
       <AnimatedGradient colors={GRADIENT_COLORS} speed={5} blur="heavy" />
+      {/* Soft white wash over gradient for readability */}
+      <div className="fixed inset-0 bg-white/40 -z-[5]" />
 
       {/* Header */}
-      <header className="relative z-10 border-b border-white/[0.06] backdrop-blur-xl bg-surface-card">
+      <header className="relative z-10 border-b border-black/[0.04] backdrop-blur-xl bg-white/50">
         <div className="max-w-[920px] mx-auto px-5 py-4 flex items-center gap-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl flex items-center justify-center text-lg font-bold shrink-0">
+          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl flex items-center justify-center text-lg font-bold text-white shrink-0 shadow-md shadow-indigo-200">
             D
           </div>
           <div className="min-w-0">
-            <div className="text-lg font-bold tracking-tight">Deloitte Salary Analyzer</div>
-            <div className="text-xs text-slate-500">
+            <div className="text-lg font-bold tracking-tight text-slate-900">Deloitte Salary Analyzer</div>
+            <div className="text-xs text-slate-400">
               2025 Open-Source Survey &bull; {totalRespondents.toLocaleString()} US respondents
             </div>
           </div>
           {step === 1 && (
             <button
               onClick={() => setStep(0)}
-              className="ml-auto shrink-0 bg-white/[0.04] border border-white/[0.08] text-slate-400 px-4 py-2 rounded-lg text-sm hover:bg-white/[0.08] hover:text-slate-200 transition-colors cursor-pointer"
+              className="ml-auto shrink-0 bg-white/70 border border-black/[0.06] text-slate-500 px-4 py-2 rounded-xl text-sm hover:bg-white hover:text-slate-700 transition-all cursor-pointer shadow-sm"
             >
               &larr; Edit Info
             </button>
@@ -164,19 +164,19 @@ export default function DeloitteSalaryAnalyzer() {
       <main className="relative z-10 max-w-[920px] mx-auto px-5 py-8">
         {step === 0 && (
           <div>
-            <div className="mb-7">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">
+            <div className="mb-8">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-2">
                 How does your comp stack up?
               </h1>
-              <p className="text-slate-500 text-[15px]">
+              <p className="text-slate-400 text-[15px]">
                 Enter your FY26 compensation details to see where you fall among your peers.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Left card */}
-              <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6">
-                <div className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-5">
+              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-6 shadow-sm">
+                <div className="text-xs font-semibold text-indigo-500 uppercase tracking-wider mb-5">
                   Your Level & Role
                 </div>
 
@@ -222,8 +222,8 @@ export default function DeloitteSalaryAnalyzer() {
               </div>
 
               {/* Right card */}
-              <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-6">
-                <div className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-5">
+              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-6 shadow-sm">
+                <div className="text-xs font-semibold text-violet-500 uppercase tracking-wider mb-5">
                   Your Compensation
                 </div>
 
@@ -231,21 +231,21 @@ export default function DeloitteSalaryAnalyzer() {
                   <label className={labelClasses}>FY25 Current Base Salary (USD) *</label>
                   <input className={inputClasses} type="number" placeholder="e.g. 136000"
                     value={form.salary} onChange={(e) => update("salary", e.target.value)} />
-                  <div className="text-[11px] text-slate-600 mt-1">Your current / last known salary</div>
+                  <div className="text-[11px] text-slate-300 mt-1">Your current / last known salary</div>
                 </div>
 
                 <div className="mb-4">
                   <label className={labelClasses}>
-                    FY26 New Base Salary (USD) <span className="text-slate-600 font-normal">— optional</span>
+                    FY26 New Base Salary (USD) <span className="text-slate-300 font-normal">— optional</span>
                   </label>
                   <input className={inputClasses} type="number" placeholder="e.g. 145000"
                     value={form.newSalary} onChange={(e) => update("newSalary", e.target.value)} />
-                  <div className="text-[11px] text-slate-600 mt-1">Leave blank if you haven't received it yet</div>
+                  <div className="text-[11px] text-slate-300 mt-1">Leave blank if you haven't received it yet</div>
                 </div>
 
                 <div className="mb-4">
                   <label className={labelClasses}>
-                    AIP / Bonus (USD) <span className="text-slate-600 font-normal">— optional</span>
+                    AIP / Bonus (USD) <span className="text-slate-300 font-normal">— optional</span>
                   </label>
                   <input className={inputClasses} type="number" placeholder="e.g. 14000"
                     value={form.aip} onChange={(e) => update("aip", e.target.value)} />
@@ -271,16 +271,16 @@ export default function DeloitteSalaryAnalyzer() {
               </div>
             </div>
 
-            <div className="mt-7 text-center">
+            <div className="mt-8 text-center">
               <button
                 disabled={!canSubmit}
                 onClick={() => setStep(1)}
-                className="bg-gradient-to-br from-indigo-500 to-violet-500 text-white px-8 py-3 rounded-xl text-[15px] font-semibold cursor-pointer transition-all hover:opacity-90 hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:translate-y-0 shadow-lg shadow-indigo-500/20"
+                className="bg-slate-900 text-white px-8 py-3.5 rounded-xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-slate-800 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:translate-y-0 shadow-lg shadow-slate-900/10"
               >
                 Analyze My Compensation &rarr;
               </button>
               {!canSubmit && (
-                <div className="text-xs text-slate-600 mt-2">Level and salary required</div>
+                <div className="text-xs text-slate-300 mt-2.5">Level and salary required</div>
               )}
             </div>
           </div>
@@ -289,10 +289,10 @@ export default function DeloitteSalaryAnalyzer() {
         {step === 1 && analysis && (
           <div>
             <div className="mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-1">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-1">
                 Your Compensation Analysis
               </h2>
-              <div className="text-slate-500 text-sm">
+              <div className="text-slate-400 text-sm">
                 {form.level} &bull; {form.business || "All Businesses"} &bull; n={analysis.stats.count} peers
               </div>
             </div>
@@ -316,7 +316,7 @@ export default function DeloitteSalaryAnalyzer() {
                 label="Median Base"
                 value={fmt(analysis.stats.salary.p50)}
                 sub={`vs yours: ${analysis.vsMedian >= 0 ? "+" : ""}${fmt(analysis.vsMedian)}`}
-                accent={analysis.vsMedian >= 0 ? "#22c55e" : "#f87171"}
+                accent={analysis.vsMedian >= 0 ? "#10b981" : "#ef4444"}
               />
               <StatCard
                 label="Your AIP"
@@ -333,7 +333,7 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
 
             {!analysis.newSal && (
-              <div className="mb-5 px-4 py-3 bg-amber-500/[0.07] border border-amber-500/20 rounded-xl text-[13px] text-amber-200 flex items-center gap-2">
+              <div className="mb-5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-[13px] text-amber-700 flex items-center gap-2">
                 <span>💡</span>
                 <span>
                   Benchmarking against your <strong>FY25 base salary</strong>. Once you receive your FY26 offer, add it above to see your raise and updated percentile.
@@ -343,30 +343,30 @@ export default function DeloitteSalaryAnalyzer() {
 
             {/* Chart + Percentile */}
             <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5 mb-5">
-              <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-5">
+              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
                 <div className="text-[13px] font-semibold text-slate-400 mb-4">
                   Base Salary Distribution — Your Level
                 </div>
                 <BenchmarkChart userSalary={analysis.sal} level={form.level} levelStats={analysis.stats} />
               </div>
 
-              <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-5">
+              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
                 <div className="text-[13px] font-semibold text-slate-400 mb-4">
                   Your Percentile Position
                 </div>
                 <div className="text-center mb-4">
-                  <div className="text-5xl font-bold font-mono bg-gradient-to-br from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                  <div className="text-5xl font-bold font-mono bg-gradient-to-br from-indigo-500 to-violet-500 bg-clip-text text-transparent">
                     {analysis.pct}<span className="text-2xl">th</span>
                   </div>
-                  <div className="text-slate-500 text-[13px] mt-1">percentile for base salary</div>
+                  <div className="text-slate-400 text-[13px] mt-1">percentile for base salary</div>
                 </div>
                 <PercentileBar percentile={analysis.pct} />
                 <div className="mt-5 grid grid-cols-2 gap-2">
                   {[["P25", analysis.stats.salary.p25], ["P50 (Median)", analysis.stats.salary.p50],
                     ["P75", analysis.stats.salary.p75], ["P90", analysis.stats.salary.p90]].map(([label, val]) => (
-                    <div key={label} className="bg-surface-dark rounded-lg px-3 py-2">
-                      <div className="text-[11px] text-slate-600">{label}</div>
-                      <div className="text-sm font-semibold font-mono text-slate-400">{fmt(val)}</div>
+                    <div key={label} className="bg-slate-50/80 rounded-lg px-3 py-2">
+                      <div className="text-[11px] text-slate-400">{label}</div>
+                      <div className="text-sm font-semibold font-mono text-slate-700">{fmt(val)}</div>
                     </div>
                   ))}
                 </div>
@@ -376,70 +376,70 @@ export default function DeloitteSalaryAnalyzer() {
             {/* Raise + range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
               {analysis.raiseRate !== null ? (
-                <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-5">
+                <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
                   <div className="text-[13px] font-semibold text-slate-400 mb-4">Year-Over-Year Raise</div>
                   <div className="flex items-baseline gap-2 mb-3">
-                    <span className={`text-4xl font-bold font-mono ${analysis.raiseRate >= 0.06 ? "text-emerald-400" : "text-amber-400"}`}>
+                    <span className={`text-4xl font-bold font-mono ${analysis.raiseRate >= 0.06 ? "text-emerald-500" : "text-amber-500"}`}>
                       +{fmtPct(analysis.raiseRate)}
                     </span>
-                    <span className="text-slate-500 text-sm">raise</span>
+                    <span className="text-slate-400 text-sm">raise</span>
                   </div>
-                  <div className="bg-surface-dark rounded-lg p-3">
-                    <div className="text-xs text-slate-500 mb-2">Survey context (your level)</div>
+                  <div className="bg-slate-50/80 rounded-xl p-3">
+                    <div className="text-xs text-slate-400 mb-2">Survey context (your level)</div>
                     {[["P25 raise", "~4.4%"], ["Median raise", "~7.0%"], ["P75 raise", "~10.9%"]].map(([l, v]) => (
-                      <div key={l} className="flex justify-between text-[13px] text-slate-400 mb-1 last:mb-0">
+                      <div key={l} className="flex justify-between text-[13px] text-slate-500 mb-1 last:mb-0">
                         <span>{l}</span>
-                        <span className="font-mono">{v}</span>
+                        <span className="font-mono font-medium">{v}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] border-dashed rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[160px]">
+                <div className="bg-white/40 backdrop-blur-xl border border-dashed border-black/[0.08] rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[160px]">
                   <div className="text-3xl mb-2">⏳</div>
-                  <div className="text-sm font-semibold text-slate-500 mb-1">Raise analysis pending</div>
-                  <div className="text-xs text-slate-600 leading-relaxed">
+                  <div className="text-sm font-semibold text-slate-400 mb-1">Raise analysis pending</div>
+                  <div className="text-xs text-slate-400 leading-relaxed">
                     Add your FY26 salary above once you receive it to see your raise vs. peers.
-                    <br />Survey median raise is <span className="text-amber-200 font-mono">~7.0%</span>
+                    <br />Survey median raise is <span className="text-amber-600 font-mono font-medium">~7.0%</span>
                   </div>
                 </div>
               )}
 
-              <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-5">
+              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
                 <div className="text-[13px] font-semibold text-slate-400 mb-4">Full Level Salary Range</div>
-                <div className="relative h-2 bg-surface-dark rounded-full my-5">
+                <div className="relative h-2 bg-slate-100 rounded-full my-5">
                   <div
-                    className="absolute h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"
+                    className="absolute h-full bg-gradient-to-r from-indigo-300 to-violet-400 rounded-full"
                     style={{
                       left: `${((analysis.stats.salary.p25 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
                       right: `${100 - ((analysis.stats.salary.p75 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
                     }}
                   />
                   <div
-                    className="absolute w-4 h-4 bg-emerald-400 rounded-full top-1/2 -mt-2 border-2 border-surface-dark"
+                    className="absolute w-4 h-4 bg-emerald-500 rounded-full top-1/2 -mt-2 border-2 border-white shadow-md"
                     style={{
                       left: `${Math.min(100, Math.max(0, ((analysis.sal - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100))}%`,
                       transform: "translateX(-50%)",
                     }}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] text-slate-600 mb-4">
+                <div className="flex justify-between text-[11px] text-slate-400 mb-4">
                   <span>{fmt(analysis.stats.salary.p10)}</span>
                   <span>{fmt(analysis.stats.salary.p90)}</span>
                 </div>
-                <div className="text-xs text-slate-600">
+                <div className="text-xs text-slate-400">
                   <span className="text-indigo-400">■</span> P25–P75 band &nbsp;
-                  <span className="text-emerald-400">●</span> Your salary
+                  <span className="text-emerald-500">●</span> Your salary
                 </div>
-                <div className="mt-3 p-3 bg-surface-dark rounded-lg text-xs">
+                <div className="mt-3 p-3 bg-slate-50/80 rounded-xl text-xs">
                   <div className="text-slate-500">
                     Gap to P75:{" "}
-                    <span className={`font-mono font-semibold ${analysis.sal >= analysis.stats.salary.p75 ? "text-emerald-400" : "text-amber-400"}`}>
+                    <span className={`font-mono font-semibold ${analysis.sal >= analysis.stats.salary.p75 ? "text-emerald-500" : "text-amber-500"}`}>
                       {analysis.sal >= analysis.stats.salary.p75 ? "You're above P75!" : fmt(analysis.stats.salary.p75 - analysis.sal)}
                     </span>
                   </div>
                   {analysis.sal < analysis.stats.salary.p75 && (
-                    <div className="text-slate-600 mt-1">
+                    <div className="text-slate-400 mt-1">
                       Gap to P90: <span className="font-mono">{fmt(analysis.stats.salary.p90 - analysis.sal)}</span>
                     </div>
                   )}
@@ -448,19 +448,19 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
 
             {/* AIP comparison */}
-            <div className="bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-2xl p-5 mb-5">
+            <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 mb-5 shadow-sm">
               <div className="text-[13px] font-semibold text-slate-400 mb-4">
                 Bonus (AIP) Benchmarks — {form.level}
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  ["Your AIP", form.aip ? fmt(analysis.aip) : "—", form.aip && analysis.aip >= analysis.stats.aip.p50 ? "#22c55e" : "#64748b"],
-                  ["P25 AIP", fmt(analysis.stats.aip.p25), "#64748b"],
+                  ["Your AIP", form.aip ? fmt(analysis.aip) : "—", form.aip && analysis.aip >= analysis.stats.aip.p50 ? "#10b981" : "#94a3b8"],
+                  ["P25 AIP", fmt(analysis.stats.aip.p25), "#94a3b8"],
                   ["Median AIP", fmt(analysis.stats.aip.p50), "#6366f1"],
-                  ["P75 AIP", fmt(analysis.stats.aip.p75), "#64748b"],
+                  ["P75 AIP", fmt(analysis.stats.aip.p75), "#94a3b8"],
                 ].map(([label, val, color]) => (
-                  <div key={label} className="text-center p-4 bg-surface-dark rounded-xl">
-                    <div className="text-[11px] text-slate-600 uppercase tracking-wider mb-2">{label}</div>
+                  <div key={label} className="text-center p-4 bg-slate-50/80 rounded-xl">
+                    <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-2">{label}</div>
                     <div className="text-xl font-bold font-mono" style={{ color }}>{val}</div>
                   </div>
                 ))}
@@ -468,8 +468,8 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
 
             {/* Footnote */}
-            <div className="p-4 bg-surface-card backdrop-blur-xl border border-white/[0.06] rounded-xl">
-              <div className="text-xs text-slate-600 leading-relaxed">
+            <div className="p-4 bg-white/40 backdrop-blur-xl border border-black/[0.04] rounded-xl">
+              <div className="text-xs text-slate-400 leading-relaxed">
                 <strong className="text-slate-500">Data source:</strong> 2025 Deloitte open-source employee salary survey.
                 US-only responses with data quality concerns filtered out (n={totalRespondents.toLocaleString()} records).
                 Statistics reflect FY26 base salary, AIP, and total compensation across all business areas unless filtered.
