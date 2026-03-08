@@ -1,11 +1,8 @@
 import { useState, useMemo } from "react";
-import AnimatedGradient from "./AnimatedGradient";
 import PercentileBar from "./PercentileBar";
 import StatCard from "./StatCard";
 import InsightChip from "./InsightChip";
 import BenchmarkChart from "./BenchmarkChart";
-
-const SURVEY_DATA = [{"FY26 Level":"Senior Manager / Specialist Leader","FY26 Base Salary (USD)":270500.0,"AIP (USD)":25400.0,"Total Compensation (FY26, AIP, Other)":295900.0,"Compensation Change (%)":0.06706114398,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Cyber","Talent Model":"Core (Traditional)","Years at Deloitte":10.0,"Years at Level":5.0,"Total Professional Years of Experience":15.0,"Consolidated Rating":"SEE","Client Rating":"Strong","Gender":null},{"FY26 Level":"Senior Manager / Specialist Leader","FY26 Base Salary (USD)":220000.0,"AIP (USD)":60000.0,"Total Compensation (FY26, AIP, Other)":320000.0,"Compensation Change (%)":0.1,"FY26 Global Business":"Consulting Services","GPS or Commercial":"GPS","FY26 Offering Portfolio":"Cyber","Talent Model":"Core (Traditional)","Years at Deloitte":13.0,"Years at Level":5.0,"Total Professional Years of Experience":15.0,"Consolidated Rating":"EEE","Client Rating":"Exceptional","Gender":"Male"},{"FY26 Level":"Senior Consultant / Specialist Senior / Senior","FY26 Base Salary (USD)":138000.0,"AIP (USD)":11000.0,"Total Compensation (FY26, AIP, Other)":149000.0,"Compensation Change (%)":0.05748113208,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Strategy & Analytics","Talent Model":"Core (Traditional)","Years at Deloitte":4.0,"Years at Level":1.0,"Total Professional Years of Experience":4.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Male"},{"FY26 Level":"Consultant / Staff","FY26 Base Salary (USD)":108000.0,"AIP (USD)":8000.0,"Total Compensation (FY26, AIP, Other)":116000.0,"Compensation Change (%)":0.07142857143,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Strategy & Analytics","Talent Model":"Core (Traditional)","Years at Deloitte":2.5,"Years at Level":2.5,"Total Professional Years of Experience":2.5,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Male"},{"FY26 Level":"Manager / Specialist Master","FY26 Base Salary (USD)":190000.0,"AIP (USD)":27500.0,"Total Compensation (FY26, AIP, Other)":217500.0,"Compensation Change (%)":0.08045977011,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Strategy & Analytics","Talent Model":"Core (Traditional)","Years at Deloitte":7.0,"Years at Level":2.0,"Total Professional Years of Experience":10.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Female"},{"FY26 Level":"Senior Consultant / Specialist Senior / Senior","FY26 Base Salary (USD)":140000.0,"AIP (USD)":14000.0,"Total Compensation (FY26, AIP, Other)":154000.0,"Compensation Change (%)":0.07142857143,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Human Capital","Talent Model":"Core (Traditional)","Years at Deloitte":3.5,"Years at Level":1.5,"Total Professional Years of Experience":5.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Female"},{"FY26 Level":"Manager / Specialist Master","FY26 Base Salary (USD)":185000.0,"AIP (USD)":24000.0,"Total Compensation (FY26, AIP, Other)":209000.0,"Compensation Change (%)":0.07407407407,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Core Business Operations","Talent Model":"Core (Traditional)","Years at Deloitte":6.0,"Years at Level":2.0,"Total Professional Years of Experience":8.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Male"},{"FY26 Level":"Senior Consultant / Specialist Senior / Senior","FY26 Base Salary (USD)":130000.0,"AIP (USD)":12000.0,"Total Compensation (FY26, AIP, Other)":142000.0,"Compensation Change (%)":0.07438016529,"FY26 Global Business":"Consulting Services","GPS or Commercial":"GPS","FY26 Offering Portfolio":"Core Business Operations","Talent Model":"Core (Traditional)","Years at Deloitte":3.0,"Years at Level":1.0,"Total Professional Years of Experience":5.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Male"},{"FY26 Level":"Analyst / Jr Staff","FY26 Base Salary (USD)":88000.0,"AIP (USD)":null,"Total Compensation (FY26, AIP, Other)":88500.0,"Compensation Change (%)":0.09163346614,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Strategy & Analytics","Talent Model":"Core (Traditional)","Years at Deloitte":1.0,"Years at Level":1.0,"Total Professional Years of Experience":1.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Female"},{"FY26 Level":"Manager / Specialist Master","FY26 Base Salary (USD)":200000.0,"AIP (USD)":30000.0,"Total Compensation (FY26, AIP, Other)":230000.0,"Compensation Change (%)":0.08108108108,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Customer","Talent Model":"Core (Traditional)","Years at Deloitte":8.0,"Years at Level":3.0,"Total Professional Years of Experience":10.0,"Consolidated Rating":"EE","Client Rating":"Exceptional","Gender":"Male"},{"FY26 Level":"Senior Manager / Specialist Leader","FY26 Base Salary (USD)":245000.0,"AIP (USD)":45000.0,"Total Compensation (FY26, AIP, Other)":290000.0,"Compensation Change (%)":0.08888888889,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Strategy & Analytics","Talent Model":"Core (Traditional)","Years at Deloitte":12.0,"Years at Level":4.0,"Total Professional Years of Experience":16.0,"Consolidated Rating":"EE","Client Rating":"Exceptional","Gender":"Female"},{"FY26 Level":"Consultant / Staff","FY26 Base Salary (USD)":104000.0,"AIP (USD)":7500.0,"Total Compensation (FY26, AIP, Other)":111500.0,"Compensation Change (%)":0.06666666667,"FY26 Global Business":"Consulting Services","GPS or Commercial":"GPS","FY26 Offering Portfolio":"Core Business Operations","Talent Model":"Core (Traditional)","Years at Deloitte":2.0,"Years at Level":2.0,"Total Professional Years of Experience":4.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Female"},{"FY26 Level":"Senior Consultant / Specialist Senior / Senior","FY26 Base Salary (USD)":145000.0,"AIP (USD)":13500.0,"Total Compensation (FY26, AIP, Other)":158500.0,"Compensation Change (%)":0.06617647059,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Cyber & Strategic Risk","Talent Model":"Core (Traditional)","Years at Deloitte":5.0,"Years at Level":2.0,"Total Professional Years of Experience":7.0,"Consolidated Rating":"EE","Client Rating":"Exceptional","Gender":"Male"},{"FY26 Level":"Manager / Specialist Master","FY26 Base Salary (USD)":175000.0,"AIP (USD)":22000.0,"Total Compensation (FY26, AIP, Other)":197000.0,"Compensation Change (%)":0.07407407407,"FY26 Global Business":"Consulting Services","GPS or Commercial":"GPS","FY26 Offering Portfolio":"Core Business Operations","Talent Model":"Core (Traditional)","Years at Deloitte":5.0,"Years at Level":1.0,"Total Professional Years of Experience":7.0,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Female"},{"FY26 Level":"Analyst / Jr Staff","FY26 Base Salary (USD)":92000.0,"AIP (USD)":null,"Total Compensation (FY26, AIP, Other)":92500.0,"Compensation Change (%)":0.07692307692,"FY26 Global Business":"Consulting Services","GPS or Commercial":"Commercial","FY26 Offering Portfolio":"Human Capital","Talent Model":"Core (Traditional)","Years at Deloitte":1.5,"Years at Level":1.5,"Total Professional Years of Experience":1.5,"Consolidated Rating":"SS","Client Rating":"Strong","Gender":"Male"}];
 
 const LEVEL_STATS = {
   "Analyst / Jr Staff": {
@@ -66,14 +63,13 @@ function getPercentile(value, level) {
   return Math.min(99, 90 + Math.round(10 * (value - s.p90) / (s.p90 - s.p75)));
 }
 
-// Soft pastel colors for light theme gradient
-const GRADIENT_COLORS = ["#c7d2fe", "#e9d5ff", "#fbcfe8", "#bae6fd", "#ddd6fe"];
+const totalRespondents = Object.values(LEVEL_STATS).reduce((s, v) => s + v.count, 0);
 
-const inputClasses = "w-full bg-white/70 border border-black/[0.08] rounded-xl px-4 py-3 text-slate-900 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-300";
-const labelClasses = "text-[11px] text-slate-400 uppercase tracking-wider mb-1.5 block font-medium";
+const inputClasses = "w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-stone-900 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition-all placeholder:text-stone-300 font-sans";
+const labelClasses = "text-[10px] text-stone-400 uppercase tracking-[0.12em] mb-1.5 block font-semibold";
 
 export default function DeloitteSalaryAnalyzer() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(0); // 0=hero, 1=form, 2=results
   const [form, setForm] = useState({
     level: "", salary: "", newSalary: "", aip: "",
     business: "", portfolio: "", gpsComm: "",
@@ -121,66 +117,168 @@ export default function DeloitteSalaryAnalyzer() {
 
     if (aip > 0 && form.aip) {
       const aipVsMedian = aip - stats.aip.p50;
-      if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(aip)} — +${fmt(aipVsMedian)} above median bonus`, type: "good" });
-      else insights.push({ text: `AIP ${fmt(aip)} — ${fmt(aipVsMedian)} vs median bonus`, type: "warn" });
+      if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(aip)} — +${fmt(aipVsMedian)} above median`, type: "good" });
+      else insights.push({ text: `AIP ${fmt(aip)} — ${fmt(aipVsMedian)} vs median`, type: "warn" });
     }
 
     return { sal, aip, tc, pct, stats, vsMedian, vsMedianPct, raiseRate, insights, newSal, currentSal };
   }, [form]);
 
   const canSubmit = form.level && form.salary;
-  const totalRespondents = Object.values(LEVEL_STATS).reduce((s, v) => s + v.count, 0);
 
-  return (
-    <div className="relative min-h-screen font-sans text-slate-900">
-      <AnimatedGradient colors={GRADIENT_COLORS} speed={5} blur="heavy" />
-      {/* Soft white wash over gradient for readability */}
-      <div className="fixed inset-0 bg-white/40 -z-[5]" />
+  // ─── HERO / LANDING ───
+  if (step === 0) {
+    return (
+      <div className="min-h-screen font-sans relative overflow-hidden">
+        {/* CSS mesh gradient background */}
+        <div className="mesh-gradient animate-mesh-move fixed inset-0 -z-10" />
+        <div className="fixed inset-0 bg-[#faf9f7]/50 -z-[5]" />
+        <div className="grain-overlay" />
 
-      {/* Header */}
-      <header className="relative z-10 border-b border-black/[0.04] backdrop-blur-xl bg-white/50">
-        <div className="max-w-[920px] mx-auto px-5 py-4 flex items-center gap-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-xl flex items-center justify-center text-lg font-bold text-white shrink-0 shadow-md shadow-indigo-200">
-            D
+        {/* Nav */}
+        <nav className="relative z-10 max-w-[1100px] mx-auto px-6 pt-8 flex items-center justify-between opacity-0 animate-fade-up">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-violet-500" />
+            <span className="text-[13px] font-semibold text-stone-500 tracking-wide uppercase">Salary Analyzer</span>
           </div>
-          <div className="min-w-0">
-            <div className="text-lg font-bold tracking-tight text-slate-900">Deloitte Salary Analyzer</div>
-            <div className="text-xs text-slate-400">
-              2025 Open-Source Survey &bull; {totalRespondents.toLocaleString()} US respondents
+          <div className="flex items-center gap-6">
+            <span className="text-[12px] text-stone-400 font-mono">{totalRespondents.toLocaleString()} respondents</span>
+            <span className="text-[12px] text-stone-400">FY26 Data</span>
+          </div>
+        </nav>
+
+        {/* Hero */}
+        <div className="relative z-10 max-w-[1100px] mx-auto px-6 pt-24 sm:pt-32 pb-20">
+          <div className="max-w-[720px]">
+            <div className="opacity-0 animate-fade-up">
+              <div className="inline-flex items-center gap-2 bg-white/80 border border-stone-200/60 rounded-full px-4 py-1.5 mb-8 shadow-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[12px] text-stone-500 font-medium">2025 Open-Source Survey — Live Data</span>
+              </div>
+            </div>
+
+            <h1 className="opacity-0 animate-fade-up-1 font-serif text-5xl sm:text-7xl leading-[1.05] tracking-tight text-stone-900 mb-6">
+              Know exactly where
+              <br />
+              <span className="italic text-violet-600">your comp</span> stands.
+            </h1>
+
+            <p className="opacity-0 animate-fade-up-2 text-lg sm:text-xl text-stone-400 leading-relaxed max-w-[540px] mb-10">
+              Benchmark your Deloitte salary, bonus, and total compensation against {totalRespondents.toLocaleString()} verified US responses. See your percentile, compare raises, and understand your market position.
+            </p>
+
+            <div className="opacity-0 animate-fade-up-3 flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setStep(1)}
+                className="bg-stone-900 text-white px-8 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
+              >
+                Analyze My Compensation
+              </button>
+              <a
+                href="#how-it-works"
+                className="text-stone-400 px-6 py-4 text-[15px] font-medium hover:text-stone-600 transition-colors text-center cursor-pointer"
+              >
+                How it works &darr;
+              </a>
             </div>
           </div>
-          {step === 1 && (
-            <button
-              onClick={() => setStep(0)}
-              className="ml-auto shrink-0 bg-white/70 border border-black/[0.06] text-slate-500 px-4 py-2 rounded-xl text-sm hover:bg-white hover:text-slate-700 transition-all cursor-pointer shadow-sm"
-            >
-              &larr; Edit Info
-            </button>
-          )}
-        </div>
-      </header>
 
-      {/* Content */}
-      <main className="relative z-10 max-w-[920px] mx-auto px-5 py-8">
-        {step === 0 && (
-          <div>
-            <div className="mb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-2">
-                How does your comp stack up?
-              </h1>
-              <p className="text-slate-400 text-[15px]">
-                Enter your FY26 compensation details to see where you fall among your peers.
+          {/* Floating stat preview cards */}
+          <div className="opacity-0 animate-fade-up-4 mt-20 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "Median Base", level: "Analyst", val: "$94,000", sub: "78 responses" },
+              { label: "Median Base", level: "Consultant", val: "$106,300", sub: "390 responses" },
+              { label: "Median Base", level: "Manager", val: "$187,000", sub: "511 responses" },
+              { label: "Median Base", level: "Sr. Manager", val: "$234,500", sub: "196 responses" },
+            ].map((card) => (
+              <div key={card.level} className="bg-white/70 backdrop-blur-sm border border-stone-200/60 rounded-2xl p-4 sm:p-5 hover:bg-white/90 transition-all">
+                <div className="text-[10px] text-stone-400 uppercase tracking-[0.1em] font-semibold">{card.level}</div>
+                <div className="text-xl sm:text-2xl font-bold font-mono text-stone-900 mt-1 tracking-tight">{card.val}</div>
+                <div className="text-[11px] text-stone-300 mt-1">{card.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* How it works section */}
+        <div id="how-it-works" className="relative z-10 border-t border-stone-200/60">
+          <div className="max-w-[1100px] mx-auto px-6 py-20">
+            <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 mb-12 tracking-tight">How it works</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+              {[
+                {
+                  num: "01",
+                  title: "Enter your details",
+                  desc: "Your level, salary, bonus, and years of experience. All data stays in your browser — nothing is sent to any server.",
+                },
+                {
+                  num: "02",
+                  title: "Get benchmarked",
+                  desc: "See exactly where you fall among peers at your level — your percentile, gap to median, and how your raise compares.",
+                },
+                {
+                  num: "03",
+                  title: "Make informed decisions",
+                  desc: "Use real data from 1,749 verified responses to negotiate, plan your career trajectory, or understand your market value.",
+                },
+              ].map((s) => (
+                <div key={s.num} className="group">
+                  <div className="text-[11px] font-mono text-violet-400 font-medium mb-3">{s.num}</div>
+                  <h3 className="text-lg font-semibold text-stone-900 mb-2">{s.title}</h3>
+                  <p className="text-sm text-stone-400 leading-relaxed">{s.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-12 pt-8 border-t border-stone-200/40">
+              <p className="text-xs text-stone-300 max-w-[600px] leading-relaxed">
+                <strong className="text-stone-400">Data source:</strong> 2025 Deloitte open-source employee salary survey. US-only responses with data quality concerns filtered out. This tool is for informational purposes only.
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Left card */}
-              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-6 shadow-sm">
-                <div className="text-xs font-semibold text-indigo-500 uppercase tracking-wider mb-5">
-                  Your Level & Role
-                </div>
+  // ─── FORM ───
+  if (step === 1) {
+    return (
+      <div className="min-h-screen font-sans relative">
+        <div className="mesh-gradient animate-mesh-move fixed inset-0 -z-10" />
+        <div className="fixed inset-0 bg-[#faf9f7]/60 -z-[5]" />
+        <div className="grain-overlay" />
 
-                <div className="mb-4">
+        {/* Nav */}
+        <nav className="relative z-10 max-w-[920px] mx-auto px-6 pt-8 pb-6 flex items-center justify-between">
+          <button
+            onClick={() => setStep(0)}
+            className="text-[13px] text-stone-400 hover:text-stone-600 transition-colors cursor-pointer font-medium flex items-center gap-1.5"
+          >
+            <span>&larr;</span> Back
+          </button>
+          <span className="text-[12px] text-stone-300 font-mono">Step 1 of 2</span>
+        </nav>
+
+        <main className="relative z-10 max-w-[920px] mx-auto px-6 pb-16">
+          <div className="mb-8 opacity-0 animate-fade-up">
+            <h1 className="font-serif text-3xl sm:text-4xl text-stone-900 tracking-tight mb-2">
+              Your compensation details
+            </h1>
+            <p className="text-stone-400 text-[15px]">
+              Fill in what you know — only level and salary are required.
+            </p>
+          </div>
+
+          <div className="opacity-0 animate-fade-up-1 grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Left card */}
+            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 shadow-sm">
+              <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+                Level & Role
+              </div>
+
+              <div className="space-y-4">
+                <div>
                   <label className={labelClasses}>FY26 Level *</label>
                   <select className={inputClasses} value={form.level} onChange={(e) => update("level", e.target.value)}>
                     <option value="">Select level...</option>
@@ -188,7 +286,7 @@ export default function DeloitteSalaryAnalyzer() {
                   </select>
                 </div>
 
-                <div className="mb-4">
+                <div>
                   <label className={labelClasses}>Global Business</label>
                   <select className={inputClasses} value={form.business} onChange={(e) => update("business", e.target.value)}>
                     <option value="">Select business...</option>
@@ -196,7 +294,7 @@ export default function DeloitteSalaryAnalyzer() {
                   </select>
                 </div>
 
-                <div className="mb-4">
+                <div>
                   <label className={labelClasses}>Offering Portfolio</label>
                   <select className={inputClasses} value={form.portfolio} onChange={(e) => update("portfolio", e.target.value)}>
                     <option value="">Select portfolio...</option>
@@ -204,7 +302,7 @@ export default function DeloitteSalaryAnalyzer() {
                   </select>
                 </div>
 
-                <div className="mb-4">
+                <div>
                   <label className={labelClasses}>GPS or Commercial</label>
                   <select className={inputClasses} value={form.gpsComm} onChange={(e) => update("gpsComm", e.target.value)}>
                     <option value="">Select...</option>
@@ -220,32 +318,35 @@ export default function DeloitteSalaryAnalyzer() {
                   </select>
                 </div>
               </div>
+            </div>
 
-              {/* Right card */}
-              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-6 shadow-sm">
-                <div className="text-xs font-semibold text-violet-500 uppercase tracking-wider mb-5">
-                  Your Compensation
-                </div>
+            {/* Right card */}
+            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 shadow-sm">
+              <div className="text-[10px] font-semibold text-emerald-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Compensation
+              </div>
 
-                <div className="mb-4">
+              <div className="space-y-4">
+                <div>
                   <label className={labelClasses}>FY25 Current Base Salary (USD) *</label>
                   <input className={inputClasses} type="number" placeholder="e.g. 136000"
                     value={form.salary} onChange={(e) => update("salary", e.target.value)} />
-                  <div className="text-[11px] text-slate-300 mt-1">Your current / last known salary</div>
+                  <div className="text-[10px] text-stone-300 mt-1 ml-1">Your current / last known salary</div>
                 </div>
 
-                <div className="mb-4">
+                <div>
                   <label className={labelClasses}>
-                    FY26 New Base Salary (USD) <span className="text-slate-300 font-normal">— optional</span>
+                    FY26 New Base Salary (USD) <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
                   </label>
                   <input className={inputClasses} type="number" placeholder="e.g. 145000"
                     value={form.newSalary} onChange={(e) => update("newSalary", e.target.value)} />
-                  <div className="text-[11px] text-slate-300 mt-1">Leave blank if you haven't received it yet</div>
+                  <div className="text-[10px] text-stone-300 mt-1 ml-1">Leave blank if not yet received</div>
                 </div>
 
-                <div className="mb-4">
+                <div>
                   <label className={labelClasses}>
-                    AIP / Bonus (USD) <span className="text-slate-300 font-normal">— optional</span>
+                    AIP / Bonus (USD) <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
                   </label>
                   <input className={inputClasses} type="number" placeholder="e.g. 14000"
                     value={form.aip} onChange={(e) => update("aip", e.target.value)} />
@@ -253,232 +354,256 @@ export default function DeloitteSalaryAnalyzer() {
 
                 <div className="grid grid-cols-3 gap-2.5">
                   <div>
-                    <label className={labelClasses}>Total Yrs Exp</label>
-                    <input className={inputClasses} type="number" placeholder="e.g. 6"
+                    <label className={labelClasses}>Total Yrs</label>
+                    <input className={inputClasses} type="number" placeholder="6"
                       value={form.totalYears} onChange={(e) => update("totalYears", e.target.value)} />
                   </div>
                   <div>
-                    <label className={labelClasses}>Yrs @ Deloitte</label>
-                    <input className={inputClasses} type="number" placeholder="e.g. 4"
+                    <label className={labelClasses}>@ Deloitte</label>
+                    <input className={inputClasses} type="number" placeholder="4"
                       value={form.yearsDeloitte} onChange={(e) => update("yearsDeloitte", e.target.value)} />
                   </div>
                   <div>
-                    <label className={labelClasses}>Yrs @ Level</label>
-                    <input className={inputClasses} type="number" placeholder="e.g. 2"
+                    <label className={labelClasses}>@ Level</label>
+                    <input className={inputClasses} type="number" placeholder="2"
                       value={form.yearsLevel} onChange={(e) => update("yearsLevel", e.target.value)} />
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="mt-8 text-center">
-              <button
-                disabled={!canSubmit}
-                onClick={() => setStep(1)}
-                className="bg-slate-900 text-white px-8 py-3.5 rounded-xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-slate-800 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:translate-y-0 shadow-lg shadow-slate-900/10"
-              >
-                Analyze My Compensation &rarr;
-              </button>
-              {!canSubmit && (
-                <div className="text-xs text-slate-300 mt-2.5">Level and salary required</div>
-              )}
-            </div>
           </div>
-        )}
 
-        {step === 1 && analysis && (
-          <div>
-            <div className="mb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-1">
-                Your Compensation Analysis
-              </h2>
-              <div className="text-slate-400 text-sm">
-                {form.level} &bull; {form.business || "All Businesses"} &bull; n={analysis.stats.count} peers
-              </div>
-            </div>
-
-            {/* Insights */}
-            <div className="mb-6">
-              {analysis.insights.map((ins, i) => (
-                <InsightChip key={i} text={ins.text} type={ins.type} />
-              ))}
-            </div>
-
-            {/* Stat cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-              <StatCard
-                label={analysis.newSal ? "Your FY26 Base" : "Your FY25 Base"}
-                value={fmt(analysis.sal)}
-                sub={`${analysis.pct}th percentile${!analysis.newSal ? " (using FY25)" : ""}`}
-                accent="#6366f1"
-              />
-              <StatCard
-                label="Median Base"
-                value={fmt(analysis.stats.salary.p50)}
-                sub={`vs yours: ${analysis.vsMedian >= 0 ? "+" : ""}${fmt(analysis.vsMedian)}`}
-                accent={analysis.vsMedian >= 0 ? "#10b981" : "#ef4444"}
-              />
-              <StatCard
-                label="Your AIP"
-                value={form.aip ? fmt(analysis.aip) : "—"}
-                sub={`Median: ${fmt(analysis.stats.aip.p50)}`}
-                accent="#8b5cf6"
-              />
-              <StatCard
-                label="Your Total Comp"
-                value={fmt(analysis.tc)}
-                sub={`Median TC: ${fmt(analysis.stats.tc.p50)}`}
-                accent="#06b6d4"
-              />
-            </div>
-
-            {!analysis.newSal && (
-              <div className="mb-5 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-[13px] text-amber-700 flex items-center gap-2">
-                <span>💡</span>
-                <span>
-                  Benchmarking against your <strong>FY25 base salary</strong>. Once you receive your FY26 offer, add it above to see your raise and updated percentile.
-                </span>
-              </div>
+          <div className="opacity-0 animate-fade-up-2 mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              disabled={!canSubmit}
+              onClick={() => setStep(2)}
+              className="w-full sm:w-auto bg-stone-900 text-white px-10 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 disabled:opacity-20 disabled:cursor-not-allowed disabled:translate-y-0 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
+            >
+              See My Results &rarr;
+            </button>
+            {!canSubmit && (
+              <span className="text-[12px] text-stone-300">Level and base salary are required</span>
             )}
+          </div>
+        </main>
+      </div>
+    );
+  }
 
-            {/* Chart + Percentile */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5 mb-5">
-              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
-                <div className="text-[13px] font-semibold text-slate-400 mb-4">
-                  Base Salary Distribution — Your Level
-                </div>
-                <BenchmarkChart userSalary={analysis.sal} level={form.level} levelStats={analysis.stats} />
-              </div>
+  // ─── RESULTS ───
+  return (
+    <div className="min-h-screen font-sans relative">
+      <div className="mesh-gradient animate-mesh-move fixed inset-0 -z-10" />
+      <div className="fixed inset-0 bg-[#faf9f7]/60 -z-[5]" />
+      <div className="grain-overlay" />
 
-              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
-                <div className="text-[13px] font-semibold text-slate-400 mb-4">
-                  Your Percentile Position
-                </div>
-                <div className="text-center mb-4">
-                  <div className="text-5xl font-bold font-mono bg-gradient-to-br from-indigo-500 to-violet-500 bg-clip-text text-transparent">
-                    {analysis.pct}<span className="text-2xl">th</span>
-                  </div>
-                  <div className="text-slate-400 text-[13px] mt-1">percentile for base salary</div>
-                </div>
-                <PercentileBar percentile={analysis.pct} />
-                <div className="mt-5 grid grid-cols-2 gap-2">
-                  {[["P25", analysis.stats.salary.p25], ["P50 (Median)", analysis.stats.salary.p50],
-                    ["P75", analysis.stats.salary.p75], ["P90", analysis.stats.salary.p90]].map(([label, val]) => (
-                    <div key={label} className="bg-slate-50/80 rounded-lg px-3 py-2">
-                      <div className="text-[11px] text-slate-400">{label}</div>
-                      <div className="text-sm font-semibold font-mono text-slate-700">{fmt(val)}</div>
-                    </div>
-                  ))}
-                </div>
+      {/* Nav */}
+      <nav className="relative z-10 max-w-[1000px] mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
+        <button
+          onClick={() => setStep(1)}
+          className="text-[13px] text-stone-400 hover:text-stone-600 transition-colors cursor-pointer font-medium flex items-center gap-1.5"
+        >
+          <span>&larr;</span> Edit inputs
+        </button>
+        <button
+          onClick={() => setStep(0)}
+          className="text-[12px] text-stone-300 hover:text-stone-500 transition-colors cursor-pointer font-medium"
+        >
+          Start over
+        </button>
+      </nav>
+
+      {analysis && (
+        <main className="relative z-10 max-w-[1000px] mx-auto px-6 pb-16">
+          {/* Results header */}
+          <div className="mb-8 opacity-0 animate-fade-up">
+            <div className="text-[10px] text-stone-400 uppercase tracking-[0.12em] font-semibold mb-3">Your Compensation Analysis</div>
+            <h1 className="font-serif text-4xl sm:text-5xl text-stone-900 tracking-tight mb-3">
+              {analysis.pct}<span className="text-3xl align-top">th</span>
+              <span className="text-stone-300 font-sans text-2xl font-normal ml-3">percentile</span>
+            </h1>
+            <p className="text-stone-400 text-sm">
+              {form.level} &middot; {form.business || "All Businesses"} &middot; n={analysis.stats.count} peers
+            </p>
+          </div>
+
+          {/* Insights */}
+          <div className="mb-6 opacity-0 animate-fade-up-1">
+            {analysis.insights.map((ins, i) => (
+              <InsightChip key={i} text={ins.text} type={ins.type} />
+            ))}
+          </div>
+
+          {/* Stat cards */}
+          <div className="opacity-0 animate-fade-up-2 grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            <StatCard
+              label={analysis.newSal ? "FY26 Base" : "FY25 Base"}
+              value={fmt(analysis.sal)}
+              sub={`${analysis.pct}th percentile${!analysis.newSal ? " (FY25)" : ""}`}
+              accent="#8b5cf6"
+            />
+            <StatCard
+              label="Median Base"
+              value={fmt(analysis.stats.salary.p50)}
+              sub={`${analysis.vsMedian >= 0 ? "+" : ""}${fmt(analysis.vsMedian)} vs yours`}
+              accent={analysis.vsMedian >= 0 ? "#10b981" : "#ef4444"}
+            />
+            <StatCard
+              label="Your AIP"
+              value={form.aip ? fmt(analysis.aip) : "—"}
+              sub={`Median: ${fmt(analysis.stats.aip.p50)}`}
+              accent="#f59e0b"
+            />
+            <StatCard
+              label="Total Comp"
+              value={fmt(analysis.tc)}
+              sub={`Median: ${fmt(analysis.stats.tc.p50)}`}
+              accent="#06b6d4"
+            />
+          </div>
+
+          {!analysis.newSal && (
+            <div className="opacity-0 animate-fade-up-2 mb-6 px-4 py-3 bg-amber-50 border border-amber-100 rounded-xl text-[12px] text-amber-700 flex items-start gap-2.5">
+              <span className="mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span>
+                Benchmarking against your <strong>FY25 base</strong>. Add your FY26 salary once received for raise analysis.
+              </span>
+            </div>
+          )}
+
+          {/* Chart + Percentile */}
+          <div className="opacity-0 animate-fade-up-3 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4 mb-4">
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-5">
+                Salary Distribution — Your Level
               </div>
+              <BenchmarkChart userSalary={analysis.sal} level={form.level} levelStats={analysis.stats} />
             </div>
 
-            {/* Raise + range */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-              {analysis.raiseRate !== null ? (
-                <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
-                  <div className="text-[13px] font-semibold text-slate-400 mb-4">Year-Over-Year Raise</div>
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className={`text-4xl font-bold font-mono ${analysis.raiseRate >= 0.06 ? "text-emerald-500" : "text-amber-500"}`}>
-                      +{fmtPct(analysis.raiseRate)}
-                    </span>
-                    <span className="text-slate-400 text-sm">raise</span>
-                  </div>
-                  <div className="bg-slate-50/80 rounded-xl p-3">
-                    <div className="text-xs text-slate-400 mb-2">Survey context (your level)</div>
-                    {[["P25 raise", "~4.4%"], ["Median raise", "~7.0%"], ["P75 raise", "~10.9%"]].map(([l, v]) => (
-                      <div key={l} className="flex justify-between text-[13px] text-slate-500 mb-1 last:mb-0">
-                        <span>{l}</span>
-                        <span className="font-mono font-medium">{v}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-white/40 backdrop-blur-xl border border-dashed border-black/[0.08] rounded-2xl p-5 flex flex-col justify-center items-center text-center min-h-[160px]">
-                  <div className="text-3xl mb-2">⏳</div>
-                  <div className="text-sm font-semibold text-slate-400 mb-1">Raise analysis pending</div>
-                  <div className="text-xs text-slate-400 leading-relaxed">
-                    Add your FY26 salary above once you receive it to see your raise vs. peers.
-                    <br />Survey median raise is <span className="text-amber-600 font-mono font-medium">~7.0%</span>
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 shadow-sm">
-                <div className="text-[13px] font-semibold text-slate-400 mb-4">Full Level Salary Range</div>
-                <div className="relative h-2 bg-slate-100 rounded-full my-5">
-                  <div
-                    className="absolute h-full bg-gradient-to-r from-indigo-300 to-violet-400 rounded-full"
-                    style={{
-                      left: `${((analysis.stats.salary.p25 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
-                      right: `${100 - ((analysis.stats.salary.p75 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
-                    }}
-                  />
-                  <div
-                    className="absolute w-4 h-4 bg-emerald-500 rounded-full top-1/2 -mt-2 border-2 border-white shadow-md"
-                    style={{
-                      left: `${Math.min(100, Math.max(0, ((analysis.sal - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100))}%`,
-                      transform: "translateX(-50%)",
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between text-[11px] text-slate-400 mb-4">
-                  <span>{fmt(analysis.stats.salary.p10)}</span>
-                  <span>{fmt(analysis.stats.salary.p90)}</span>
-                </div>
-                <div className="text-xs text-slate-400">
-                  <span className="text-indigo-400">■</span> P25–P75 band &nbsp;
-                  <span className="text-emerald-500">●</span> Your salary
-                </div>
-                <div className="mt-3 p-3 bg-slate-50/80 rounded-xl text-xs">
-                  <div className="text-slate-500">
-                    Gap to P75:{" "}
-                    <span className={`font-mono font-semibold ${analysis.sal >= analysis.stats.salary.p75 ? "text-emerald-500" : "text-amber-500"}`}>
-                      {analysis.sal >= analysis.stats.salary.p75 ? "You're above P75!" : fmt(analysis.stats.salary.p75 - analysis.sal)}
-                    </span>
-                  </div>
-                  {analysis.sal < analysis.stats.salary.p75 && (
-                    <div className="text-slate-400 mt-1">
-                      Gap to P90: <span className="font-mono">{fmt(analysis.stats.salary.p90 - analysis.sal)}</span>
-                    </div>
-                  )}
-                </div>
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-5">
+                Percentile Position
               </div>
-            </div>
-
-            {/* AIP comparison */}
-            <div className="bg-white/60 backdrop-blur-xl border border-black/[0.04] rounded-2xl p-5 mb-5 shadow-sm">
-              <div className="text-[13px] font-semibold text-slate-400 mb-4">
-                Bonus (AIP) Benchmarks — {form.level}
+              <div className="text-center mb-5">
+                <div className="text-6xl font-bold font-mono text-stone-900 tracking-tighter leading-none">
+                  {analysis.pct}<span className="text-2xl text-stone-300 align-top ml-0.5">th</span>
+                </div>
+                <div className="text-[11px] text-stone-400 mt-2">base salary percentile</div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  ["Your AIP", form.aip ? fmt(analysis.aip) : "—", form.aip && analysis.aip >= analysis.stats.aip.p50 ? "#10b981" : "#94a3b8"],
-                  ["P25 AIP", fmt(analysis.stats.aip.p25), "#94a3b8"],
-                  ["Median AIP", fmt(analysis.stats.aip.p50), "#6366f1"],
-                  ["P75 AIP", fmt(analysis.stats.aip.p75), "#94a3b8"],
-                ].map(([label, val, color]) => (
-                  <div key={label} className="text-center p-4 bg-slate-50/80 rounded-xl">
-                    <div className="text-[11px] text-slate-400 uppercase tracking-wider mb-2">{label}</div>
-                    <div className="text-xl font-bold font-mono" style={{ color }}>{val}</div>
+              <PercentileBar percentile={analysis.pct} />
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                {[["P25", analysis.stats.salary.p25], ["Median", analysis.stats.salary.p50],
+                  ["P75", analysis.stats.salary.p75], ["P90", analysis.stats.salary.p90]].map(([label, val]) => (
+                  <div key={label} className="bg-stone-50 rounded-xl px-3 py-2.5">
+                    <div className="text-[10px] text-stone-400 font-medium">{label}</div>
+                    <div className="text-[14px] font-semibold font-mono text-stone-700">{fmt(val)}</div>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
 
-            {/* Footnote */}
-            <div className="p-4 bg-white/40 backdrop-blur-xl border border-black/[0.04] rounded-xl">
-              <div className="text-xs text-slate-400 leading-relaxed">
-                <strong className="text-slate-500">Data source:</strong> 2025 Deloitte open-source employee salary survey.
-                US-only responses with data quality concerns filtered out (n={totalRespondents.toLocaleString()} records).
-                Statistics reflect FY26 base salary, AIP, and total compensation across all business areas unless filtered.
-                This tool is for informational purposes only.
+          {/* Raise + range */}
+          <div className="opacity-0 animate-fade-up-4 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {analysis.raiseRate !== null ? (
+              <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+                <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">Year-Over-Year Raise</div>
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className={`text-4xl font-bold font-mono tracking-tight ${analysis.raiseRate >= 0.06 ? "text-emerald-600" : "text-amber-600"}`}>
+                    +{fmtPct(analysis.raiseRate)}
+                  </span>
+                  <span className="text-stone-300 text-sm font-medium">raise</span>
+                </div>
+                <div className="bg-stone-50 rounded-xl p-3.5">
+                  <div className="text-[10px] text-stone-400 uppercase tracking-wide font-semibold mb-2">Survey context</div>
+                  {[["P25 raise", "~4.4%"], ["Median raise", "~7.0%"], ["P75 raise", "~10.9%"]].map(([l, v]) => (
+                    <div key={l} className="flex justify-between text-[13px] text-stone-500 mb-1 last:mb-0">
+                      <span>{l}</span>
+                      <span className="font-mono font-medium text-stone-700">{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white/50 border border-dashed border-stone-200 rounded-2xl p-6 flex flex-col justify-center items-center text-center min-h-[180px]">
+                <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 mb-3 text-lg">?</div>
+                <div className="text-sm font-semibold text-stone-400 mb-1">Raise analysis pending</div>
+                <div className="text-xs text-stone-300 leading-relaxed max-w-[240px]">
+                  Add your FY26 salary to see your raise vs. peers. Survey median is <span className="font-mono font-semibold text-stone-500">~7.0%</span>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">Full Salary Range</div>
+              <div className="relative h-2 bg-stone-100 rounded-full my-6">
+                <div
+                  className="absolute h-full bg-gradient-to-r from-violet-300 to-violet-500 rounded-full"
+                  style={{
+                    left: `${((analysis.stats.salary.p25 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
+                    right: `${100 - ((analysis.stats.salary.p75 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
+                  }}
+                />
+                <div
+                  className="absolute w-4 h-4 bg-emerald-500 rounded-full top-1/2 -mt-2 border-2 border-white shadow-md shadow-emerald-200"
+                  style={{
+                    left: `${Math.min(100, Math.max(0, ((analysis.sal - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100))}%`,
+                    transform: "translateX(-50%)",
+                  }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-stone-400 font-mono mb-4">
+                <span>{fmt(analysis.stats.salary.p10)}</span>
+                <span>{fmt(analysis.stats.salary.p90)}</span>
+              </div>
+              <div className="flex items-center gap-4 text-[11px] text-stone-400 mb-3">
+                <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-violet-400 mr-1 align-middle" /> P25–P75</span>
+                <span><span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1 align-middle" /> You</span>
+              </div>
+              <div className="bg-stone-50 rounded-xl p-3">
+                <div className="text-[12px] text-stone-500">
+                  Gap to P75:{" "}
+                  <span className={`font-mono font-semibold ${analysis.sal >= analysis.stats.salary.p75 ? "text-emerald-600" : "text-amber-600"}`}>
+                    {analysis.sal >= analysis.stats.salary.p75 ? "Above P75" : fmt(analysis.stats.salary.p75 - analysis.sal)}
+                  </span>
+                </div>
+                {analysis.sal < analysis.stats.salary.p75 && (
+                  <div className="text-[11px] text-stone-400 mt-1">
+                    Gap to P90: <span className="font-mono">{fmt(analysis.stats.salary.p90 - analysis.sal)}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        )}
-      </main>
+
+          {/* AIP comparison */}
+          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
+            <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">
+              AIP Benchmarks — {form.level}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                ["Your AIP", form.aip ? fmt(analysis.aip) : "—", form.aip && analysis.aip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-stone-400"],
+                ["P25 AIP", fmt(analysis.stats.aip.p25), "text-stone-500"],
+                ["Median AIP", fmt(analysis.stats.aip.p50), "text-violet-600"],
+                ["P75 AIP", fmt(analysis.stats.aip.p75), "text-stone-500"],
+              ].map(([label, val, colorClass]) => (
+                <div key={label} className="text-center p-4 bg-stone-50 rounded-xl">
+                  <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">{label}</div>
+                  <div className={`text-xl font-bold font-mono ${colorClass}`}>{val}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Footnote */}
+          <div className="p-4 border-t border-stone-100 mt-8">
+            <p className="text-[11px] text-stone-300 leading-relaxed">
+              <strong className="text-stone-400">Source:</strong> 2025 Deloitte open-source salary survey &middot; {totalRespondents.toLocaleString()} US respondents &middot; Informational purposes only
+            </p>
+          </div>
+        </main>
+      )}
     </div>
   );
 }

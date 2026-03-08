@@ -7,28 +7,28 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["'DM Sans'", "system-ui", "sans-serif"],
-        mono: ["'DM Mono'", "monospace"],
-      },
-      colors: {
-        surface: {
-          DEFAULT: "#0f172a",
-          dark: "#020617",
-          card: "rgba(15, 23, 42, 0.6)",
-        },
+        sans: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],
+        serif: ["'Instrument Serif'", "Georgia", "serif"],
+        mono: ["'Geist Mono'", "monospace"],
       },
       keyframes: {
-        "background-gradient": {
-          "0%": { transform: "translate(0, 0) scale(1)" },
-          "20%": { transform: "translate(calc(var(--tx-1) * 200px), calc(var(--ty-1) * 200px)) scale(1.05)" },
-          "40%": { transform: "translate(calc(var(--tx-2) * 200px), calc(var(--ty-2) * 200px)) scale(0.95)" },
-          "60%": { transform: "translate(calc(var(--tx-3) * 200px), calc(var(--ty-3) * 200px)) scale(1.1)" },
-          "80%": { transform: "translate(calc(var(--tx-4) * 200px), calc(var(--ty-4) * 200px)) scale(0.98)" },
-          "100%": { transform: "translate(0, 0) scale(1)" },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "mesh-move": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
         },
       },
       animation: {
-        "background-gradient": "background-gradient calc(var(--background-gradient-speed, 0.1s) * 100) ease-in-out infinite",
+        "fade-up": "fade-up 0.6s ease-out forwards",
+        "fade-up-1": "fade-up 0.6s ease-out 0.1s forwards",
+        "fade-up-2": "fade-up 0.6s ease-out 0.2s forwards",
+        "fade-up-3": "fade-up 0.6s ease-out 0.3s forwards",
+        "fade-up-4": "fade-up 0.6s ease-out 0.4s forwards",
+        "mesh-move": "mesh-move 20s ease-in-out infinite",
       },
     },
   },
