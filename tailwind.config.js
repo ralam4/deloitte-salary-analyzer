@@ -18,16 +18,17 @@ export default {
         },
       },
       keyframes: {
-        "gradient-drift": {
-          "0%": { transform: "translate(0, 0)" },
-          "25%": { transform: "translate(calc(var(--tx-1) * 120px), calc(var(--ty-1) * 120px))" },
-          "50%": { transform: "translate(calc(var(--tx-2) * 120px), calc(var(--ty-2) * 120px))" },
-          "75%": { transform: "translate(calc(var(--tx-3) * 120px), calc(var(--ty-3) * 120px))" },
-          "100%": { transform: "translate(0, 0)" },
+        "background-gradient": {
+          "0%": { transform: "translate(0, 0) scale(1)" },
+          "20%": { transform: "translate(calc(var(--tx-1) * 200px), calc(var(--ty-1) * 200px)) scale(1.05)" },
+          "40%": { transform: "translate(calc(var(--tx-2) * 200px), calc(var(--ty-2) * 200px)) scale(0.95)" },
+          "60%": { transform: "translate(calc(var(--tx-3) * 200px), calc(var(--ty-3) * 200px)) scale(1.1)" },
+          "80%": { transform: "translate(calc(var(--tx-4) * 200px), calc(var(--ty-4) * 200px)) scale(0.98)" },
+          "100%": { transform: "translate(0, 0) scale(1)" },
         },
       },
       animation: {
-        "gradient-drift": "gradient-drift var(--gradient-speed, 8s) ease-in-out infinite",
+        "background-gradient": "background-gradient calc(var(--background-gradient-speed, 0.1s) * 100) ease-in-out infinite",
       },
     },
   },

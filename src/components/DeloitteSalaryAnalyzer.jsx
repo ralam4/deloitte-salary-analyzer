@@ -135,7 +135,7 @@ export default function DeloitteSalaryAnalyzer() {
 
   return (
     <div className="relative min-h-screen font-sans text-slate-100">
-      <AnimatedGradient colors={GRADIENT_COLORS} speed={3} blur="heavy" />
+      <AnimatedGradient colors={GRADIENT_COLORS} speed={5} blur="heavy" />
 
       {/* Header */}
       <header className="relative z-10 border-b border-white/[0.06] backdrop-blur-xl bg-surface-card">
