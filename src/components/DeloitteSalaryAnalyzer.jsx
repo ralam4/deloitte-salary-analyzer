@@ -4,36 +4,37 @@ import StatCard from "./StatCard";
 import InsightChip from "./InsightChip";
 import BenchmarkChart from "./BenchmarkChart";
 
+// Stats computed from 2025 Deloitte Salary Survey Responses.xlsx (1,775 clean rows of 1,934 total)
 const LEVEL_STATS = {
   "Analyst / Jr Staff": {
-    count: 78,
-    salary: { p10: 78160, p25: 87800, p50: 94000, p75: 99225, p90: 102500, mean: 92860 },
+    count: 80,
+    salary: { p10: 73470, p25: 87775, p50: 94000, p75: 99075, p90: 102500, mean: 91228 },
     aip: { p25: 4900, p50: 4900, p75: 4900, mean: 4900 },
-    tc: { p25: 87950, p50: 94975, p75: 100475 },
+    tc: { p25: 87775, p50: 94700, p75: 100225 },
   },
   "Consultant / Staff": {
-    count: 390,
-    salary: { p10: 93590, p25: 99700, p50: 106300, p75: 115400, p90: 121200, mean: 107589 },
+    count: 391,
+    salary: { p10: 93500, p25: 99600, p50: 106300, p75: 115400, p90: 121200, mean: 107428 },
     aip: { p25: 4800, p50: 7000, p75: 10200, mean: 7823 },
-    tc: { p25: 104125, p50: 113750, p75: 125438 },
+    tc: { p25: 104050, p50: 113750, p75: 125325 },
   },
   "Senior Consultant / Specialist Senior / Senior": {
-    count: 574,
-    salary: { p10: 114260, p25: 121400, p50: 137000, p75: 151875, p90: 175970, mean: 138518 },
-    aip: { p25: 8100, p50: 12000, p75: 15900, mean: 12593 },
-    tc: { p25: 132925, p50: 150075, p75: 168388 },
+    count: 577,
+    salary: { p10: 113560, p25: 121000, p50: 137000, p75: 151800, p90: 175940, mean: 138238 },
+    aip: { p25: 8000, p50: 12000, p75: 15900, mean: 12566 },
+    tc: { p25: 132800, p50: 150000, p75: 168200 },
   },
   "Manager / Specialist Master": {
-    count: 511,
-    salary: { p10: 148100, p25: 164250, p50: 187000, p75: 204000, p90: 215500, mean: 183242 },
-    aip: { p25: 16300, p50: 24100, p75: 33600, mean: 26193 },
-    tc: { p25: 185500, p50: 212000, p75: 237000 },
+    count: 515,
+    salary: { p10: 147900, p25: 162900, p50: 186500, p75: 204000, p90: 215460, mean: 182712 },
+    aip: { p25: 16275, p50: 24050, p75: 33525, mean: 26106 },
+    tc: { p25: 185225, p50: 211350, p75: 236950 },
   },
   "Senior Manager / Specialist Leader": {
-    count: 196,
-    salary: { p10: 193000, p25: 218150, p50: 234500, p75: 255250, p90: 272000, mean: 233919 },
-    aip: { p25: 29925, p50: 45000, p75: 53925, mean: 44179 },
-    tc: { p25: 252000, p50: 281925, p75: 310302 },
+    count: 202,
+    salary: { p10: 186910, p25: 216050, p50: 232750, p75: 254300, p90: 271870, mean: 231234 },
+    aip: { p25: 27250, p50: 44200, p75: 53475, mean: 43278 },
+    tc: { p25: 250500, p50: 279600, p75: 309375 },
   },
 };
 
@@ -147,7 +148,7 @@ export default function DeloitteSalaryAnalyzer() {
           </div>
           <div className="flex items-center gap-6">
             <span className="text-[12px] text-stone-400 font-mono">{totalRespondents.toLocaleString()} respondents</span>
-            <span className="text-[12px] text-stone-400">FY26 Data</span>
+            <span className="text-[12px] text-stone-400">FY25 Data</span>
           </div>
         </nav>
 
@@ -190,10 +191,10 @@ export default function DeloitteSalaryAnalyzer() {
           {/* Floating stat preview cards */}
           <div className="opacity-0 animate-fade-up-4 mt-20 grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Median Base", level: "Analyst", val: "$94,000", sub: "78 responses" },
-              { label: "Median Base", level: "Consultant", val: "$106,300", sub: "390 responses" },
-              { label: "Median Base", level: "Manager", val: "$187,000", sub: "511 responses" },
-              { label: "Median Base", level: "Sr. Manager", val: "$234,500", sub: "196 responses" },
+              { label: "Median Base", level: "Analyst", val: "$94,000", sub: "80 responses" },
+              { label: "Median Base", level: "Consultant", val: "$106,300", sub: "391 responses" },
+              { label: "Median Base", level: "Manager", val: "$186,500", sub: "515 responses" },
+              { label: "Median Base", level: "Sr. Manager", val: "$232,750", sub: "202 responses" },
             ].map((card) => (
               <div key={card.level} className="bg-white/70 backdrop-blur-sm border border-stone-200/60 rounded-2xl p-4 sm:p-5 hover:bg-white/90 transition-all">
                 <div className="text-[10px] text-stone-400 uppercase tracking-[0.1em] font-semibold">{card.level}</div>
@@ -223,7 +224,7 @@ export default function DeloitteSalaryAnalyzer() {
                 {
                   num: "03",
                   title: "Make informed decisions",
-                  desc: "Use real data from 1,749 verified responses to negotiate, plan your career trajectory, or understand your market value.",
+                  desc: "Use real data from 1,765 verified responses to negotiate, plan your career trajectory, or understand your market value.",
                 },
               ].map((s) => (
                 <div key={s.num} className="group">
