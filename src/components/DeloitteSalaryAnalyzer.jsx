@@ -81,11 +81,14 @@ export default function DeloitteSalaryAnalyzer() {
   const analysis = useMemo(() => {
     if (!form.level || !form.salary) return null;
     const currentSal = parseFloat(form.salary);
-    const newSal = parseFloat(form.newSalary) || null;
+    if (!Number.isFinite(currentSal) || currentSal <= 0) return null;
+    const rawNew = parseFloat(form.newSalary);
+    const newSal = Number.isFinite(rawNew) && rawNew > 0 ? rawNew : null;
     const benchmarkSal = newSal || currentSal;
-    const aip = parseFloat(form.aip) || 0;
+    const rawAip = parseFloat(form.aip);
+    const aip = Number.isFinite(rawAip) && rawAip >= 0 ? rawAip : 0;
     const tc = benchmarkSal + aip;
-    const raiseRate = newSal ? (newSal - currentSal) / currentSal : null;
+    const raiseRate = newSal && currentSal > 0 ? (newSal - currentSal) / currentSal : null;
     const stats = LEVEL_STATS[form.level];
     if (!stats) return null;
 
@@ -124,7 +127,8 @@ export default function DeloitteSalaryAnalyzer() {
     return { sal, aip, tc, pct, stats, vsMedian, vsMedianPct, raiseRate, insights, newSal, currentSal };
   }, [form]);
 
-  const canSubmit = form.level && form.salary;
+  const parsedSalary = parseFloat(form.salary);
+  const canSubmit = form.level && form.salary && Number.isFinite(parsedSalary) && parsedSalary > 0;
 
   // ─── HERO / LANDING ───
   if (step === 0) {
