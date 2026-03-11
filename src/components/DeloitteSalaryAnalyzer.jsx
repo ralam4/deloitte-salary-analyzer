@@ -234,15 +234,9 @@ export default function DeloitteSalaryAnalyzer() {
                 </div>
               ))}
             </div>
-            <div className="mt-12 pt-8 border-t border-stone-200/40 space-y-3">
-              <div className="flex items-start gap-2.5 bg-stone-50/80 border border-stone-200/40 rounded-xl px-4 py-3 max-w-[640px]">
-                <span className="mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full bg-stone-300" />
-                <p className="text-[11px] text-stone-400 leading-relaxed">
-                  <strong className="text-stone-500">No data collection.</strong> This is a purely client-side analysis tool — your inputs never leave your browser and nothing is stored, tracked, or sent to any server.
-                </p>
-              </div>
-              <p className="text-xs text-stone-300 max-w-[600px] leading-relaxed">
-                <strong className="text-stone-400">Data source:</strong> Crowdsourced from the 2025 Deloitte compensation survey on Fishbowl. US-only responses with data quality concerns filtered out. This tool is not affiliated with Deloitte and is for informational purposes only.
+            <div className="mt-12 pt-8 border-t border-stone-200/40">
+              <p className="text-xs text-stone-400 max-w-[640px] leading-relaxed">
+                This tool does not collect, store, or transmit any data — all analysis runs entirely in your browser. Compensation data is crowdsourced from the 2025 Deloitte salary survey on Fishbowl ({totalRespondents.toLocaleString()} US respondents, filtered for quality). Not affiliated with Deloitte. For informational purposes only.
               </p>
             </div>
           </div>
