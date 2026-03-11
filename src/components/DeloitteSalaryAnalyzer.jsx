@@ -158,7 +158,7 @@ export default function DeloitteSalaryAnalyzer() {
             <div className="opacity-0 animate-fade-up">
               <div className="inline-flex items-center gap-2 bg-white/80 border border-stone-200/60 rounded-full px-4 py-1.5 mb-8 shadow-sm">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[12px] text-stone-500 font-medium">2025 Open-Source Survey — Live Data</span>
+                <span className="text-[12px] text-stone-500 font-medium">Crowdsourced from Fishbowl — No Data Collected</span>
               </div>
             </div>
 
@@ -214,7 +214,7 @@ export default function DeloitteSalaryAnalyzer() {
                 {
                   num: "01",
                   title: "Enter your details",
-                  desc: "Your level, salary, bonus, and years of experience. All data stays in your browser — nothing is sent to any server.",
+                  desc: "Your level, salary, bonus, and years of experience. No data is collected — everything runs entirely in your browser.",
                 },
                 {
                   num: "02",
@@ -234,9 +234,15 @@ export default function DeloitteSalaryAnalyzer() {
                 </div>
               ))}
             </div>
-            <div className="mt-12 pt-8 border-t border-stone-200/40">
+            <div className="mt-12 pt-8 border-t border-stone-200/40 space-y-3">
+              <div className="flex items-start gap-2.5 bg-stone-50/80 border border-stone-200/40 rounded-xl px-4 py-3 max-w-[640px]">
+                <span className="mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full bg-stone-300" />
+                <p className="text-[11px] text-stone-400 leading-relaxed">
+                  <strong className="text-stone-500">No data collection.</strong> This is a purely client-side analysis tool — your inputs never leave your browser and nothing is stored, tracked, or sent to any server.
+                </p>
+              </div>
               <p className="text-xs text-stone-300 max-w-[600px] leading-relaxed">
-                <strong className="text-stone-400">Data source:</strong> 2025 Deloitte open-source employee salary survey. US-only responses with data quality concerns filtered out. This tool is for informational purposes only.
+                <strong className="text-stone-400">Data source:</strong> Crowdsourced from the 2025 Deloitte compensation survey on Fishbowl. US-only responses with data quality concerns filtered out. This tool is not affiliated with Deloitte and is for informational purposes only.
               </p>
             </div>
           </div>
@@ -602,9 +608,12 @@ export default function DeloitteSalaryAnalyzer() {
           </div>
 
           {/* Footnote */}
-          <div className="p-4 border-t border-stone-100 mt-8">
+          <div className="p-4 border-t border-stone-100 mt-8 space-y-2">
             <p className="text-[11px] text-stone-300 leading-relaxed">
-              <strong className="text-stone-400">Source:</strong> 2025 Deloitte open-source salary survey &middot; {totalRespondents.toLocaleString()} US respondents &middot; Informational purposes only
+              <strong className="text-stone-400">Source:</strong> Crowdsourced from the 2025 Deloitte compensation survey on Fishbowl &middot; {totalRespondents.toLocaleString()} US respondents &middot; Not affiliated with Deloitte
+            </p>
+            <p className="text-[11px] text-stone-300 leading-relaxed">
+              <strong className="text-stone-400">Privacy:</strong> No data is collected, stored, or transmitted. All analysis runs entirely in your browser.
             </p>
           </div>
         </main>
