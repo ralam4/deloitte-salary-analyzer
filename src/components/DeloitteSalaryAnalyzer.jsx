@@ -6,7 +6,7 @@ import BenchmarkChart from "./BenchmarkChart";
 import {
   LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
   BUSINESS_MODELS, CONSOLIDATED_RATINGS, EDUCATION_LEVELS,
-  GPS_COMMERCIAL_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
+  GPS_COMMERCIAL_STATS, MBA_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
   CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE,
   totalRespondents,
 } from "../data/salaryData";
@@ -86,6 +86,29 @@ function UsdcContext({ usdcData, level }) {
   );
 }
 
+function CompareToggle({ label, options, value, onChange }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] text-stone-400 uppercase tracking-[0.1em] font-semibold shrink-0">{label}</span>
+      <div className="flex gap-1">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`px-3 py-1 rounded-full text-[12px] font-medium cursor-pointer transition-all ${
+              value === opt.value
+                ? "bg-stone-900 text-white shadow-sm"
+                : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function DeloitteSalaryAnalyzer() {
   const [step, setStep] = useState(0); // 0=hero, 1=form, 2=results
   const [form, setForm] = useState({
@@ -105,6 +128,10 @@ export default function DeloitteSalaryAnalyzer() {
     consolidatedRating: "",
     education: "",
   });
+
+  // Compare toggle state (results page only, independent of form)
+  const [compareGroup, setCompareGroup] = useState(""); // "", "GPS", "Commercial"
+  const [compareEdu, setCompareEdu] = useState(""); // "", "MBA", "NonMBA"
 
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const updateBusiness = (v) => {
@@ -128,14 +155,26 @@ export default function DeloitteSalaryAnalyzer() {
 
     const raiseRate = fy26Sal && fy25Sal > 0 ? (fy26Sal - fy25Sal) / fy25Sal : null;
 
-    // Pick stats: GPS/Commercial filtered if selected, else blended
+    // Pick stats based on compare toggles (results page) or form (initial)
     const blendedStats = LEVEL_STATS[form.level];
     if (!blendedStats) return null;
 
+    // GPS/Commercial filter
     const gpsCommSplit = GPS_COMMERCIAL_STATS[form.level];
-    const hasFilteredStats = !!(form.gpsComm && gpsCommSplit?.[form.gpsComm]);
-    const stats = hasFilteredStats ? gpsCommSplit[form.gpsComm] : blendedStats;
-    const peerLabel = hasFilteredStats ? `${form.gpsComm} peers` : "all peers";
+    const activeGroup = step === 2 ? compareGroup : form.gpsComm;
+    const hasFilteredStats = !!(activeGroup && gpsCommSplit?.[activeGroup]);
+    let stats = hasFilteredStats ? gpsCommSplit[activeGroup] : blendedStats;
+    let peerLabel = hasFilteredStats ? `${activeGroup} peers` : "all peers";
+    let peerCount = stats.count;
+
+    // MBA/Education filter (overrides GPS/Commercial if active, since we don't have cross-cuts)
+    const mbaStatsForLevel = MBA_STATS[form.level];
+    const activeEdu = step === 2 ? compareEdu : "";
+    if (activeEdu && mbaStatsForLevel?.[activeEdu]) {
+      stats = mbaStatsForLevel[activeEdu];
+      peerLabel = activeEdu === "MBA" ? "MBA peers" : "Non-MBA peers";
+      peerCount = stats.count;
+    }
 
     // USDC context (not primary benchmark)
     const usdcData = form.businessModel === "USDC" ? USDC_STATS[form.level] : null;
@@ -228,7 +267,7 @@ export default function DeloitteSalaryAnalyzer() {
       promoData,
       insights,
     };
-  }, [form]);
+  }, [form, step, compareGroup, compareEdu]);
 
   const parsedSalary = parseFloat(form.fy25Salary);
   const canSubmit = form.level && form.fy25Salary && Number.isFinite(parsedSalary) && parsedSalary > 0;
@@ -528,7 +567,11 @@ export default function DeloitteSalaryAnalyzer() {
           <div className="opacity-0 animate-fade-up-2 mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               disabled={!canSubmit}
-              onClick={() => setStep(2)}
+              onClick={() => {
+                setCompareGroup(form.gpsComm || "");
+                setCompareEdu(form.education === "MBA" ? "MBA" : "");
+                setStep(2);
+              }}
               className="w-full sm:w-auto bg-stone-900 text-white px-10 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 disabled:opacity-20 disabled:cursor-not-allowed disabled:translate-y-0 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
             >
               See My Results &rarr;
@@ -587,7 +630,33 @@ export default function DeloitteSalaryAnalyzer() {
             ))}
           </div>
 
-          {analysis.gpsCommDelta != null && (
+          {/* Compare toggles */}
+          <div className="mb-6 opacity-0 animate-fade-up-1 flex flex-wrap items-center gap-4">
+            <CompareToggle
+              label="Segment"
+              options={[
+                { value: "", label: "All" },
+                { value: "GPS", label: "GPS" },
+                { value: "Commercial", label: "Commercial" },
+              ]}
+              value={compareGroup}
+              onChange={(v) => { setCompareGroup(v); setCompareEdu(""); }}
+            />
+            {MBA_STATS[form.level] && (
+              <CompareToggle
+                label="Education"
+                options={[
+                  { value: "", label: "All" },
+                  { value: "MBA", label: "MBA" },
+                  { value: "NonMBA", label: "Non-MBA" },
+                ]}
+                value={compareEdu}
+                onChange={(v) => { setCompareEdu(v); setCompareGroup(""); }}
+              />
+            )}
+          </div>
+
+          {analysis.gpsCommDelta != null && !compareEdu && (
             <div className="mb-6 opacity-0 animate-fade-up-1 bg-white rounded-2xl px-5 py-4 border border-stone-200/60 shadow-sm flex items-center justify-between">
               <div>
                 <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-1">GPS vs Commercial Split</div>

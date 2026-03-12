@@ -106,6 +106,52 @@ export const GPS_COMMERCIAL_STATS = {
   },
 };
 
+// Full MBA vs Non-MBA stats (levels with sufficient n)
+export const MBA_STATS = {
+  "Senior Consultant / Specialist Senior / Senior": {
+    MBA: {
+      count: 75,
+      salary: { p10: 96760, p25: 125100, p50: 154000, p75: 175000, p90: 177800, mean: 146415 },
+      aip: { p25: 8500, p50: 11900, p75: 16150, mean: 12403 },
+      tc: { p25: 137150, p50: 164800, p75: 187545 },
+    },
+    NonMBA: {
+      count: 499,
+      salary: { p10: 97456, p25: 108100, p50: 123000, p75: 138250, p90: 150160, mean: 123880 },
+      aip: { p25: 7850, p50: 11700, p75: 15800, mean: 12294 },
+      tc: { p25: 118400, p50: 136450, p75: 152400 },
+    },
+  },
+  "Manager / Specialist Master": {
+    MBA: {
+      count: 129,
+      salary: { p10: 142440, p25: 169600, p50: 191000, p75: 204000, p90: 218540, mean: 185467 },
+      aip: { p25: 16900, p50: 28000, p75: 39700, mean: 29614 },
+      tc: { p25: 189100, p50: 217400, p75: 243900 },
+    },
+    NonMBA: {
+      count: 382,
+      salary: { p10: 130120, p25: 146325, p50: 168000, p75: 186500, p90: 199970, mean: 166317 },
+      aip: { p25: 16000, p50: 23450, p75: 32675, mean: 24901 },
+      tc: { p25: 168400, p50: 192300, p75: 216275 },
+    },
+  },
+  "Senior Manager / Specialist Leader": {
+    MBA: {
+      count: 63,
+      salary: { p10: 196440, p25: 209200, p50: 223200, p75: 244000, p90: 266680, mean: 227722 },
+      aip: { p25: 32200, p50: 47500, p75: 55900, mean: 49351 },
+      tc: { p25: 242250, p50: 275100, p75: 303550 },
+    },
+    NonMBA: {
+      count: 133,
+      salary: { p10: 178500, p25: 200000, p50: 218000, p75: 244000, p90: 260000, mean: 219140 },
+      aip: { p25: 25400, p50: 42000, p75: 51200, mean: 41729 },
+      tc: { p25: 235000, p50: 263300, p75: 284998 },
+    },
+  },
+};
+
 export const USDC_STATS = {
   "Consultant / Staff": {
     USDC: { count: 34, salary: { p25: 79625, p50: 88600, p75: 100275 } },
