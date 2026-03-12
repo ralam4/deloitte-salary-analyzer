@@ -3,46 +3,10 @@ import PercentileBar from "./PercentileBar";
 import StatCard from "./StatCard";
 import InsightChip from "./InsightChip";
 import BenchmarkChart from "./BenchmarkChart";
-
-// Stats computed from 2025 Deloitte Salary Survey Responses.xlsx (1,775 clean rows of 1,934 total)
-const LEVEL_STATS = {
-  "Analyst / Jr Staff": {
-    count: 80,
-    salary: { p10: 73470, p25: 87775, p50: 94000, p75: 99075, p90: 102500, mean: 91228 },
-    aip: { p25: 4900, p50: 4900, p75: 4900, mean: 4900 },
-    tc: { p25: 87775, p50: 94700, p75: 100225 },
-  },
-  "Consultant / Staff": {
-    count: 391,
-    salary: { p10: 93500, p25: 99600, p50: 106300, p75: 115400, p90: 121200, mean: 107428 },
-    aip: { p25: 4800, p50: 7000, p75: 10200, mean: 7823 },
-    tc: { p25: 104050, p50: 113750, p75: 125325 },
-  },
-  "Senior Consultant / Specialist Senior / Senior": {
-    count: 577,
-    salary: { p10: 113560, p25: 121000, p50: 137000, p75: 151800, p90: 175940, mean: 138238 },
-    aip: { p25: 8000, p50: 12000, p75: 15900, mean: 12566 },
-    tc: { p25: 132800, p50: 150000, p75: 168200 },
-  },
-  "Manager / Specialist Master": {
-    count: 515,
-    salary: { p10: 147900, p25: 162900, p50: 186500, p75: 204000, p90: 215460, mean: 182712 },
-    aip: { p25: 16275, p50: 24050, p75: 33525, mean: 26106 },
-    tc: { p25: 185225, p50: 211350, p75: 236950 },
-  },
-  "Senior Manager / Specialist Leader": {
-    count: 202,
-    salary: { p10: 186910, p25: 216050, p50: 232750, p75: 254300, p90: 271870, mean: 231234 },
-    aip: { p25: 27250, p50: 44200, p75: 53475, mean: 43278 },
-    tc: { p25: 250500, p50: 279600, p75: 309375 },
-  },
-};
-
-const LEVELS = Object.keys(LEVEL_STATS);
-const BUSINESSES = ["Consulting Services", "Audit & Assurance", "Tax", "Enabling Areas"];
-const PORTFOLIOS = ["Strategy & Analytics", "Core Business Operations", "Cyber & Strategic Risk", "Cyber", "Human Capital", "Customer", "Finance Transformation", "Enterprise Performance", "Mergers & Acquisitions", "Regulatory, Risk & Forensic", "AI & Engineering", "Other"];
-const GPS_COMM = ["Commercial", "GPS"];
-const RATINGS = ["Exceptional", "Strong", "Meets Expectations"];
+import {
+  LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
+  totalRespondents,
+} from "../data/salaryData";
 
 export const fmt = (n) => {
   if (n == null) return "N/A";
@@ -53,8 +17,8 @@ export const fmt = (n) => {
 
 const fmtPct = (n) => (n != null ? `${(n * 100).toFixed(1)}%` : "N/A");
 
-function getPercentile(value, level) {
-  const s = LEVEL_STATS[level]?.salary;
+function getPercentile(value, salaryStats) {
+  const s = salaryStats;
   if (!s || !value) return null;
   if (value <= s.p10) return 10;
   if (value <= s.p25) return Math.round(10 + 15 * (value - s.p10) / (s.p25 - s.p10));
@@ -63,8 +27,6 @@ function getPercentile(value, level) {
   if (value <= s.p90) return Math.round(75 + 15 * (value - s.p75) / (s.p90 - s.p75));
   return Math.min(99, 90 + Math.round(10 * (value - s.p90) / (s.p90 - s.p75)));
 }
-
-const totalRespondents = Object.values(LEVEL_STATS).reduce((s, v) => s + v.count, 0);
 
 const inputClasses = "w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-stone-900 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition-all placeholder:text-stone-300 font-sans";
 const labelClasses = "text-[10px] text-stone-400 uppercase tracking-[0.12em] mb-1.5 block font-semibold";
@@ -94,7 +56,7 @@ export default function DeloitteSalaryAnalyzer() {
     if (!stats) return null;
 
     const sal = benchmarkSal;
-    const pct = getPercentile(sal, form.level);
+    const pct = getPercentile(sal, stats.salary);
     const vsMedian = sal - stats.salary.p50;
     const vsMedianPct = vsMedian / stats.salary.p50;
 
@@ -319,7 +281,7 @@ export default function DeloitteSalaryAnalyzer() {
                   <label className={labelClasses}>FY25 Performance Rating</label>
                   <select className={inputClasses} value={form.rating} onChange={(e) => update("rating", e.target.value)}>
                     <option value="">Select rating...</option>
-                    {RATINGS.map((r) => <option key={r} value={r}>{r}</option>)}
+                    {CLIENT_RATINGS.map((r) => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
               </div>
