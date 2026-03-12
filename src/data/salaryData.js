@@ -204,13 +204,22 @@ export const MBA_PREMIUM = {
   },
 };
 
+// "Promoted to X" = people whose FY26 level is X and FY25 level was the level below
 export const PROMOTION_RAISES = {
-  "Consultant / Staff": { n: 97, median: 0.0993 },
-  "Senior Consultant / Specialist Senior / Senior": { n: 210, median: 0.1375 },
-  "Manager / Specialist Master": { n: 122, median: 0.1510 },
-  "Senior Manager / Specialist Leader": { n: 52, median: 0.0971 },
+  "Consultant / Staff": { n: 97, median: 0.0993, fromLabel: "Analyst", toLabel: "Consultant" },
+  "Senior Consultant / Specialist Senior / Senior": { n: 210, median: 0.1375, fromLabel: "Consultant", toLabel: "Senior Consultant" },
+  "Manager / Specialist Master": { n: 122, median: 0.1510, fromLabel: "Senior Consultant", toLabel: "Manager" },
+  "Senior Manager / Specialist Leader": { n: 52, median: 0.0971, fromLabel: "Manager", toLabel: "Senior Manager" },
 };
 export const NON_PROMOTION_RAISE = { n: 1269, median: 0.0560, p25: 0.0375, p75: 0.0762 };
+
+// Map each level to the next level key (for "what's my promo raise going to look like")
+export const NEXT_LEVEL = {
+  "Analyst / Jr Staff": "Consultant / Staff",
+  "Consultant / Staff": "Senior Consultant / Specialist Senior / Senior",
+  "Senior Consultant / Specialist Senior / Senior": "Manager / Specialist Master",
+  "Manager / Specialist Master": "Senior Manager / Specialist Leader",
+};
 
 export const YEARS_AT_LEVEL_MANAGER = {
   1: { n: 119, median: 168300 },

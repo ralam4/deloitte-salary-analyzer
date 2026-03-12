@@ -7,7 +7,7 @@ import {
   LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
   BUSINESS_MODELS, CONSOLIDATED_RATINGS, EDUCATION_LEVELS,
   GPS_COMMERCIAL_STATS, MBA_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
-  CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE,
+  CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE, NEXT_LEVEL,
   totalRespondents,
 } from "../data/salaryData";
 
@@ -247,8 +247,10 @@ export default function DeloitteSalaryAnalyzer() {
       };
     }
 
-    // Promotion context
-    const promoData = PROMOTION_RAISES[form.level] || null;
+    // Promotion context — into your level + out to next level
+    const promoInto = PROMOTION_RAISES[form.level] || null;
+    const nextLevelKey = NEXT_LEVEL[form.level];
+    const promoNext = nextLevelKey ? PROMOTION_RAISES[nextLevelKey] || null : null;
 
     return {
       fy25Sal, fy25Aip, fy25Tc,
@@ -264,7 +266,8 @@ export default function DeloitteSalaryAnalyzer() {
       ratingRaiseData, ratingLabel,
       consolidatedRaiseData, clientRaiseData,
       projectedFy26,
-      promoData,
+      promoInto,
+      promoNext,
       insights,
     };
   }, [form, step, compareGroup, compareEdu]);
@@ -901,16 +904,33 @@ export default function DeloitteSalaryAnalyzer() {
             <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">
               Promotion Raise Benchmarks
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="text-center p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-2 font-semibold">Promoted to Your Level</div>
-                <div className="text-2xl font-bold font-mono text-emerald-700">
-                  {analysis.promoData ? `${(analysis.promoData.median * 100).toFixed(1)}%` : "—"}
+            <div className={`grid gap-3 mb-4 ${analysis.promoNext ? "grid-cols-3" : "grid-cols-2"}`}>
+              {analysis.promoInto && (
+                <div className="text-center p-4 bg-stone-50 rounded-xl">
+                  <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">
+                    {analysis.promoInto.fromLabel} → {analysis.promoInto.toLabel}
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-stone-600">
+                    {(analysis.promoInto.median * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-[11px] text-stone-400 mt-1">
+                    median raise (n={analysis.promoInto.n})
+                  </div>
                 </div>
-                <div className="text-[11px] text-emerald-500 mt-1">
-                  {analysis.promoData ? `median raise (n=${analysis.promoData.n})` : "N/A at this level"}
+              )}
+              {analysis.promoNext && (
+                <div className="text-center p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                  <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-2 font-semibold">
+                    {analysis.promoNext.fromLabel} → {analysis.promoNext.toLabel}
+                  </div>
+                  <div className="text-2xl font-bold font-mono text-emerald-700">
+                    {(analysis.promoNext.median * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-[11px] text-emerald-500 mt-1">
+                    your next promotion (n={analysis.promoNext.n})
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="text-center p-4 bg-stone-50 rounded-xl">
                 <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">Not Promoted</div>
                 <div className="text-2xl font-bold font-mono text-stone-600">{(NON_PROMOTION_RAISE.median * 100).toFixed(1)}%</div>
@@ -918,12 +938,12 @@ export default function DeloitteSalaryAnalyzer() {
               </div>
             </div>
 
-            {analysis.raiseRate !== null && analysis.promoData && (
+            {analysis.raiseRate !== null && analysis.promoNext && (
               <div className="px-4 py-3 bg-stone-50 rounded-xl text-[12px] text-stone-500">
                 Your raise of <span className="font-mono font-semibold text-stone-700">{fmtPct(analysis.raiseRate)}</span>
-                {analysis.raiseRate >= analysis.promoData.median * 0.9
-                  ? " is consistent with a promotion-level raise."
-                  : ` is below the promotion median of ${(analysis.promoData.median * 100).toFixed(1)}% for your level.`
+                {analysis.raiseRate >= analysis.promoNext.median * 0.9
+                  ? ` is consistent with a promotion to ${analysis.promoNext.toLabel}.`
+                  : ` is below the typical ${(analysis.promoNext.median * 100).toFixed(1)}% raise for promotion to ${analysis.promoNext.toLabel}.`
                 }
               </div>
             )}
