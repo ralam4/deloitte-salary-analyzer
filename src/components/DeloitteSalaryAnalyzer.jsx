@@ -794,10 +794,7 @@ export default function DeloitteSalaryAnalyzer() {
                 <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 mb-3 text-lg">?</div>
                 <div className="text-sm font-semibold text-stone-400 mb-1">Raise analysis</div>
                 <div className="text-xs text-stone-300 leading-relaxed max-w-[240px]">
-                  {analysis.projectedFy26
-                    ? <>With a {analysis.ratingLabel} rating, expected raise is <span className="font-mono font-semibold text-stone-500">~{(analysis.ratingRaiseData.median * 100).toFixed(1)}%</span>. Projected FY26: <span className="font-mono font-semibold text-stone-500">{fmt(analysis.projectedFy26.mid)}</span></>
-                    : <>Add your FY26 salary to see your raise vs. peers. Survey median is <span className="font-mono font-semibold text-stone-500">~7.0%</span></>
-                  }
+                  Add your FY26 salary to compare your raise against peers. Survey median is <span className="font-mono font-semibold text-stone-500">~7.0%</span>
                 </div>
               </div>
             )}
@@ -901,9 +898,12 @@ export default function DeloitteSalaryAnalyzer() {
 
           {/* Promotion Raise Benchmarks */}
           <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
-            <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">
+            <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-1">
               Promotion Raise Benchmarks
             </div>
+            <p className="text-[12px] text-stone-400 mb-4 leading-relaxed">
+              Median salary increase for survey respondents who changed levels between FY25 and FY26, compared to those who stayed at the same level.
+            </p>
             <div className={`grid gap-3 mb-4 ${analysis.promoNext ? "grid-cols-3" : "grid-cols-2"}`}>
               {analysis.promoInto && (
                 <div className="text-center p-4 bg-stone-50 rounded-xl">
