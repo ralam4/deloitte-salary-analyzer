@@ -7,7 +7,7 @@ import {
   LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
   BUSINESS_MODELS, CONSOLIDATED_RATINGS, EDUCATION_LEVELS,
   GPS_COMMERCIAL_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
-  CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES,
+  CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE,
   totalRespondents,
 } from "../data/salaryData";
 
@@ -770,6 +770,94 @@ export default function DeloitteSalaryAnalyzer() {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Rating in Context */}
+          {analysis.ratingRaiseData && (
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">
+                Your Rating in Context — {analysis.ratingLabel}
+              </div>
+
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-3xl font-bold font-mono text-stone-900 tracking-tight">
+                  {(analysis.ratingRaiseData.median * 100).toFixed(1)}%
+                </span>
+                <span className="text-stone-400 text-sm">median raise for {analysis.ratingLabel}-rated peers (n={analysis.ratingRaiseData.n})</span>
+              </div>
+
+              {analysis.raiseRate !== null && (
+                <div className="mb-4 px-4 py-3 bg-stone-50 rounded-xl">
+                  <div className="text-[12px] text-stone-500">
+                    Your raise:{" "}
+                    <span className={`font-mono font-semibold ${analysis.raiseRate >= analysis.ratingRaiseData.median ? "text-emerald-600" : "text-amber-600"}`}>
+                      {fmtPct(analysis.raiseRate)}
+                    </span>
+                    {" "}vs {analysis.ratingLabel} median of{" "}
+                    <span className="font-mono font-semibold text-stone-700">{(analysis.ratingRaiseData.median * 100).toFixed(1)}%</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Rating raise table */}
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-2">
+                {analysis.consolidatedRaiseData ? "All Consolidated Ratings" : "All Client Ratings"}
+              </div>
+              <div className="space-y-1">
+                {Object.entries(analysis.consolidatedRaiseData ? CONSOLIDATED_RATING_RAISES : CLIENT_RATING_RAISES)
+                  .map(([rating, data]) => {
+                    const isUser = rating === analysis.ratingLabel;
+                    return (
+                      <div key={rating}
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-[12px] ${isUser ? "bg-violet-50 border border-violet-100" : "bg-stone-50"}`}
+                      >
+                        <span className={`font-medium ${isUser ? "text-violet-700" : "text-stone-500"}`}>
+                          {rating} {isUser && "← you"}
+                        </span>
+                        <div className="flex items-center gap-4">
+                          <span className="text-stone-400 text-[11px]">n={data.n}</span>
+                          <span className={`font-mono font-semibold ${isUser ? "text-violet-700" : "text-stone-700"}`}>
+                            {(data.median * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
+          {/* Promotion Raise Benchmarks */}
+          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
+            <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">
+              Promotion Raise Benchmarks
+            </div>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="text-center p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-2 font-semibold">Promoted to Your Level</div>
+                <div className="text-2xl font-bold font-mono text-emerald-700">
+                  {analysis.promoData ? `${(analysis.promoData.median * 100).toFixed(1)}%` : "—"}
+                </div>
+                <div className="text-[11px] text-emerald-500 mt-1">
+                  {analysis.promoData ? `median raise (n=${analysis.promoData.n})` : "N/A at this level"}
+                </div>
+              </div>
+              <div className="text-center p-4 bg-stone-50 rounded-xl">
+                <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">Not Promoted</div>
+                <div className="text-2xl font-bold font-mono text-stone-600">{(NON_PROMOTION_RAISE.median * 100).toFixed(1)}%</div>
+                <div className="text-[11px] text-stone-400 mt-1">median raise (n={NON_PROMOTION_RAISE.n})</div>
+              </div>
+            </div>
+
+            {analysis.raiseRate !== null && analysis.promoData && (
+              <div className="px-4 py-3 bg-stone-50 rounded-xl text-[12px] text-stone-500">
+                Your raise of <span className="font-mono font-semibold text-stone-700">{fmtPct(analysis.raiseRate)}</span>
+                {analysis.raiseRate >= analysis.promoData.median * 0.9
+                  ? " is consistent with a promotion-level raise."
+                  : ` is below the promotion median of ${(analysis.promoData.median * 100).toFixed(1)}% for your level.`
+                }
+              </div>
+            )}
           </div>
 
           {/* AIP comparison */}
