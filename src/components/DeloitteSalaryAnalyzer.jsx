@@ -6,7 +6,7 @@ import BenchmarkChart from "./BenchmarkChart";
 import {
   LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
   BUSINESS_MODELS, CONSOLIDATED_RATINGS, EDUCATION_LEVELS,
-  GPS_COMMERCIAL_STATS, MBA_STATS, PORTFOLIO_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
+  GPS_COMMERCIAL_STATS, MBA_STATS, PORTFOLIO_STATS, BUSINESS_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
   CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE, NEXT_LEVEL,
   totalRespondents,
 } from "../data/salaryData";
@@ -157,15 +157,25 @@ export default function DeloitteSalaryAnalyzer() {
     const raiseRate = fy26Sal && fy25Sal > 0 ? (fy26Sal - fy25Sal) / fy25Sal : null;
 
     // Pick stats based on compare toggles (results page) or form (initial)
-    const blendedStats = LEVEL_STATS[form.level];
-    if (!blendedStats) return null;
+    const allLevelStats = LEVEL_STATS[form.level];
+    if (!allLevelStats) return null;
+
+    // Business type filter (base filter — narrows the peer group)
+    const businessStatsForLevel = BUSINESS_STATS[form.level];
+    const activeBusiness = form.business;
+    const hasBusinessStats = !!(activeBusiness && businessStatsForLevel?.[activeBusiness]);
+    const blendedStats = hasBusinessStats ? businessStatsForLevel[activeBusiness] : allLevelStats;
 
     // GPS/Commercial filter
     const gpsCommSplit = GPS_COMMERCIAL_STATS[form.level];
     const activeGroup = step === 2 ? compareGroup : form.gpsComm;
     const hasFilteredStats = !!(activeGroup && gpsCommSplit?.[activeGroup]);
     let stats = hasFilteredStats ? gpsCommSplit[activeGroup] : blendedStats;
-    let peerLabel = hasFilteredStats ? `${activeGroup} peers` : "all peers";
+    let peerLabel = hasFilteredStats
+      ? `${activeGroup} peers`
+      : hasBusinessStats
+        ? `${activeBusiness} peers`
+        : "all peers";
     let peerCount = stats.count;
 
     // MBA/Education filter (overrides GPS/Commercial if active, since we don't have cross-cuts)
@@ -663,7 +673,7 @@ export default function DeloitteSalaryAnalyzer() {
               <span className="text-stone-300 font-sans text-2xl font-normal ml-3">percentile</span>
             </h1>
             <p className="text-stone-400 text-sm">
-              {form.level} &middot; {form.gpsComm || "All"} &middot; n={analysis.stats.count} {analysis.peerLabel}
+              {form.level} &middot; {form.business || "All"}{form.gpsComm ? ` (${form.gpsComm})` : ""} &middot; n={analysis.stats.count} {analysis.peerLabel}
               {analysis.usdcData && <span> &middot; USDC</span>}
             </p>
           </div>
