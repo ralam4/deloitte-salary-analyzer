@@ -5,6 +5,7 @@ import InsightChip from "./InsightChip";
 import BenchmarkChart from "./BenchmarkChart";
 import {
   LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
+  BUSINESS_MODELS, CONSOLIDATED_RATINGS, EDUCATION_LEVELS,
   totalRespondents,
 } from "../data/salaryData";
 
@@ -34,21 +35,36 @@ const labelClasses = "text-[10px] text-stone-400 uppercase tracking-[0.12em] mb-
 export default function DeloitteSalaryAnalyzer() {
   const [step, setStep] = useState(0); // 0=hero, 1=form, 2=results
   const [form, setForm] = useState({
-    level: "", salary: "", newSalary: "", aip: "",
-    business: "", portfolio: "", gpsComm: "",
-    yearsDeloitte: "", yearsLevel: "", totalYears: "", rating: "",
+    level: "",
+    fy25Salary: "",
+    fy25Aip: "",
+    fy26Salary: "",
+    fy26Aip: "",
+    business: "",
+    businessModel: "",
+    portfolio: "",
+    gpsComm: "",
+    yearsDeloitte: "",
+    yearsLevel: "",
+    totalYears: "",
+    clientRating: "",
+    consolidatedRating: "",
+    education: "",
   });
 
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const updateBusiness = (v) => {
+    setForm((f) => ({ ...f, business: v, businessModel: v === "Consulting Services" ? f.businessModel : "" }));
+  };
 
   const analysis = useMemo(() => {
-    if (!form.level || !form.salary) return null;
-    const currentSal = parseFloat(form.salary);
+    if (!form.level || !form.fy25Salary) return null;
+    const currentSal = parseFloat(form.fy25Salary);
     if (!Number.isFinite(currentSal) || currentSal <= 0) return null;
-    const rawNew = parseFloat(form.newSalary);
+    const rawNew = parseFloat(form.fy26Salary);
     const newSal = Number.isFinite(rawNew) && rawNew > 0 ? rawNew : null;
     const benchmarkSal = newSal || currentSal;
-    const rawAip = parseFloat(form.aip);
+    const rawAip = parseFloat(form.fy25Aip);
     const aip = Number.isFinite(rawAip) && rawAip >= 0 ? rawAip : 0;
     const tc = benchmarkSal + aip;
     const raiseRate = newSal && currentSal > 0 ? (newSal - currentSal) / currentSal : null;
@@ -81,7 +97,7 @@ export default function DeloitteSalaryAnalyzer() {
       if (yl >= 3 && pct < 60) insights.push({ text: `${yl} yrs at level — consider promotion timeline`, type: "warn" });
     }
 
-    if (aip > 0 && form.aip) {
+    if (aip > 0 && form.fy25Aip) {
       const aipVsMedian = aip - stats.aip.p50;
       if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(aip)} — +${fmt(aipVsMedian)} above median`, type: "good" });
       else insights.push({ text: `AIP ${fmt(aip)} — ${fmt(aipVsMedian)} vs median`, type: "warn" });
@@ -90,8 +106,8 @@ export default function DeloitteSalaryAnalyzer() {
     return { sal, aip, tc, pct, stats, vsMedian, vsMedianPct, raiseRate, insights, newSal, currentSal };
   }, [form]);
 
-  const parsedSalary = parseFloat(form.salary);
-  const canSubmit = form.level && form.salary && Number.isFinite(parsedSalary) && parsedSalary > 0;
+  const parsedSalary = parseFloat(form.fy25Salary);
+  const canSubmit = form.level && form.fy25Salary && Number.isFinite(parsedSalary) && parsedSalary > 0;
 
   // ─── HERO / LANDING ───
   if (step === 0) {
@@ -255,11 +271,22 @@ export default function DeloitteSalaryAnalyzer() {
 
                 <div>
                   <label className={labelClasses}>Global Business</label>
-                  <select className={inputClasses} value={form.business} onChange={(e) => update("business", e.target.value)}>
+                  <select className={inputClasses} value={form.business} onChange={(e) => updateBusiness(e.target.value)}>
                     <option value="">Select business...</option>
                     {BUSINESSES.map((b) => <option key={b} value={b}>{b}</option>)}
                   </select>
                 </div>
+
+                {form.business === "Consulting Services" && (
+                  <div>
+                    <label className={labelClasses}>Business Model</label>
+                    <select className={inputClasses} value={form.businessModel}
+                      onChange={(e) => update("businessModel", e.target.value)}>
+                      <option value="">Select...</option>
+                      {BUSINESS_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </div>
+                )}
 
                 <div>
                   <label className={labelClasses}>Offering Portfolio</label>
@@ -278,10 +305,30 @@ export default function DeloitteSalaryAnalyzer() {
                 </div>
 
                 <div>
-                  <label className={labelClasses}>FY25 Performance Rating</label>
-                  <select className={inputClasses} value={form.rating} onChange={(e) => update("rating", e.target.value)}>
+                  <label className={labelClasses}>FY25 Client Rating</label>
+                  <select className={inputClasses} value={form.clientRating} onChange={(e) => update("clientRating", e.target.value)}>
                     <option value="">Select rating...</option>
                     {CLIENT_RATINGS.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className={labelClasses}>
+                    Consolidated Rating <span className="text-stone-300 font-normal normal-case tracking-normal">— e.g. EEE, ESS</span>
+                  </label>
+                  <select className={inputClasses} value={form.consolidatedRating}
+                    onChange={(e) => update("consolidatedRating", e.target.value)}>
+                    <option value="">Select...</option>
+                    {CONSOLIDATED_RATINGS.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className={labelClasses}>Education Level</label>
+                  <select className={inputClasses} value={form.education}
+                    onChange={(e) => update("education", e.target.value)}>
+                    <option value="">Select...</option>
+                    {EDUCATION_LEVELS.map((ed) => <option key={ed} value={ed}>{ed}</option>)}
                   </select>
                 </div>
               </div>
@@ -291,50 +338,64 @@ export default function DeloitteSalaryAnalyzer() {
             <div className="bg-white rounded-2xl p-6 border border-stone-200/60 shadow-sm">
               <div className="text-[10px] font-semibold text-emerald-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Compensation
+                FY25 Compensation
               </div>
-
-              <div className="space-y-4">
+              <div className="space-y-4 mb-6">
                 <div>
-                  <label className={labelClasses}>FY25 Current Base Salary (USD) *</label>
+                  <label className={labelClasses}>Base Salary (USD) *</label>
                   <input className={inputClasses} type="number" placeholder="e.g. 136000"
-                    value={form.salary} onChange={(e) => update("salary", e.target.value)} />
-                  <div className="text-[10px] text-stone-300 mt-1 ml-1">Your current / last known salary</div>
+                    value={form.fy25Salary} onChange={(e) => update("fy25Salary", e.target.value)} />
                 </div>
-
-                <div>
-                  <label className={labelClasses}>
-                    FY26 New Base Salary (USD) <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
-                  </label>
-                  <input className={inputClasses} type="number" placeholder="e.g. 145000"
-                    value={form.newSalary} onChange={(e) => update("newSalary", e.target.value)} />
-                  <div className="text-[10px] text-stone-300 mt-1 ml-1">Leave blank if not yet received</div>
-                </div>
-
                 <div>
                   <label className={labelClasses}>
                     AIP / Bonus (USD) <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
                   </label>
                   <input className={inputClasses} type="number" placeholder="e.g. 14000"
-                    value={form.aip} onChange={(e) => update("aip", e.target.value)} />
+                    value={form.fy25Aip} onChange={(e) => update("fy25Aip", e.target.value)} />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-3 gap-2.5">
-                  <div>
-                    <label className={labelClasses}>Total Yrs</label>
-                    <input className={inputClasses} type="number" placeholder="6"
-                      value={form.totalYears} onChange={(e) => update("totalYears", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelClasses}>@ Deloitte</label>
-                    <input className={inputClasses} type="number" placeholder="4"
-                      value={form.yearsDeloitte} onChange={(e) => update("yearsDeloitte", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className={labelClasses}>@ Level</label>
-                    <input className={inputClasses} type="number" placeholder="2"
-                      value={form.yearsLevel} onChange={(e) => update("yearsLevel", e.target.value)} />
-                  </div>
+              <div className="border-t border-stone-100 mb-6" />
+
+              <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+                FY26 Compensation <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
+              </div>
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className={labelClasses}>Base Salary (USD)</label>
+                  <input className={inputClasses} type="number" placeholder="e.g. 145000"
+                    value={form.fy26Salary} onChange={(e) => update("fy26Salary", e.target.value)} />
+                  <div className="text-[10px] text-stone-300 mt-1 ml-1">Leave blank if not yet received</div>
+                </div>
+                <div>
+                  <label className={labelClasses}>AIP / Bonus (USD)</label>
+                  <input className={inputClasses} type="number" placeholder="e.g. 16000"
+                    value={form.fy26Aip} onChange={(e) => update("fy26Aip", e.target.value)} />
+                </div>
+              </div>
+
+              <div className="border-t border-stone-100 mb-6" />
+
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-4 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-stone-400" />
+                Experience
+              </div>
+              <div className="grid grid-cols-3 gap-2.5">
+                <div>
+                  <label className={labelClasses}>Total Yrs</label>
+                  <input className={inputClasses} type="number" placeholder="6"
+                    value={form.totalYears} onChange={(e) => update("totalYears", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelClasses}>@ Deloitte</label>
+                  <input className={inputClasses} type="number" placeholder="4"
+                    value={form.yearsDeloitte} onChange={(e) => update("yearsDeloitte", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelClasses}>@ Level</label>
+                  <input className={inputClasses} type="number" placeholder="2"
+                    value={form.yearsLevel} onChange={(e) => update("yearsLevel", e.target.value)} />
                 </div>
               </div>
             </div>
@@ -417,7 +478,7 @@ export default function DeloitteSalaryAnalyzer() {
             />
             <StatCard
               label="Your AIP"
-              value={form.aip ? fmt(analysis.aip) : "—"}
+              value={form.fy25Aip ? fmt(analysis.aip) : "—"}
               sub={`Median: ${fmt(analysis.stats.aip.p50)}`}
               accent="#f59e0b"
             />
@@ -550,7 +611,7 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                ["Your AIP", form.aip ? fmt(analysis.aip) : "—", form.aip && analysis.aip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-stone-400"],
+                ["Your AIP", form.fy25Aip ? fmt(analysis.aip) : "—", form.fy25Aip && analysis.aip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-stone-400"],
                 ["P25 AIP", fmt(analysis.stats.aip.p25), "text-stone-500"],
                 ["Median AIP", fmt(analysis.stats.aip.p50), "text-violet-600"],
                 ["P75 AIP", fmt(analysis.stats.aip.p75), "text-stone-500"],
