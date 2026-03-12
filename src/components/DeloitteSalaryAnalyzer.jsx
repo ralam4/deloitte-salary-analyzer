@@ -34,7 +34,7 @@ function getPercentile(value, salaryStats) {
 const inputClasses = "w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-stone-900 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition-all placeholder:text-stone-300 font-sans";
 const labelClasses = "text-[10px] text-stone-400 uppercase tracking-[0.12em] mb-1.5 block font-semibold";
 
-function UsdcContext({ usdcData, salary, level }) {
+function UsdcContext({ usdcData, level }) {
   const [showCore, setShowCore] = useState(false);
   const usdc = usdcData.USDC;
   const core = usdcData.Core;
@@ -133,7 +133,7 @@ export default function DeloitteSalaryAnalyzer() {
     if (!blendedStats) return null;
 
     const gpsCommSplit = GPS_COMMERCIAL_STATS[form.level];
-    const hasFilteredStats = form.gpsComm && gpsCommSplit?.[form.gpsComm];
+    const hasFilteredStats = !!(form.gpsComm && gpsCommSplit?.[form.gpsComm]);
     const stats = hasFilteredStats ? gpsCommSplit[form.gpsComm] : blendedStats;
     const peerLabel = hasFilteredStats ? `${form.gpsComm} peers` : "all peers";
 
@@ -143,7 +143,7 @@ export default function DeloitteSalaryAnalyzer() {
     // Primary benchmark is FY25 salary vs FY25 survey data
     const pct = getPercentile(fy25Sal, stats.salary);
     const vsMedian = fy25Sal - stats.salary.p50;
-    const vsMedianPct = vsMedian / stats.salary.p50;
+
 
     // GPS/Commercial delta
     const gpsCommDelta = gpsCommSplit
@@ -216,7 +216,7 @@ export default function DeloitteSalaryAnalyzer() {
       fy26Sal, fy26Aip, fy26Tc,
       raiseRate,
       stats, blendedStats,
-      pct, vsMedian, vsMedianPct,
+      pct, vsMedian,
       gpsCommDelta,
       peerLabel,
       hasFilteredStats,
@@ -576,6 +576,7 @@ export default function DeloitteSalaryAnalyzer() {
             </h1>
             <p className="text-stone-400 text-sm">
               {form.level} &middot; {form.gpsComm || "All"} &middot; n={analysis.stats.count} {analysis.peerLabel}
+              {analysis.usdcData && <span> &middot; USDC</span>}
             </p>
           </div>
 
@@ -614,7 +615,7 @@ export default function DeloitteSalaryAnalyzer() {
           )}
 
           {analysis.usdcData && (
-            <UsdcContext usdcData={analysis.usdcData} salary={analysis.fy25Sal} level={form.level} />
+            <UsdcContext usdcData={analysis.usdcData} level={form.level} />
           )}
 
           {/* Stat cards */}
@@ -666,7 +667,6 @@ export default function DeloitteSalaryAnalyzer() {
               </div>
               <BenchmarkChart
                 userSalary={analysis.fy25Sal}
-                level={form.level}
                 levelStats={analysis.stats}
                 groupMedian={analysis.hasFilteredStats ? analysis.stats.salary.p50 : null}
                 groupLabel={analysis.hasFilteredStats ? `${form.gpsComm} median` : null}
