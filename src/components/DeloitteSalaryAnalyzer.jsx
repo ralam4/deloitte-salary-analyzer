@@ -293,15 +293,15 @@ export default function DeloitteSalaryAnalyzer() {
           {/* Floating stat preview cards */}
           <div className="opacity-0 animate-fade-up-4 mt-20 grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Median Base", level: "Analyst", val: "$94,000", sub: "80 responses" },
-              { label: "Median Base", level: "Consultant", val: "$106,300", sub: "391 responses" },
-              { label: "Median Base", level: "Manager", val: "$186,500", sub: "515 responses" },
-              { label: "Median Base", level: "Sr. Manager", val: "$232,750", sub: "202 responses" },
+              { level: "Analyst", key: "Analyst / Jr Staff" },
+              { level: "Consultant", key: "Consultant / Staff" },
+              { level: "Manager", key: "Manager / Specialist Master" },
+              { level: "Sr. Manager", key: "Senior Manager / Specialist Leader" },
             ].map((card) => (
               <div key={card.level} className="bg-white/70 backdrop-blur-sm border border-stone-200/60 rounded-2xl p-4 sm:p-5 hover:bg-white/90 transition-all">
                 <div className="text-[10px] text-stone-400 uppercase tracking-[0.1em] font-semibold">{card.level}</div>
-                <div className="text-xl sm:text-2xl font-bold font-mono text-stone-900 mt-1 tracking-tight">{card.val}</div>
-                <div className="text-[11px] text-stone-300 mt-1">{card.sub}</div>
+                <div className="text-xl sm:text-2xl font-bold font-mono text-stone-900 mt-1 tracking-tight">{fmt(LEVEL_STATS[card.key].salary.p50)}</div>
+                <div className="text-[11px] text-stone-300 mt-1">{LEVEL_STATS[card.key].count} responses</div>
               </div>
             ))}
           </div>
@@ -326,7 +326,7 @@ export default function DeloitteSalaryAnalyzer() {
                 {
                   num: "03",
                   title: "Make informed decisions",
-                  desc: "Use real data from 1,765 verified responses to negotiate, plan your career trajectory, or understand your market value.",
+                  desc: `Use real data from ${totalRespondents.toLocaleString()} verified responses to negotiate, plan your career trajectory, or understand your market value.`,
                 },
               ].map((s) => (
                 <div key={s.num} className="group">
