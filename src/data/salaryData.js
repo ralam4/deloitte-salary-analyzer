@@ -249,4 +249,148 @@ export const CONSOLIDATED_RATINGS = ["EEE", "EES", "ESE", "ESS", "SSE", "SES", "
 export const EDUCATION_LEVELS = ["Bachelor's", "Non-MBA Master's", "MBA", "PhD / Other"];
 export const BUSINESS_MODELS = ["Core (Traditional)", "USDC"];
 
+// Offering Portfolio stats by level (FY26 portfolio names, n>=30 only)
+export const PORTFOLIO_STATS = {
+  "Consultant / Staff": {
+    "AI & Engineering": {
+      count: 78,
+      salary: { p10: 90140, p25: 96175, p50: 104400, p75: 108900, p90: 113240, mean: 102538 },
+      aip: { p25: 3975, p50: 7450, p75: 10800, mean: 7285 },
+      tc: { p25: 102900, p50: 112300, p75: 118500 },
+    },
+    "Customer": {
+      count: 66,
+      salary: { p10: 91750, p25: 97000, p50: 102200, p75: 111750, p90: 115000, mean: 103485 },
+      aip: { p25: 0, p50: 6850, p75: 11400, mean: 6570 },
+      tc: { p25: 97300, p50: 109100, p75: 122175 },
+    },
+    "Strategy & Transactions": {
+      count: 55,
+      salary: { p10: 88840, p25: 92850, p50: 99200, p75: 106400, p90: 110000, mean: 98123 },
+      aip: { p25: 0, p50: 5100, p75: 7750, mean: 4986 },
+      tc: { p25: 97350, p50: 104200, p75: 112950 },
+    },
+    "Enterprise Performance": {
+      count: 52,
+      salary: { p10: 84110, p25: 94700, p50: 96850, p75: 106425, p90: 111717, mean: 100100 },
+      aip: { p25: 4300, p50: 6700, p75: 7700, mean: 6763 },
+      tc: { p25: 99050, p50: 104250, p75: 113025 },
+    },
+    "Human Capital": {
+      count: 48,
+      salary: { p10: 89450, p25: 94700, p50: 101650, p75: 108700, p90: 121500, mean: 101773 },
+      aip: { p25: 4075, p50: 6600, p75: 7675, mean: 6346 },
+      tc: { p25: 100825, p50: 110450, p75: 117400 },
+    },
+  },
+  "Senior Consultant / Specialist Senior / Senior": {
+    "AI & Engineering": {
+      count: 125,
+      salary: { p10: 106060, p25: 119500, p50: 132000, p75: 146400, p90: 169520, mean: 134614 },
+      aip: { p25: 8600, p50: 12800, p75: 16500, mean: 13629 },
+      tc: { p25: 133000, p50: 145300, p75: 159600 },
+    },
+    "Strategy & Transactions": {
+      count: 88,
+      salary: { p10: 98790, p25: 108550, p50: 124650, p75: 143625, p90: 175000, mean: 129456 },
+      aip: { p25: 9100, p50: 12000, p75: 15950, mean: 13039 },
+      tc: { p25: 119700, p50: 137700, p75: 156075 },
+    },
+    "Human Capital": {
+      count: 85,
+      salary: { p10: 95800, p25: 107500, p50: 120000, p75: 139900, p90: 154080, mean: 123553 },
+      aip: { p25: 8200, p50: 11500, p75: 16600, mean: 12909 },
+      tc: { p25: 116000, p50: 134600, p75: 154200 },
+    },
+    "Enterprise Performance": {
+      count: 63,
+      salary: { p10: 105320, p25: 115800, p50: 128000, p75: 139550, p90: 149420, mean: 127601 },
+      aip: { p25: 8900, p50: 12600, p75: 15350, mean: 12719 },
+      tc: { p25: 126200, p50: 141000, p75: 154000 },
+    },
+    "Customer": {
+      count: 61,
+      salary: { p10: 108500, p25: 128600, p50: 136000, p75: 152100, p90: 175000, mean: 138905 },
+      aip: { p25: 8700, p50: 13500, p75: 17900, mean: 14139 },
+      tc: { p25: 136925, p50: 154600, p75: 170000 },
+    },
+    "Other": {
+      count: 55,
+      salary: { p10: 86700, p25: 91250, p50: 108000, p75: 129500, p90: 140320, mean: 110304 },
+      aip: { p25: 4300, p50: 6500, p75: 12450, mean: 8801 },
+      tc: { p25: 98500, p50: 115200, p75: 138750 },
+    },
+    "Cyber": {
+      count: 31,
+      salary: { p10: 98800, p25: 107400, p50: 114000, p75: 123750, p90: 133100, mean: 117059 },
+      aip: { p25: 6750, p50: 10000, p75: 10900, mean: 9921 },
+      tc: { p25: 116950, p50: 123900, p75: 136200 },
+    },
+    "Finance Transformation": {
+      count: 31,
+      salary: { p10: 95000, p25: 105750, p50: 121600, p75: 137000, p90: 150000, mean: 123361 },
+      aip: { p25: 7450, p50: 10400, p75: 14950, mean: 11939 },
+      tc: { p25: 115800, p50: 138200, p75: 148350 },
+    },
+  },
+  "Manager / Specialist Master": {
+    "AI & Engineering": {
+      count: 98,
+      salary: { p10: 137400, p25: 157200, p50: 180400, p75: 193512, p90: 203720, mean: 174529 },
+      aip: { p25: 16450, p50: 23800, p75: 33425, mean: 25882 },
+      tc: { p25: 179575, p50: 201200, p75: 224825 },
+    },
+    "Strategy & Transactions": {
+      count: 80,
+      salary: { p10: 142570, p25: 160500, p50: 180000, p75: 207050, p90: 223000, mean: 183086 },
+      aip: { p25: 18975, p50: 30300, p75: 41925, mean: 31648 },
+      tc: { p25: 189775, p50: 210050, p75: 248250 },
+    },
+    "Customer": {
+      count: 73,
+      salary: { p10: 142760, p25: 155000, p50: 181800, p75: 195000, p90: 203600, mean: 176780 },
+      aip: { p25: 21600, p50: 27800, p75: 35100, mean: 29022 },
+      tc: { p25: 180300, p50: 208000, p75: 227000 },
+    },
+    "Human Capital": {
+      count: 66,
+      salary: { p10: 135950, p25: 155100, p50: 176600, p75: 192075, p90: 201200, mean: 172567 },
+      aip: { p25: 18500, p50: 25750, p75: 33750, mean: 27218 },
+      tc: { p25: 181075, p50: 202200, p75: 218675 },
+    },
+    "Enterprise Performance": {
+      count: 59,
+      salary: { p10: 145960, p25: 160900, p50: 178000, p75: 188050, p90: 201280, mean: 173111 },
+      aip: { p25: 16450, p50: 26000, p75: 35950, mean: 26506 },
+      tc: { p25: 180150, p50: 205700, p75: 221250 },
+    },
+    "Other": {
+      count: 42,
+      salary: { p10: 119100, p25: 125500, p50: 140250, p75: 176350, p90: 199700, mean: 151140 },
+      aip: { p25: 8625, p50: 13000, p75: 19625, mean: 15981 },
+      tc: { p25: 137600, p50: 152030, p75: 195700 },
+    },
+    "Cyber": {
+      count: 35,
+      salary: { p10: 127810, p25: 147858, p50: 160000, p75: 176500, p90: 192200, mean: 159413 },
+      aip: { p25: 15600, p50: 20000, p75: 28600, mean: 22791 },
+      tc: { p25: 168758, p50: 181800, p75: 199250 },
+    },
+  },
+  "Senior Manager / Specialist Leader": {
+    "AI & Engineering": {
+      count: 45,
+      salary: { p10: 200000, p25: 211500, p50: 225600, p75: 251800, p90: 263900, mean: 227773 },
+      aip: { p25: 35000, p50: 47000, p75: 54000, mean: 46111 },
+      tc: { p25: 255200, p50: 275500, p75: 294200 },
+    },
+    "Strategy & Transactions": {
+      count: 35,
+      salary: { p10: 180980, p25: 213425, p50: 233600, p75: 253850, p90: 274060, mean: 231559 },
+      aip: { p25: 31450, p50: 46400, p75: 71400, mean: 53320 },
+      tc: { p25: 248975, p50: 270000, p75: 336650 },
+    },
+  },
+};
+
 export const totalRespondents = Object.values(LEVEL_STATS).reduce((s, v) => s + v.count, 0);

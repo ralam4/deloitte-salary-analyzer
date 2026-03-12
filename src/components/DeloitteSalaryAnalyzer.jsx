@@ -6,7 +6,7 @@ import BenchmarkChart from "./BenchmarkChart";
 import {
   LEVEL_STATS, LEVELS, BUSINESSES, PORTFOLIOS, GPS_COMM, CLIENT_RATINGS,
   BUSINESS_MODELS, CONSOLIDATED_RATINGS, EDUCATION_LEVELS,
-  GPS_COMMERCIAL_STATS, MBA_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
+  GPS_COMMERCIAL_STATS, MBA_STATS, PORTFOLIO_STATS, USDC_STATS, CONSOLIDATED_RATING_RAISES,
   CLIENT_RATING_RAISES, MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE, NEXT_LEVEL,
   totalRespondents,
 } from "../data/salaryData";
@@ -132,6 +132,7 @@ export default function DeloitteSalaryAnalyzer() {
   // Compare toggle state (results page only, independent of form)
   const [compareGroup, setCompareGroup] = useState(""); // "", "GPS", "Commercial"
   const [compareEdu, setCompareEdu] = useState(""); // "", "MBA", "NonMBA"
+  const [comparePortfolio, setComparePortfolio] = useState(""); // "" = All, or a portfolio name
 
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const updateBusiness = (v) => {
@@ -173,6 +174,15 @@ export default function DeloitteSalaryAnalyzer() {
     if (activeEdu && mbaStatsForLevel?.[activeEdu]) {
       stats = mbaStatsForLevel[activeEdu];
       peerLabel = activeEdu === "MBA" ? "MBA peers" : "Non-MBA peers";
+      peerCount = stats.count;
+    }
+
+    // Portfolio filter (overrides GPS/Commercial and MBA if active)
+    const portfolioStatsForLevel = PORTFOLIO_STATS[form.level];
+    const activePortfolio = step === 2 ? comparePortfolio : "";
+    if (activePortfolio && portfolioStatsForLevel?.[activePortfolio]) {
+      stats = portfolioStatsForLevel[activePortfolio];
+      peerLabel = `${activePortfolio} peers`;
       peerCount = stats.count;
     }
 
@@ -270,7 +280,7 @@ export default function DeloitteSalaryAnalyzer() {
       promoNext,
       insights,
     };
-  }, [form, step, compareGroup, compareEdu]);
+  }, [form, step, compareGroup, compareEdu, comparePortfolio]);
 
   const parsedSalary = parseFloat(form.fy25Salary);
   const canSubmit = form.level && form.fy25Salary && Number.isFinite(parsedSalary) && parsedSalary > 0;
@@ -573,6 +583,7 @@ export default function DeloitteSalaryAnalyzer() {
               onClick={() => {
                 setCompareGroup(form.gpsComm || "");
                 setCompareEdu(form.education === "MBA" ? "MBA" : "");
+                setComparePortfolio(form.portfolio || "");
                 setStep(2);
               }}
               className="w-full sm:w-auto bg-stone-900 text-white px-10 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 disabled:opacity-20 disabled:cursor-not-allowed disabled:translate-y-0 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
@@ -613,6 +624,24 @@ export default function DeloitteSalaryAnalyzer() {
 
       {analysis && (
         <main className="relative z-10 max-w-[1000px] mx-auto px-6 pb-16">
+          {/* Input summary */}
+          <div className="mb-6 opacity-0 animate-fade-up flex flex-wrap items-center gap-2">
+            {[
+              form.level && form.level.split(" / ")[0],
+              form.business,
+              form.businessModel && form.businessModel !== "Core (Traditional)" && form.businessModel,
+              form.portfolio,
+              form.gpsComm,
+              form.education,
+              form.clientRating && `${form.clientRating} rating`,
+              form.consolidatedRating && `Consolidated: ${form.consolidatedRating}`,
+            ].filter(Boolean).map((tag) => (
+              <span key={tag} className="inline-flex items-center bg-stone-100 text-stone-600 rounded-full px-3 py-1 text-[12px] font-medium">
+                {tag}
+              </span>
+            ))}
+          </div>
+
           {/* Results header */}
           <div className="mb-8 opacity-0 animate-fade-up">
             <div className="text-[10px] text-stone-400 uppercase tracking-[0.12em] font-semibold mb-3">Your Compensation Analysis</div>
@@ -643,7 +672,7 @@ export default function DeloitteSalaryAnalyzer() {
                 { value: "Commercial", label: "Commercial" },
               ]}
               value={compareGroup}
-              onChange={(v) => { setCompareGroup(v); setCompareEdu(""); }}
+              onChange={(v) => { setCompareGroup(v); setCompareEdu(""); setComparePortfolio(""); }}
             />
             {MBA_STATS[form.level] && (
               <CompareToggle
@@ -654,12 +683,29 @@ export default function DeloitteSalaryAnalyzer() {
                   { value: "NonMBA", label: "Non-MBA" },
                 ]}
                 value={compareEdu}
-                onChange={(v) => { setCompareEdu(v); setCompareGroup(""); }}
+                onChange={(v) => { setCompareEdu(v); setCompareGroup(""); setComparePortfolio(""); }}
+              />
+            )}
+            {PORTFOLIO_STATS[form.level] && (
+              <CompareToggle
+                label="Portfolio"
+                options={[
+                  { value: "", label: "All OPs" },
+                  ...Object.keys(PORTFOLIO_STATS[form.level]).map((p) => ({ value: p, label: p })),
+                ]}
+                value={comparePortfolio}
+                onChange={(v) => { setComparePortfolio(v); setCompareGroup(""); setCompareEdu(""); }}
               />
             )}
           </div>
 
-          {analysis.gpsCommDelta != null && !compareEdu && (
+          {analysis.stats.count < 30 && (
+            <div className="mb-4 text-[11px] text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+              Small sample — treat with caution (n={analysis.stats.count})
+            </div>
+          )}
+
+          {analysis.gpsCommDelta != null && !compareEdu && !comparePortfolio && (
             <div className="mb-6 opacity-0 animate-fade-up-1 bg-white rounded-2xl px-5 py-4 border border-stone-200/60 shadow-sm flex items-center justify-between">
               <div>
                 <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-1">GPS vs Commercial Split</div>
