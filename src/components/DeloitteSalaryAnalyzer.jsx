@@ -386,7 +386,7 @@ export default function DeloitteSalaryAnalyzer() {
 
               <div className="space-y-4">
                 <div>
-                  <label className={labelClasses}>FY26 Level *</label>
+                  <label className={labelClasses}>FY25 Level *</label>
                   <select className={inputClasses} value={form.level} onChange={(e) => update("level", e.target.value)}>
                     <option value="">Select level...</option>
                     {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
