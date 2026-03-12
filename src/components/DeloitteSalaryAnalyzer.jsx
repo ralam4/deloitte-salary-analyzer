@@ -95,7 +95,7 @@ function CompareToggle({ label, options, value, onChange }) {
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`px-3 py-1 rounded-full text-[12px] font-medium cursor-pointer transition-all ${
+            className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium cursor-pointer transition-all whitespace-nowrap ${
               value === opt.value
                 ? "bg-stone-900 text-white shadow-sm"
                 : "bg-stone-100 text-stone-500 hover:bg-stone-200"
@@ -581,9 +581,22 @@ export default function DeloitteSalaryAnalyzer() {
             <button
               disabled={!canSubmit}
               onClick={() => {
-                setCompareGroup(form.gpsComm || "");
-                setCompareEdu(form.education === "MBA" ? "MBA" : "");
-                setComparePortfolio(form.portfolio || "");
+                // Initialize exactly ONE toggle based on priority (Portfolio > Education > Segment)
+                const hasPortfolio = form.portfolio && PORTFOLIO_STATS[form.level]?.[form.portfolio];
+                const hasMba = form.education === "MBA" && MBA_STATS[form.level];
+                if (hasPortfolio) {
+                  setComparePortfolio(form.portfolio);
+                  setCompareGroup("");
+                  setCompareEdu("");
+                } else if (hasMba) {
+                  setCompareEdu("MBA");
+                  setCompareGroup("");
+                  setComparePortfolio("");
+                } else {
+                  setCompareGroup(form.gpsComm || "");
+                  setCompareEdu("");
+                  setComparePortfolio("");
+                }
                 setStep(2);
               }}
               className="w-full sm:w-auto bg-stone-900 text-white px-10 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 disabled:opacity-20 disabled:cursor-not-allowed disabled:translate-y-0 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
@@ -663,29 +676,31 @@ export default function DeloitteSalaryAnalyzer() {
           </div>
 
           {/* Compare toggles */}
-          <div className="mb-6 opacity-0 animate-fade-up-1 flex flex-wrap items-center gap-4">
-            <CompareToggle
-              label="Segment"
-              options={[
-                { value: "", label: "All" },
-                { value: "GPS", label: "GPS" },
-                { value: "Commercial", label: "Commercial" },
-              ]}
-              value={compareGroup}
-              onChange={(v) => { setCompareGroup(v); setCompareEdu(""); setComparePortfolio(""); }}
-            />
-            {MBA_STATS[form.level] && (
+          <div className="mb-6 opacity-0 animate-fade-up-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-4">
               <CompareToggle
-                label="Education"
+                label="Segment"
                 options={[
                   { value: "", label: "All" },
-                  { value: "MBA", label: "MBA" },
-                  { value: "NonMBA", label: "Non-MBA" },
+                  { value: "GPS", label: "GPS" },
+                  { value: "Commercial", label: "Commercial" },
                 ]}
-                value={compareEdu}
-                onChange={(v) => { setCompareEdu(v); setCompareGroup(""); setComparePortfolio(""); }}
+                value={compareGroup}
+                onChange={(v) => { setCompareGroup(v); setCompareEdu(""); setComparePortfolio(""); }}
               />
-            )}
+              {MBA_STATS[form.level] && (
+                <CompareToggle
+                  label="Education"
+                  options={[
+                    { value: "", label: "All" },
+                    { value: "MBA", label: "MBA" },
+                    { value: "NonMBA", label: "Non-MBA" },
+                  ]}
+                  value={compareEdu}
+                  onChange={(v) => { setCompareEdu(v); setCompareGroup(""); setComparePortfolio(""); }}
+                />
+              )}
+            </div>
             {PORTFOLIO_STATS[form.level] && (
               <CompareToggle
                 label="Portfolio"
