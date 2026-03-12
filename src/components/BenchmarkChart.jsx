@@ -4,7 +4,7 @@ import {
 } from "recharts";
 import { fmt } from "./DeloitteSalaryAnalyzer";
 
-export default function BenchmarkChart({ userSalary, levelStats }) {
+export default function BenchmarkChart({ userSalary, levelStats, groupMedian, groupLabel }) {
   const s = levelStats?.salary;
   if (!s) return null;
 
@@ -52,6 +52,15 @@ export default function BenchmarkChart({ userSalary, levelStats }) {
         </Bar>
         {userSalary && (
           <ReferenceLine y={userSalary} stroke="#10b981" strokeDasharray="4 4" strokeWidth={1.5} />
+        )}
+        {groupMedian && (
+          <ReferenceLine
+            y={groupMedian}
+            stroke="#8b5cf6"
+            strokeDasharray="6 3"
+            strokeWidth={1.5}
+            label={{ value: groupLabel, position: "right", fill: "#8b5cf6", fontSize: 10 }}
+          />
         )}
       </BarChart>
     </ResponsiveContainer>

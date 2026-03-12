@@ -34,6 +34,58 @@ function getPercentile(value, salaryStats) {
 const inputClasses = "w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-stone-900 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition-all placeholder:text-stone-300 font-sans";
 const labelClasses = "text-[10px] text-stone-400 uppercase tracking-[0.12em] mb-1.5 block font-semibold";
 
+function UsdcContext({ usdcData, salary, level }) {
+  const [showCore, setShowCore] = useState(false);
+  const usdc = usdcData.USDC;
+  const core = usdcData.Core;
+  const shortLevel = level.split("/")[0].trim();
+
+  return (
+    <div className="mb-6 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+          USDC Benchmarks — {shortLevel}
+        </div>
+        <span className="text-[11px] text-stone-300 font-mono">n={usdc.count} USDC peers</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {[["P25", usdc.salary.p25], ["Median", usdc.salary.p50], ["P75", usdc.salary.p75]].map(([label, val]) => (
+          <div key={label} className="text-center p-3 bg-stone-50 rounded-xl">
+            <div className="text-[10px] text-stone-400 font-semibold mb-1">{label}</div>
+            <div className="text-lg font-bold font-mono text-stone-700">{fmt(val)}</div>
+          </div>
+        ))}
+      </div>
+
+      {usdc.count < 30 && (
+        <div className="mb-3 text-[11px] text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+          Small sample — treat with caution (n={usdc.count})
+        </div>
+      )}
+
+      <button
+        onClick={() => setShowCore(!showCore)}
+        className="text-[12px] text-violet-500 hover:text-violet-700 font-medium cursor-pointer transition-colors"
+      >
+        {showCore ? "Hide" : "Compare to"} Core (Traditional) &middot; n={core.count}
+      </button>
+
+      {showCore && (
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          {[["P25", core.salary.p25], ["Median", core.salary.p50], ["P75", core.salary.p75]].map(([label, val]) => (
+            <div key={label} className="text-center p-3 bg-violet-50/50 rounded-xl border border-violet-100/50">
+              <div className="text-[10px] text-violet-400 font-semibold mb-1">Core {label}</div>
+              <div className="text-lg font-bold font-mono text-violet-700">{fmt(val)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function DeloitteSalaryAnalyzer() {
   const [step, setStep] = useState(0); // 0=hero, 1=form, 2=results
   const [form, setForm] = useState({
@@ -534,6 +586,37 @@ export default function DeloitteSalaryAnalyzer() {
             ))}
           </div>
 
+          {analysis.gpsCommDelta != null && (
+            <div className="mb-6 opacity-0 animate-fade-up-1 bg-white rounded-2xl px-5 py-4 border border-stone-200/60 shadow-sm flex items-center justify-between">
+              <div>
+                <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-1">GPS vs Commercial Split</div>
+                <p className="text-sm text-stone-500">
+                  Commercial peers at your level earn a median of{" "}
+                  <span className="font-mono font-semibold text-stone-700">{fmt(analysis.gpsCommDelta)}</span>{" "}
+                  more than GPS peers.
+                </p>
+              </div>
+              <div className="flex gap-3 text-center shrink-0 ml-4">
+                <div>
+                  <div className="text-[10px] text-stone-400 font-semibold">GPS</div>
+                  <div className="text-sm font-mono font-bold text-stone-700">
+                    {fmt(GPS_COMMERCIAL_STATS[form.level]?.GPS.salary.p50)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-stone-400 font-semibold">Commercial</div>
+                  <div className="text-sm font-mono font-bold text-stone-700">
+                    {fmt(GPS_COMMERCIAL_STATS[form.level]?.Commercial.salary.p50)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {analysis.usdcData && (
+            <UsdcContext usdcData={analysis.usdcData} salary={analysis.fy25Sal} level={form.level} />
+          )}
+
           {/* Stat cards */}
           <div className="opacity-0 animate-fade-up-2 grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
             <StatCard
@@ -581,7 +664,13 @@ export default function DeloitteSalaryAnalyzer() {
               <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-5">
                 Salary Distribution — Your Level
               </div>
-              <BenchmarkChart userSalary={analysis.fy25Sal} level={form.level} levelStats={analysis.stats} />
+              <BenchmarkChart
+                userSalary={analysis.fy25Sal}
+                level={form.level}
+                levelStats={analysis.stats}
+                groupMedian={analysis.hasFilteredStats ? analysis.stats.salary.p50 : null}
+                groupLabel={analysis.hasFilteredStats ? `${form.gpsComm} median` : null}
+              />
             </div>
 
             <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
