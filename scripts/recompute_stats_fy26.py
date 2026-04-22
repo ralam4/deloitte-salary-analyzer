@@ -219,6 +219,61 @@ def years_at_level_manager(rows: list[dict]) -> dict:
     return out
 
 
+LEVEL_TO_PREV = {
+    "Consultant / Staff": "Analyst / Jr Staff",
+    "Senior Consultant / Specialist Senior / Senior": "Consultant / Staff",
+    "Manager / Specialist Master": "Senior Consultant / Specialist Senior / Senior",
+    "Senior Manager / Specialist Leader": "Manager / Specialist Master",
+}
+FROM_LABEL = {
+    "Consultant / Staff": ("Analyst", "Consultant"),
+    "Senior Consultant / Specialist Senior / Senior": ("Consultant", "Senior Consultant"),
+    "Manager / Specialist Master": ("Senior Consultant", "Manager"),
+    "Senior Manager / Specialist Leader": ("Manager", "Senior Manager"),
+}
+
+
+def raise_pct(r: dict) -> float | None:
+    fy25 = r.get("FY25 Base Salary (USD)")
+    fy26 = r.get("FY26 Base Salary (USD)")
+    if not (isinstance(fy25, (int, float)) and fy25 > 0 and isinstance(fy26, (int, float)) and fy26 > 0):
+        return None
+    return (fy26 - fy25) / fy25
+
+
+def promotion_raises(rows: list[dict]) -> dict:
+    out = {}
+    for to_level, from_level in LEVEL_TO_PREV.items():
+        subset = [
+            raise_pct(r) for r in rows
+            if r.get("FY26 Level") == to_level and r.get("FY25 Level") == from_level
+        ]
+        subset = [x for x in subset if x is not None and -0.5 < x < 1.0]
+        if len(subset) >= 10:
+            f_lbl, t_lbl = FROM_LABEL[to_level]
+            out[to_level] = {
+                "n": len(subset),
+                "median": round(float(np.median(subset)), 4),
+                "fromLabel": f_lbl,
+                "toLabel": t_lbl,
+            }
+    return out
+
+
+def non_promotion_raise(rows: list[dict]) -> dict:
+    subset = [
+        raise_pct(r) for r in rows
+        if r.get("FY25 Level") == r.get("FY26 Level")
+    ]
+    subset = [x for x in subset if x is not None and -0.5 < x < 1.0]
+    return {
+        "n": len(subset),
+        "median": round(float(np.median(subset)), 4),
+        "p25": round(float(np.percentile(subset, 25)), 4),
+        "p75": round(float(np.percentile(subset, 75)), 4),
+    }
+
+
 def main() -> None:
     raw = load_rows()
     rows = clean(raw)
@@ -240,6 +295,10 @@ def main() -> None:
     print(f"MBA levels:  {list(mba)}", file=sys.stderr)
     print(f"Premium:     {list(premium)}", file=sys.stderr)
     print(f"Years(mgr):  {years}", file=sys.stderr)
+    promos = promotion_raises(rows)
+    non_promo = non_promotion_raise(rows)
+    print(f"Promos: {promos}", file=sys.stderr)
+    print(f"Non-promo: {non_promo}", file=sys.stderr)
 
 
 if __name__ == "__main__":
