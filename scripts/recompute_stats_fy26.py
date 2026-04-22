@@ -156,6 +156,69 @@ def portfolio_stats(rows: list[dict]) -> dict:
     return out
 
 
+def usdc_stats(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER[:4]:  # no USDC data at Senior Manager in prior output
+        lvl_rows = [r for r in rows if r["FY26 Level"] == lvl]
+        block = {}
+        for key, match in (("USDC", "USDC"), ("Core", "Core (Traditional)")):
+            subset = [r for r in lvl_rows if (r.get("Talent Model") or "").strip() == match]
+            if len(subset) >= 10:
+                salary = pct_block(
+                    [r["FY26 Base Salary (USD)"] for r in subset],
+                    include_p10_p90=False,
+                )
+                block[key] = {
+                    "count": len(subset),
+                    "salary": {k: round(v) for k, v in salary.items() if k in ("p25", "p50", "p75")},
+                }
+        if "USDC" in block and "Core" in block:
+            out[lvl] = block
+    return out
+
+
+def mba_stats(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER[1:]:  # MBA stats skip Analyst
+        lvl_rows = [r for r in rows if r["FY26 Level"] == lvl]
+        mba = [r for r in lvl_rows if (r.get("Education Level") or "").strip() == "MBA"]
+        non = [r for r in lvl_rows if (r.get("Education Level") or "").strip() and (r.get("Education Level") or "").strip() != "MBA"]
+        if len(mba) >= 20 and len(non) >= 20:
+            out[lvl] = {"MBA": salary_stats(mba), "NonMBA": salary_stats(non)}
+    return out
+
+
+def mba_premium(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER[1:]:
+        lvl_rows = [r for r in rows if r["FY26 Level"] == lvl]
+        mba = [r["FY26 Base Salary (USD)"] for r in lvl_rows if (r.get("Education Level") or "").strip() == "MBA"]
+        bach = [r["FY26 Base Salary (USD)"] for r in lvl_rows if (r.get("Education Level") or "").strip() == "Bachelor's"]
+        if len(mba) >= 20 and len(bach) >= 20:
+            m_med = float(np.median(mba))
+            b_med = float(np.median(bach))
+            out[lvl] = {
+                "mba": {"n": len(mba), "median": round(m_med)},
+                "bachelors": {"n": len(bach), "median": round(b_med)},
+                "delta": round(m_med - b_med),
+                "deltaPct": round((m_med - b_med) / b_med, 3),
+            }
+    return out
+
+
+def years_at_level_manager(rows: list[dict]) -> dict:
+    mgr = [r for r in rows if r["FY26 Level"] == "Manager / Specialist Master"]
+    out = {}
+    for y in (1, 2, 3, 4, 5):
+        subset = [r for r in mgr if r.get("Rounded Years at level") == y]
+        if len(subset) >= 10:
+            out[y] = {
+                "n": len(subset),
+                "median": round(float(np.median([r["FY26 Base Salary (USD)"] for r in subset]))),
+            }
+    return out
+
+
 def main() -> None:
     raw = load_rows()
     rows = clean(raw)
@@ -169,6 +232,14 @@ def main() -> None:
     print(f"Businesses per level: {[len(biz[l]) for l in LEVEL_ORDER]}", file=sys.stderr)
     print(f"GPS/Comm per level:   {[len(gps[l]) for l in LEVEL_ORDER]}", file=sys.stderr)
     print(f"Portfolios per level: {[len(port.get(l, {})) for l in LEVEL_ORDER]}", file=sys.stderr)
+    usdc = usdc_stats(rows)
+    mba = mba_stats(rows)
+    premium = mba_premium(rows)
+    years = years_at_level_manager(rows)
+    print(f"USDC levels: {list(usdc)}", file=sys.stderr)
+    print(f"MBA levels:  {list(mba)}", file=sys.stderr)
+    print(f"Premium:     {list(premium)}", file=sys.stderr)
+    print(f"Years(mgr):  {years}", file=sys.stderr)
 
 
 if __name__ == "__main__":
