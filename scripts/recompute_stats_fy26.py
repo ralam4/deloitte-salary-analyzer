@@ -18,6 +18,48 @@ XLSX_PATH = REPO_ROOT / "2025 Deloitte Salary Survey Responses.xlsx"
 OUT_PATH = REPO_ROOT / "src" / "data" / "salaryData.js"
 
 
+HEADER = '''// Stats recomputed from 2025 Deloitte Salary Survey Responses.xlsx
+// Base salary benchmarks are computed against the FY26 Base Salary column
+// (respondents' post-June-2025 salaries).
+// Raise stats are FY25->FY26 percent change.
+// Regenerate with: python3 scripts/recompute_stats_fy26.py
+'''
+
+
+def as_js(name: str, value) -> str:
+    return f"export const {name} = {json.dumps(value, indent=2)};\n\n"
+
+
+def write_js(out: dict) -> None:
+    parts = [HEADER + "\n"]
+    parts.append(as_js("LEVEL_STATS", out["level"]))
+    parts.append(as_js("GPS_COMMERCIAL_STATS", out["gps"]))
+    parts.append(as_js("BUSINESS_STATS", out["biz"]))
+    parts.append(as_js("PORTFOLIO_STATS", out["port"]))
+    parts.append(as_js("USDC_STATS", out["usdc"]))
+    parts.append(as_js("MBA_STATS", out["mba"]))
+    parts.append(as_js("MBA_PREMIUM", out["premium"]))
+    parts.append(as_js("YEARS_AT_LEVEL_MANAGER", out["years"]))
+    parts.append(as_js("PROMOTION_RAISES", out["promos"]))
+    parts.append(as_js("NON_PROMOTION_RAISE", out["non_promo"]))
+
+    parts.append("export const LEVELS = Object.keys(LEVEL_STATS);\n")
+    parts.append('export const BUSINESSES = ["Consulting Services", "Audit & Assurance", "Tax", "Enabling Areas"];\n')
+    parts.append("export const PORTFOLIOS = " + json.dumps(PORTFOLIO_ORDER) + ";\n")
+    parts.append('export const GPS_COMM = ["Commercial", "GPS"];\n')
+    parts.append('export const EDUCATION_LEVELS = ["Bachelor\\u0027s", "Non-MBA Master\\u0027s", "MBA", "PhD / Other"];\n')
+    parts.append('export const BUSINESS_MODELS = ["Core (Traditional)", "USDC"];\n')
+    parts.append("export const NEXT_LEVEL = " + json.dumps({
+        "Analyst / Jr Staff": "Consultant / Staff",
+        "Consultant / Staff": "Senior Consultant / Specialist Senior / Senior",
+        "Senior Consultant / Specialist Senior / Senior": "Manager / Specialist Master",
+        "Manager / Specialist Master": "Senior Manager / Specialist Leader",
+    }) + ";\n\n")
+    parts.append(f"export const totalRespondents = {out['count']};\n")
+
+    OUT_PATH.write_text("".join(parts))
+
+
 def load_rows() -> list[dict]:
     wb = openpyxl.load_workbook(XLSX_PATH, read_only=True, data_only=True)
     ws = wb[wb.sheetnames[0]]
@@ -299,6 +341,20 @@ def main() -> None:
     non_promo = non_promotion_raise(rows)
     print(f"Promos: {promos}", file=sys.stderr)
     print(f"Non-promo: {non_promo}", file=sys.stderr)
+    write_js({
+        "count": len(rows),
+        "level": level,
+        "gps": gps,
+        "biz": biz,
+        "port": port,
+        "usdc": usdc,
+        "mba": mba,
+        "premium": premium,
+        "years": years,
+        "promos": promos,
+        "non_promo": non_promo,
+    })
+    print(f"Wrote {OUT_PATH} ({len(rows)} respondents)", file=sys.stderr)
 
 
 if __name__ == "__main__":

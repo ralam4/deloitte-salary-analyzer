@@ -1,478 +1,1312 @@
-// Stats recomputed from 2025 Deloitte Salary Survey Responses.xlsx (1,767 clean rows of 1,934 total)
-// FY25 Global Business: Consulting + Advisory → "Consulting Services"
+// Stats recomputed from 2025 Deloitte Salary Survey Responses.xlsx
+// Base salary benchmarks are computed against the FY26 Base Salary column
+// (respondents' post-June-2025 salaries).
+// Raise stats are FY25->FY26 percent change.
+// Regenerate with: python3 scripts/recompute_stats_fy26.py
 
 export const LEVEL_STATS = {
   "Analyst / Jr Staff": {
-    count: 182,
-    salary: { p10: 77050, p25: 85000, p50: 90000, p75: 94950, p90: 97180, mean: 88515 },
-    aip: { p25: 0, p50: 0, p75: 0, mean: 0 },
-    tc: { p25: 85000, p50: 90000, p75: 94950 },
+    "count": 80,
+    "salary": {
+      "p25": 87775,
+      "p50": 94000,
+      "p75": 99075,
+      "mean": 91228,
+      "p10": 73470,
+      "p90": 102500
+    },
+    "aip": {
+      "p25": 4900,
+      "p50": 4900,
+      "p75": 4900,
+      "mean": 4900
+    },
+    "tc": {
+      "p25": 87775,
+      "p50": 94000,
+      "p75": 99075
+    }
   },
   "Consultant / Staff": {
-    count: 500,
-    salary: { p10: 91800, p25: 96775, p50: 104000, p75: 111902, p90: 121330, mean: 103956 },
-    aip: { p25: 5800, p50: 7800, p75: 12025, mean: 8768 },
-    tc: { p25: 104500, p50: 112300, p75: 122100 },
+    "count": 391,
+    "salary": {
+      "p25": 99600,
+      "p50": 106300,
+      "p75": 115400,
+      "mean": 107428,
+      "p10": 93500,
+      "p90": 121200
+    },
+    "aip": {
+      "p25": 4800,
+      "p50": 7000,
+      "p75": 10200,
+      "mean": 7823
+    },
+    "tc": {
+      "p25": 102850,
+      "p50": 112200,
+      "p75": 123600
+    }
   },
   "Senior Consultant / Specialist Senior / Senior": {
-    count: 490,
-    salary: { p10: 115380, p25: 125600, p50: 138000, p75: 155000, p90: 175000, mean: 140413 },
-    aip: { p25: 9525, p50: 13900, p75: 21150, mean: 15522 },
-    tc: { p25: 138000, p50: 152700, p75: 175825 },
+    "count": 577,
+    "salary": {
+      "p25": 121000,
+      "p50": 137000,
+      "p75": 151800,
+      "mean": 138238,
+      "p10": 113560,
+      "p90": 175940
+    },
+    "aip": {
+      "p25": 8000,
+      "p50": 12000,
+      "p75": 15900,
+      "mean": 12566
+    },
+    "tc": {
+      "p25": 131500,
+      "p50": 148780,
+      "p75": 166200
+    }
   },
   "Manager / Specialist Master": {
-    count: 448,
-    salary: { p10: 142300, p25: 160075, p50: 183200, p75: 199375, p90: 214720, mean: 180276 },
-    aip: { p25: 16475, p50: 27550, p75: 40000, mean: 29194 },
-    tc: { p25: 185000, p50: 211900, p75: 235625 },
+    "count": 515,
+    "salary": {
+      "p25": 162900,
+      "p50": 186500,
+      "p75": 204000,
+      "mean": 182712,
+      "p10": 147900,
+      "p90": 215460
+    },
+    "aip": {
+      "p25": 16275,
+      "p50": 24050,
+      "p75": 33525,
+      "mean": 26106
+    },
+    "tc": {
+      "p25": 183500,
+      "p50": 209100,
+      "p75": 234750
+    }
   },
   "Senior Manager / Specialist Leader": {
-    count: 147,
-    salary: { p10: 185200, p25: 210200, p50: 225000, p75: 251400, p90: 265600, mean: 227406 },
-    aip: { p25: 25050, p50: 40000, p75: 55000, mean: 43510 },
-    tc: { p25: 242000, p50: 270300, p75: 300500 },
-  },
+    "count": 202,
+    "salary": {
+      "p25": 216050,
+      "p50": 232750,
+      "p75": 254300,
+      "mean": 231234,
+      "p10": 186910,
+      "p90": 271870
+    },
+    "aip": {
+      "p25": 27250,
+      "p50": 44200,
+      "p75": 53475,
+      "mean": 43278
+    },
+    "tc": {
+      "p25": 248250,
+      "p50": 276500,
+      "p75": 303725
+    }
+  }
 };
 
 export const GPS_COMMERCIAL_STATS = {
   "Analyst / Jr Staff": {
-    GPS: {
-      count: 79,
-      salary: { p10: 71660, p25: 82650, p50: 88000, p75: 91050, p90: 96740, mean: 86387 },
-      aip: { p25: 0, p50: 0, p75: 0, mean: 0 },
-      tc: { p25: 82650, p50: 88000, p75: 91050 },
+    "GPS": {
+      "count": 32,
+      "salary": {
+        "p25": 84700,
+        "p50": 88000,
+        "p75": 92025,
+        "mean": 87611,
+        "p10": 72870,
+        "p90": 96925
+      },
+      "aip": {
+        "p25": 4900,
+        "p50": 4900,
+        "p75": 4900,
+        "mean": 4900
+      },
+      "tc": {
+        "p25": 84700,
+        "p50": 88000,
+        "p75": 92025
+      }
     },
-    Commercial: {
-      count: 98,
-      salary: { p10: 83680, p25: 88125, p50: 92200, p75: 96700, p90: 97600, mean: 91323 },
-      aip: { p25: 0, p50: 0, p75: 0, mean: 0 },
-      tc: { p25: 88125, p50: 92200, p75: 96700 },
-    },
+    "Commercial": {
+      "count": 45,
+      "salary": {
+        "p25": 94300,
+        "p50": 98200,
+        "p75": 100800,
+        "mean": 95351,
+        "p10": 91300,
+        "p90": 102560
+      },
+      "aip": {},
+      "tc": {
+        "p25": 94300,
+        "p50": 98200,
+        "p75": 100800
+      }
+    }
   },
   "Consultant / Staff": {
-    GPS: {
-      count: 239,
-      salary: { p10: 90980, p25: 96350, p50: 101000, p75: 107800, p90: 113140, mean: 101831 },
-      aip: { p25: 5450, p50: 7300, p75: 11050, mean: 8348 },
-      tc: { p25: 103400, p50: 110100, p75: 117850 },
+    "GPS": {
+      "count": 177,
+      "salary": {
+        "p25": 97400,
+        "p50": 103700,
+        "p75": 110400,
+        "mean": 103436,
+        "p10": 92500,
+        "p90": 116700
+      },
+      "aip": {
+        "p25": 4450,
+        "p50": 6600,
+        "p75": 9600,
+        "mean": 7311
+      },
+      "tc": {
+        "p25": 99400,
+        "p50": 108600,
+        "p75": 118600
+      }
     },
-    Commercial: {
-      count: 255,
-      salary: { p10: 94700, p25: 97950, p50: 107100, p75: 115000, p90: 127760, mean: 106932 },
-      aip: { p25: 6000, p50: 8100, p75: 12800, mean: 9263 },
-      tc: { p25: 105750, p50: 115600, p75: 126600 },
-    },
+    "Commercial": {
+      "count": 208,
+      "salary": {
+        "p25": 103400,
+        "p50": 108850,
+        "p75": 117100,
+        "mean": 112067,
+        "p10": 96350,
+        "p90": 123500
+      },
+      "aip": {
+        "p25": 5400,
+        "p50": 7300,
+        "p75": 10400,
+        "mean": 8292
+      },
+      "tc": {
+        "p25": 106700,
+        "p50": 114700,
+        "p75": 126400
+      }
+    }
   },
   "Senior Consultant / Specialist Senior / Senior": {
-    GPS: {
-      count: 236,
-      salary: { p10: 115050, p25: 120900, p50: 128900, p75: 139025, p90: 148280, mean: 131049 },
-      aip: { p25: 8275, p50: 12150, p75: 17625, mean: 13608 },
-      tc: { p25: 135000, p50: 143050, p75: 153500 },
+    "GPS": {
+      "count": 290,
+      "salary": {
+        "p25": 120700,
+        "p50": 129150,
+        "p75": 140000,
+        "mean": 130283,
+        "p10": 114800,
+        "p90": 147830
+      },
+      "aip": {
+        "p25": 7300,
+        "p50": 10700,
+        "p75": 13900,
+        "mean": 11233
+      },
+      "tc": {
+        "p25": 128800,
+        "p50": 141450,
+        "p75": 152000
+      }
     },
-    Commercial: {
-      count: 237,
-      salary: { p10: 124620, p25: 138560, p50: 152500, p75: 172000, p90: 177800, mean: 152182 },
-      aip: { p25: 12500, p50: 16900, p75: 24600, mean: 18005 },
-      tc: { p25: 153500, p50: 170000, p75: 188800 },
-    },
+    "Commercial": {
+      "count": 271,
+      "salary": {
+        "p25": 133300,
+        "p50": 149200,
+        "p75": 165050,
+        "mean": 148184,
+        "p10": 110400,
+        "p90": 185000
+      },
+      "aip": {
+        "p25": 9700,
+        "p50": 13500,
+        "p75": 17300,
+        "mean": 14316
+      },
+      "tc": {
+        "p25": 145325,
+        "p50": 161900,
+        "p75": 183650
+      }
+    }
   },
   "Manager / Specialist Master": {
-    GPS: {
-      count: 138,
-      salary: { p10: 142000, p25: 151078, p50: 161000, p75: 177825, p90: 192635, mean: 163947 },
-      aip: { p25: 14875, p50: 23350, p75: 35450, mean: 25701 },
-      tc: { p25: 169200, p50: 186950, p75: 205400 },
+    "GPS": {
+      "count": 182,
+      "salary": {
+        "p25": 154200,
+        "p50": 165600,
+        "p75": 178675,
+        "mean": 166485,
+        "p10": 145390,
+        "p90": 192230
+      },
+      "aip": {
+        "p25": 14775,
+        "p50": 21100,
+        "p75": 29650,
+        "mean": 23115
+      },
+      "tc": {
+        "p25": 171600,
+        "p50": 187550,
+        "p75": 204700
+      }
     },
-    Commercial: {
-      count: 288,
-      salary: { p10: 162130, p25: 180475, p50: 193250, p75: 205075, p90: 219160, mean: 191113 },
-      aip: { p25: 19000, p50: 32700, p75: 44425, mean: 32306 },
-      tc: { p25: 204650, p50: 224400, p75: 245000 },
-    },
+    "Commercial": {
+      "count": 313,
+      "salary": {
+        "p25": 183000,
+        "p50": 198275,
+        "p75": 210000,
+        "mean": 194370,
+        "p10": 163280,
+        "p90": 222940
+      },
+      "aip": {
+        "p25": 18250,
+        "p50": 26800,
+        "p75": 35925,
+        "mean": 28856
+      },
+      "tc": {
+        "p25": 203900,
+        "p50": 225900,
+        "p75": 243400
+      }
+    }
   },
   "Senior Manager / Specialist Leader": {
-    GPS: {
-      count: 34,
-      salary: { p10: 178500, p25: 198550, p50: 208950, p75: 222050, p90: 248900, mean: 209921 },
-      aip: { p25: 18375, p50: 28850, p75: 46275, mean: 32779 },
-      tc: { p25: 218700, p50: 239200, p75: 273250 },
+    "GPS": {
+      "count": 44,
+      "salary": {
+        "p25": 200400,
+        "p50": 215650,
+        "p75": 225700,
+        "mean": 211505,
+        "p10": 184530,
+        "p90": 250290
+      },
+      "aip": {
+        "p25": 20950,
+        "p50": 33000,
+        "p75": 47125,
+        "mean": 35227
+      },
+      "tc": {
+        "p25": 230950,
+        "p50": 247100,
+        "p75": 280225
+      }
     },
-    Commercial: {
-      count: 108,
-      salary: { p10: 207380, p25: 215950, p50: 233658, p75: 255850, p90: 267670, mean: 234639 },
-      aip: { p25: 32150, p50: 46300, p75: 57875, mean: 48097 },
-      tc: { p25: 256150, p50: 276750, p75: 311475 },
-    },
-  },
+    "Commercial": {
+      "count": 148,
+      "salary": {
+        "p25": 222900,
+        "p50": 241400,
+        "p75": 261025,
+        "mean": 241319,
+        "p10": 208400,
+        "p90": 276810
+      },
+      "aip": {
+        "p25": 34675,
+        "p50": 46900,
+        "p75": 55000,
+        "mean": 47662
+      },
+      "tc": {
+        "p25": 261900,
+        "p50": 287050,
+        "p75": 313825
+      }
+    }
+  }
 };
 
-// Full MBA vs Non-MBA stats (levels with sufficient n)
-export const MBA_STATS = {
+export const BUSINESS_STATS = {
+  "Analyst / Jr Staff": {
+    "Consulting Services": {
+      "count": 76,
+      "salary": {
+        "p25": 87800,
+        "p50": 94150,
+        "p75": 99350,
+        "mean": 92141,
+        "p10": 77200,
+        "p90": 102500
+      },
+      "aip": {
+        "p25": 4900,
+        "p50": 4900,
+        "p75": 4900,
+        "mean": 4900
+      },
+      "tc": {
+        "p25": 87800,
+        "p50": 94150,
+        "p75": 99350
+      }
+    }
+  },
   "Consultant / Staff": {
-    MBA: {
-      count: 23,
-      salary: { p10: 71480, p25: 91400, p50: 96500, p75: 99850, p90: 116720, mean: 92082 },
-      aip: { p25: 4850, p50: 6900, p75: 9500, mean: 6956 },
-      tc: { p25: 98050, p50: 103800, p75: 109800 },
-    },
-    NonMBA: {
-      count: 477,
-      salary: { p10: 92000, p25: 97000, p50: 104400, p75: 112000, p90: 121420, mean: 104528 },
-      aip: { p25: 5900, p50: 7800, p75: 12300, mean: 8855 },
-      tc: { p25: 104900, p50: 112600, p75: 122200 },
-    },
+    "Consulting Services": {
+      "count": 382,
+      "salary": {
+        "p25": 99825,
+        "p50": 106550,
+        "p75": 115600,
+        "mean": 108418,
+        "p10": 94520,
+        "p90": 121200
+      },
+      "aip": {
+        "p25": 4800,
+        "p50": 7000,
+        "p75": 10300,
+        "mean": 7899
+      },
+      "tc": {
+        "p25": 103350,
+        "p50": 112600,
+        "p75": 123600
+      }
+    }
   },
   "Senior Consultant / Specialist Senior / Senior": {
-    MBA: {
-      count: 81,
-      salary: { p10: 127300, p25: 135500, p50: 159000, p75: 175000, p90: 177800, mean: 155233 },
-      aip: { p25: 9800, p50: 13800, p75: 19500, mean: 15559 },
-      tc: { p25: 151000, p50: 180000, p75: 188800 },
+    "Consulting Services": {
+      "count": 528,
+      "salary": {
+        "p25": 124950,
+        "p50": 138900,
+        "p75": 153000,
+        "mean": 140828,
+        "p10": 115240,
+        "p90": 177150
+      },
+      "aip": {
+        "p25": 8450,
+        "p50": 12300,
+        "p75": 16150,
+        "mean": 12955
+      },
+      "tc": {
+        "p25": 134100,
+        "p50": 151150,
+        "p75": 168625
+      }
     },
-    NonMBA: {
-      count: 409,
-      salary: { p10: 115080, p25: 123600, p50: 135380, p75: 149000, p90: 167640, mean: 137478 },
-      aip: { p25: 9500, p50: 14000, p75: 21200, mean: 15514 },
-      tc: { p25: 137100, p50: 150900, p75: 169800 },
-    },
+    "Audit & Assurance": {
+      "count": 36,
+      "salary": {
+        "p25": 100800,
+        "p50": 104950,
+        "p75": 116500,
+        "mean": 108654,
+        "p10": 97100,
+        "p90": 124600
+      },
+      "aip": {
+        "p25": 4900,
+        "p50": 6000,
+        "p75": 10000,
+        "mean": 7830
+      },
+      "tc": {
+        "p25": 102340,
+        "p50": 112800,
+        "p75": 126850
+      }
+    }
   },
   "Manager / Specialist Master": {
-    MBA: {
-      count: 126,
-      salary: { p10: 156950, p25: 178025, p50: 195350, p75: 208050, p90: 223050, mean: 193473 },
-      aip: { p25: 17562, p50: 32050, p75: 47000, mean: 32904 },
-      tc: { p25: 200800, p50: 228750, p75: 252625 },
+    "Consulting Services": {
+      "count": 484,
+      "salary": {
+        "p25": 167375,
+        "p50": 188850,
+        "p75": 204490,
+        "mean": 185652,
+        "p10": 153760,
+        "p90": 215600
+      },
+      "aip": {
+        "p25": 17400,
+        "p50": 25000,
+        "p75": 34000,
+        "mean": 27110
+      },
+      "tc": {
+        "p25": 188700,
+        "p50": 212950,
+        "p75": 235600
+      }
     },
-    NonMBA: {
-      count: 322,
-      salary: { p10: 140000, p25: 155600, p50: 180000, p75: 195075, p90: 207980, mean: 175112 },
-      aip: { p25: 16000, p50: 25000, p75: 37475, mean: 27743 },
-      tc: { p25: 177625, p50: 205300, p75: 227200 },
-    },
+    "Enabling Areas": {
+      "count": 17,
+      "salary": {
+        "p25": 125500,
+        "p50": 135500,
+        "p75": 150500,
+        "mean": 132511,
+        "p10": 121264,
+        "p90": 154800
+      },
+      "aip": {
+        "p25": 4600,
+        "p50": 9000,
+        "p75": 12000,
+        "mean": 8982
+      },
+      "tc": {
+        "p25": 135600,
+        "p50": 143300,
+        "p75": 160000
+      }
+    }
   },
   "Senior Manager / Specialist Leader": {
-    MBA: {
-      count: 50,
-      salary: { p10: 200000, p25: 211600, p50: 227250, p75: 247725, p90: 273390, mean: 231177 },
-      aip: { p25: 31150, p50: 46300, p75: 59125, mean: 48588 },
-      tc: { p25: 245525, p50: 275400, p75: 316125 },
+    "Consulting Services": {
+      "count": 191,
+      "salary": {
+        "p25": 219850,
+        "p50": 235000,
+        "p75": 256500,
+        "mean": 234573,
+        "p10": 195600,
+        "p90": 272000
+      },
+      "aip": {
+        "p25": 30850,
+        "p50": 45000,
+        "p75": 54000,
+        "mean": 44948
+      },
+      "tc": {
+        "p25": 252000,
+        "p50": 280900,
+        "p75": 306500
+      }
+    }
+  }
+};
+
+export const PORTFOLIO_STATS = {
+  "Consultant / Staff": {
+    "AI & Engineering": {
+      "count": 78,
+      "salary": {
+        "p25": 105725,
+        "p50": 110650,
+        "p75": 116975,
+        "mean": 110647,
+        "p10": 98540,
+        "p90": 120740
+      },
+      "aip": {
+        "p25": 5000,
+        "p50": 7900,
+        "p75": 13000,
+        "mean": 8742
+      },
+      "tc": {
+        "p25": 109175,
+        "p50": 119900,
+        "p75": 127525
+      }
     },
-    NonMBA: {
-      count: 97,
-      salary: { p10: 180480, p25: 209700, p50: 225000, p75: 252000, p90: 261720, mean: 225462 },
-      aip: { p25: 21700, p50: 38300, p75: 51200, mean: 40892 },
-      tc: { p25: 238000, p50: 269600, p75: 296500 },
+    "Strategy & Transactions": {
+      "count": 54,
+      "salary": {
+        "p25": 97925,
+        "p50": 105600,
+        "p75": 111650,
+        "mean": 99328,
+        "p10": 93020,
+        "p90": 115900
+      },
+      "aip": {
+        "p25": 4700,
+        "p50": 7000,
+        "p75": 9100,
+        "mean": 6872
+      },
+      "tc": {
+        "p25": 102325,
+        "p50": 108250,
+        "p75": 118800
+      }
     },
+    "Customer": {
+      "count": 66,
+      "salary": {
+        "p25": 105450,
+        "p50": 110550,
+        "p75": 120150,
+        "mean": 111801,
+        "p10": 100580,
+        "p90": 123750
+      },
+      "aip": {
+        "p25": 6500,
+        "p50": 8000,
+        "p75": 12550,
+        "mean": 9473
+      },
+      "tc": {
+        "p25": 107925,
+        "p50": 114900,
+        "p75": 130725
+      }
+    },
+    "Human Capital": {
+      "count": 48,
+      "salary": {
+        "p25": 102000,
+        "p50": 107700,
+        "p75": 116000,
+        "mean": 108589,
+        "p10": 95280,
+        "p90": 125830
+      },
+      "aip": {
+        "p25": 4875,
+        "p50": 6750,
+        "p75": 8700,
+        "mean": 7616
+      },
+      "tc": {
+        "p25": 107775,
+        "p50": 116250,
+        "p75": 122375
+      }
+    },
+    "Enterprise Performance": {
+      "count": 52,
+      "salary": {
+        "p25": 100975,
+        "p50": 105850,
+        "p75": 113200,
+        "mean": 124569,
+        "p10": 94820,
+        "p90": 119420
+      },
+      "aip": {
+        "p25": 4500,
+        "p50": 7000,
+        "p75": 9500,
+        "mean": 8083
+      },
+      "tc": {
+        "p25": 105250,
+        "p50": 113150,
+        "p75": 120350
+      }
+    }
   },
+  "Senior Consultant / Specialist Senior / Senior": {
+    "AI & Engineering": {
+      "count": 125,
+      "salary": {
+        "p25": 132600,
+        "p50": 144700,
+        "p75": 159400,
+        "mean": 147082,
+        "p10": 121100,
+        "p90": 179160
+      },
+      "aip": {
+        "p25": 8600,
+        "p50": 12800,
+        "p75": 16500,
+        "mean": 13629
+      },
+      "tc": {
+        "p25": 144500,
+        "p50": 157000,
+        "p75": 178300
+      }
+    },
+    "Strategy & Transactions": {
+      "count": 88,
+      "salary": {
+        "p25": 120900,
+        "p50": 138650,
+        "p75": 153175,
+        "mean": 142233,
+        "p10": 116680,
+        "p90": 183400
+      },
+      "aip": {
+        "p25": 9150,
+        "p50": 12000,
+        "p75": 16000,
+        "mean": 13189
+      },
+      "tc": {
+        "p25": 131750,
+        "p50": 152200,
+        "p75": 165375
+      }
+    },
+    "Customer": {
+      "count": 61,
+      "salary": {
+        "p25": 138100,
+        "p50": 148000,
+        "p75": 166000,
+        "mean": 152110,
+        "p10": 127000,
+        "p90": 185000
+      },
+      "aip": {
+        "p25": 10050,
+        "p50": 13500,
+        "p75": 17950,
+        "mean": 14375
+      },
+      "tc": {
+        "p25": 146500,
+        "p50": 163600,
+        "p75": 183600
+      }
+    },
+    "Human Capital": {
+      "count": 87,
+      "salary": {
+        "p25": 117800,
+        "p50": 131900,
+        "p75": 151400,
+        "mean": 134059,
+        "p10": 113860,
+        "p90": 164800
+      },
+      "aip": {
+        "p25": 7950,
+        "p50": 11400,
+        "p75": 16550,
+        "mean": 12728
+      },
+      "tc": {
+        "p25": 128162,
+        "p50": 144700,
+        "p75": 165100
+      }
+    },
+    "Enterprise Performance": {
+      "count": 64,
+      "salary": {
+        "p25": 127500,
+        "p50": 140700,
+        "p75": 150275,
+        "mean": 138553,
+        "p10": 118070,
+        "p90": 157980
+      },
+      "aip": {
+        "p25": 9000,
+        "p50": 12650,
+        "p75": 15525,
+        "mean": 12924
+      },
+      "tc": {
+        "p25": 140500,
+        "p50": 153050,
+        "p75": 165375
+      }
+    },
+    "Cyber": {
+      "count": 31,
+      "salary": {
+        "p25": 117250,
+        "p50": 122700,
+        "p75": 133750,
+        "mean": 123132,
+        "p10": 110300,
+        "p90": 140500
+      },
+      "aip": {
+        "p25": 6750,
+        "p50": 10000,
+        "p75": 10900,
+        "mean": 9921
+      },
+      "tc": {
+        "p25": 126800,
+        "p50": 131800,
+        "p75": 148250
+      }
+    },
+    "Finance Transformation": {
+      "count": 31,
+      "salary": {
+        "p25": 122450,
+        "p50": 134700,
+        "p75": 144650,
+        "mean": 133903,
+        "p10": 112700,
+        "p90": 157000
+      },
+      "aip": {
+        "p25": 7800,
+        "p50": 11600,
+        "p75": 15675,
+        "mean": 12337
+      },
+      "tc": {
+        "p25": 131875,
+        "p50": 147000,
+        "p75": 156950
+      }
+    },
+    "Other": {
+      "count": 55,
+      "salary": {
+        "p25": 101800,
+        "p50": 120000,
+        "p75": 138500,
+        "mean": 121479,
+        "p10": 98940,
+        "p90": 147680
+      },
+      "aip": {
+        "p25": 5600,
+        "p50": 7500,
+        "p75": 13000,
+        "mean": 9879
+      },
+      "tc": {
+        "p25": 106650,
+        "p50": 126500,
+        "p75": 152850
+      }
+    }
+  },
+  "Manager / Specialist Master": {
+    "AI & Engineering": {
+      "count": 100,
+      "salary": {
+        "p25": 169300,
+        "p50": 191000,
+        "p75": 203364,
+        "mean": 187168,
+        "p10": 156090,
+        "p90": 215420
+      },
+      "aip": {
+        "p25": 16600,
+        "p50": 23800,
+        "p75": 33250,
+        "mean": 25913
+      },
+      "tc": {
+        "p25": 190200,
+        "p50": 213850,
+        "p75": 235675
+      }
+    },
+    "Strategy & Transactions": {
+      "count": 81,
+      "salary": {
+        "p25": 172000,
+        "p50": 199600,
+        "p75": 215500,
+        "mean": 194765,
+        "p10": 152000,
+        "p90": 230500
+      },
+      "aip": {
+        "p25": 18975,
+        "p50": 30300,
+        "p75": 41925,
+        "mean": 31648
+      },
+      "tc": {
+        "p25": 198900,
+        "p50": 228300,
+        "p75": 259000
+      }
+    },
+    "Customer": {
+      "count": 73,
+      "salary": {
+        "p25": 169461,
+        "p50": 193800,
+        "p75": 206100,
+        "mean": 189592,
+        "p10": 155120,
+        "p90": 213920
+      },
+      "aip": {
+        "p25": 21600,
+        "p50": 27800,
+        "p75": 35100,
+        "mean": 29022
+      },
+      "tc": {
+        "p25": 196961,
+        "p50": 218950,
+        "p75": 239100
+      }
+    },
+    "Human Capital": {
+      "count": 66,
+      "salary": {
+        "p25": 168748,
+        "p50": 188150,
+        "p75": 199750,
+        "mean": 184693,
+        "p10": 153250,
+        "p90": 211500
+      },
+      "aip": {
+        "p25": 18500,
+        "p50": 25750,
+        "p75": 33750,
+        "mean": 27218
+      },
+      "tc": {
+        "p25": 199000,
+        "p50": 212400,
+        "p75": 231225
+      }
+    },
+    "Enterprise Performance": {
+      "count": 59,
+      "salary": {
+        "p25": 174900,
+        "p50": 189000,
+        "p75": 197700,
+        "mean": 185548,
+        "p10": 162420,
+        "p90": 210300
+      },
+      "aip": {
+        "p25": 17400,
+        "p50": 26200,
+        "p75": 35975,
+        "mean": 26963
+      },
+      "tc": {
+        "p25": 194200,
+        "p50": 218000,
+        "p75": 233200
+      }
+    },
+    "Cyber": {
+      "count": 35,
+      "salary": {
+        "p25": 161050,
+        "p50": 171400,
+        "p75": 180300,
+        "mean": 170776,
+        "p10": 146907,
+        "p90": 202960
+      },
+      "aip": {
+        "p25": 15600,
+        "p50": 20000,
+        "p75": 28600,
+        "mean": 22791
+      },
+      "tc": {
+        "p25": 182250,
+        "p50": 190314,
+        "p75": 205400
+      }
+    },
+    "Other": {
+      "count": 43,
+      "salary": {
+        "p25": 132350,
+        "p50": 150500,
+        "p75": 183500,
+        "mean": 156283,
+        "p10": 125500,
+        "p90": 208440
+      },
+      "aip": {
+        "p25": 8050,
+        "p50": 12500,
+        "p75": 19250,
+        "mean": 15720
+      },
+      "tc": {
+        "p25": 142900,
+        "p50": 160500,
+        "p75": 205100
+      }
+    }
+  },
+  "Senior Manager / Specialist Leader": {
+    "AI & Engineering": {
+      "count": 45,
+      "salary": {
+        "p25": 225000,
+        "p50": 237400,
+        "p75": 259300,
+        "mean": 236907,
+        "p10": 208200,
+        "p90": 271200
+      },
+      "aip": {
+        "p25": 35000,
+        "p50": 47000,
+        "p75": 54000,
+        "mean": 46111
+      },
+      "tc": {
+        "p25": 271200,
+        "p50": 285000,
+        "p75": 310500
+      }
+    },
+    "Strategy & Transactions": {
+      "count": 36,
+      "salary": {
+        "p25": 220150,
+        "p50": 248900,
+        "p75": 269925,
+        "mean": 243076,
+        "p10": 186850,
+        "p90": 295200
+      },
+      "aip": {
+        "p25": 30525,
+        "p50": 46200,
+        "p75": 71100,
+        "mean": 52117
+      },
+      "tc": {
+        "p25": 254100,
+        "p50": 289250,
+        "p75": 350525
+      }
+    }
+  }
 };
 
 export const USDC_STATS = {
-  "Analyst / Jr Staff": {
-    USDC: { count: 17, salary: { p25: 70000, p50: 70700, p75: 76200 } },
-    Core: { count: 165, salary: { p25: 86900, p50: 90200, p75: 95000 } },
-  },
   "Consultant / Staff": {
-    USDC: { count: 41, salary: { p25: 86000, p50: 96000, p75: 105000 } },
-    Core: { count: 459, salary: { p25: 97500, p50: 104400, p75: 112200 } },
+    "USDC": {
+      "count": 34,
+      "salary": {
+        "p25": 85175,
+        "p50": 93900,
+        "p75": 105525
+      }
+    },
+    "Core": {
+      "count": 341,
+      "salary": {
+        "p25": 101000,
+        "p50": 106700,
+        "p75": 115800
+      }
+    }
   },
   "Senior Consultant / Specialist Senior / Senior": {
-    USDC: { count: 31, salary: { p25: 110100, p50: 118000, p75: 132500 } },
-    Core: { count: 459, salary: { p25: 126950, p50: 139400, p75: 157250 } },
+    "USDC": {
+      "count": 42,
+      "salary": {
+        "p25": 113275,
+        "p50": 117800,
+        "p75": 125300
+      }
+    },
+    "Core": {
+      "count": 481,
+      "salary": {
+        "p25": 122200,
+        "p50": 137200,
+        "p75": 152300
+      }
+    }
   },
   "Manager / Specialist Master": {
-    USDC: { count: 15, salary: { p25: 142500, p50: 153700, p75: 157250 } },
-    Core: { count: 433, salary: { p25: 162000, p50: 185000, p75: 200000 } },
+    "USDC": {
+      "count": 20,
+      "salary": {
+        "p25": 148075,
+        "p50": 160000,
+        "p75": 162950
+      }
+    },
+    "Core": {
+      "count": 416,
+      "salary": {
+        "p25": 166275,
+        "p50": 188550,
+        "p75": 204000
+      }
+    }
+  }
+};
+
+export const MBA_STATS = {
+  "Senior Consultant / Specialist Senior / Senior": {
+    "MBA": {
+      "count": 76,
+      "salary": {
+        "p25": 132300,
+        "p50": 159500,
+        "p75": 183600,
+        "mean": 155359,
+        "p10": 109650,
+        "p90": 189500
+      },
+      "aip": {
+        "p25": 8600,
+        "p50": 12400,
+        "p75": 16900,
+        "mean": 12742
+      },
+      "tc": {
+        "p25": 141375,
+        "p50": 169450,
+        "p75": 197522
+      }
+    },
+    "NonMBA": {
+      "count": 501,
+      "salary": {
+        "p25": 120900,
+        "p50": 135500,
+        "p75": 148000,
+        "mean": 135640,
+        "p10": 114200,
+        "p90": 162800
+      },
+      "aip": {
+        "p25": 8000,
+        "p50": 11950,
+        "p75": 15875,
+        "mean": 12540
+      },
+      "tc": {
+        "p25": 130800,
+        "p50": 148000,
+        "p75": 163000
+      }
+    }
   },
-};
-
-export const CONSOLIDATED_RATING_RAISES = {
-  EEE: { n: 415, median: 0.1052, p25: 0.0748, p75: 0.1319 },
-  EES: { n: 216, median: 0.0904, p25: 0.0602, p75: 0.1253 },
-  ESE: { n: 191, median: 0.0852, p25: 0.0598, p75: 0.1123 },
-  ESS: { n: 254, median: 0.0744, p25: 0.0486, p75: 0.108 },
-  SSE: { n: 93, median: 0.0544, p25: 0.0457, p75: 0.071 },
-  SES: { n: 70, median: 0.0461, p25: 0.0357, p75: 0.0578 },
-  SSS: { n: 230, median: 0.035, p25: 0.0298, p75: 0.0448 },
-};
-
-export const CLIENT_RATING_RAISES = {
-  Exceptional: { n: 1144, median: 0.0901, p25: 0.0602, p75: 0.121 },
-  Strong: { n: 536, median: 0.0442, p25: 0.0327, p75: 0.0599 },
-  "Meets Expectations": { n: 78, median: 0.0345, p25: 0.0268, p75: 0.0425 },
+  "Manager / Specialist Master": {
+    "MBA": {
+      "count": 129,
+      "salary": {
+        "p25": 178000,
+        "p50": 201700,
+        "p75": 213200,
+        "mean": 197086,
+        "p10": 161560,
+        "p90": 228700
+      },
+      "aip": {
+        "p25": 17300,
+        "p50": 28200,
+        "p75": 39850,
+        "mean": 30081
+      },
+      "tc": {
+        "p25": 197500,
+        "p50": 230400,
+        "p75": 252200
+      }
+    },
+    "NonMBA": {
+      "count": 386,
+      "salary": {
+        "p25": 159400,
+        "p50": 181000,
+        "p75": 198525,
+        "mean": 177908,
+        "p10": 145000,
+        "p90": 210900
+      },
+      "aip": {
+        "p25": 15900,
+        "p50": 23400,
+        "p75": 32600,
+        "mean": 24794
+      },
+      "tc": {
+        "p25": 178100,
+        "p50": 204100,
+        "p75": 227000
+      }
+    }
+  },
+  "Senior Manager / Specialist Leader": {
+    "MBA": {
+      "count": 67,
+      "salary": {
+        "p25": 219000,
+        "p50": 236400,
+        "p75": 255000,
+        "mean": 235938,
+        "p10": 201000,
+        "p90": 280960
+      },
+      "aip": {
+        "p25": 31300,
+        "p50": 47000,
+        "p75": 55150,
+        "mean": 47243
+      },
+      "tc": {
+        "p25": 252000,
+        "p50": 282100,
+        "p75": 313950
+      }
+    },
+    "NonMBA": {
+      "count": 135,
+      "salary": {
+        "p25": 213500,
+        "p50": 232000,
+        "p75": 254200,
+        "mean": 228899,
+        "p10": 186240,
+        "p90": 270300
+      },
+      "aip": {
+        "p25": 25250,
+        "p50": 40400,
+        "p75": 51100,
+        "mean": 41311
+      },
+      "tc": {
+        "p25": 245000,
+        "p50": 275000,
+        "p75": 298000
+      }
+    }
+  }
 };
 
 export const MBA_PREMIUM = {
-  "Consultant / Staff": {
-    mba: { n: 23, median: 96500 },
-    bachelors: { n: 368, median: 104400 },
-    delta: -7900,
-    deltaPct: -0.076,
-  },
   "Senior Consultant / Specialist Senior / Senior": {
-    mba: { n: 81, median: 159000 },
-    bachelors: { n: 265, median: 136000 },
-    delta: 23000,
-    deltaPct: 0.169,
+    "mba": {
+      "n": 76,
+      "median": 159500
+    },
+    "bachelors": {
+      "n": 351,
+      "median": 135600
+    },
+    "delta": 23900,
+    "deltaPct": 0.176
   },
   "Manager / Specialist Master": {
-    mba: { n: 126, median: 195350 },
-    bachelors: { n: 186, median: 180000 },
-    delta: 15350,
-    deltaPct: 0.085,
+    "mba": {
+      "n": 129,
+      "median": 201700
+    },
+    "bachelors": {
+      "n": 232,
+      "median": 183000
+    },
+    "delta": 18700,
+    "deltaPct": 0.102
   },
   "Senior Manager / Specialist Leader": {
-    mba: { n: 50, median: 227250 },
-    bachelors: { n: 57, median: 229300 },
-    delta: -2050,
-    deltaPct: -0.009,
-  },
-};
-
-// "Promoted to X" = people whose FY26 level is X and FY25 level was the level below
-export const PROMOTION_RAISES = {
-  "Consultant / Staff": { n: 96, median: 0.0992, fromLabel: "Analyst", toLabel: "Consultant" },
-  "Senior Consultant / Specialist Senior / Senior": { n: 204, median: 0.1375, fromLabel: "Consultant", toLabel: "Senior Consultant" },
-  "Manager / Specialist Master": { n: 124, median: 0.1529, fromLabel: "Senior Consultant", toLabel: "Manager" },
-  "Senior Manager / Specialist Leader": { n: 55, median: 0.0955, fromLabel: "Manager", toLabel: "Senior Manager" },
-};
-export const NON_PROMOTION_RAISE = { n: 1277, median: 0.0556, p25: 0.0368, p75: 0.0762 };
-
-// Map each level to the next level key (for "what's my promo raise going to look like")
-export const NEXT_LEVEL = {
-  "Analyst / Jr Staff": "Consultant / Staff",
-  "Consultant / Staff": "Senior Consultant / Specialist Senior / Senior",
-  "Senior Consultant / Specialist Senior / Senior": "Manager / Specialist Master",
-  "Manager / Specialist Master": "Senior Manager / Specialist Leader",
+    "mba": {
+      "n": 67,
+      "median": 236400
+    },
+    "bachelors": {
+      "n": 76,
+      "median": 234600
+    },
+    "delta": 1800,
+    "deltaPct": 0.008
+  }
 };
 
 export const YEARS_AT_LEVEL_MANAGER = {
-  1: { n: 118, median: 171300 },
-  2: { n: 91, median: 180500 },
-  3: { n: 132, median: 189100 },
-  4: { n: 68, median: 196250 },
-  5: { n: 16, median: 199500 },
+  "1": {
+    "n": 119,
+    "median": 179600
+  },
+  "2": {
+    "n": 117,
+    "median": 188700
+  },
+  "3": {
+    "n": 169,
+    "median": 186100
+  },
+  "4": {
+    "n": 69,
+    "median": 190900
+  },
+  "5": {
+    "n": 15,
+    "median": 207000
+  }
+};
+
+export const PROMOTION_RAISES = {
+  "Consultant / Staff": {
+    "n": 95,
+    "median": 0.0991,
+    "fromLabel": "Analyst",
+    "toLabel": "Consultant"
+  },
+  "Senior Consultant / Specialist Senior / Senior": {
+    "n": 203,
+    "median": 0.1375,
+    "fromLabel": "Consultant",
+    "toLabel": "Senior Consultant"
+  },
+  "Manager / Specialist Master": {
+    "n": 123,
+    "median": 0.1548,
+    "fromLabel": "Senior Consultant",
+    "toLabel": "Manager"
+  },
+  "Senior Manager / Specialist Leader": {
+    "n": 54,
+    "median": 0.0959,
+    "fromLabel": "Manager",
+    "toLabel": "Senior Manager"
+  }
+};
+
+export const NON_PROMOTION_RAISE = {
+  "n": 1271,
+  "median": 0.056,
+  "p25": 0.0375,
+  "p75": 0.0763
 };
 
 export const LEVELS = Object.keys(LEVEL_STATS);
 export const BUSINESSES = ["Consulting Services", "Audit & Assurance", "Tax", "Enabling Areas"];
-export const PORTFOLIOS = [
-  "AI & Engineering",
-  "Strategy & Transactions",
-  "Customer",
-  "Human Capital",
-  "Enterprise Performance",
-  "Cyber",
-  "Finance Transformation",
-  "Regulatory, Risk & Forensic",
-  "Other",
-];
+export const PORTFOLIOS = ["AI & Engineering", "Strategy & Transactions", "Customer", "Human Capital", "Enterprise Performance", "Cyber", "Finance Transformation", "Regulatory, Risk & Forensic", "Other"];
 export const GPS_COMM = ["Commercial", "GPS"];
-export const CLIENT_RATINGS = ["Exceptional", "Strong", "Meets Expectations"];
-export const CONSOLIDATED_RATINGS = ["EEE", "EES", "ESE", "ESS", "SSE", "SES", "SSS"];
-export const EDUCATION_LEVELS = ["Bachelor's", "Non-MBA Master's", "MBA", "PhD / Other"];
+export const EDUCATION_LEVELS = ["Bachelor\u0027s", "Non-MBA Master\u0027s", "MBA", "PhD / Other"];
 export const BUSINESS_MODELS = ["Core (Traditional)", "USDC"];
+export const NEXT_LEVEL = {"Analyst / Jr Staff": "Consultant / Staff", "Consultant / Staff": "Senior Consultant / Specialist Senior / Senior", "Senior Consultant / Specialist Senior / Senior": "Manager / Specialist Master", "Manager / Specialist Master": "Senior Manager / Specialist Leader"};
 
-// Business-type stats by level (Consulting Services = Consulting + Advisory merged)
-export const BUSINESS_STATS = {
-  "Analyst / Jr Staff": {
-    "Consulting Services": {
-      count: 176,
-      salary: { p10: 80150, p25: 85075, p50: 90000, p75: 95000, p90: 97200, mean: 89200 },
-      aip: { p25: 0, p50: 0, p75: 0, mean: 0 },
-      tc: { p25: 85075, p50: 90000, p75: 95000 },
-    },
-  },
-  "Consultant / Staff": {
-    "Consulting Services": {
-      count: 490,
-      salary: { p10: 92000, p25: 97000, p50: 104400, p75: 112000, p90: 121610, mean: 104697 },
-      aip: { p25: 6000, p50: 7800, p75: 12250, mean: 8890 },
-      tc: { p25: 104650, p50: 112450, p75: 122100 },
-    },
-  },
-  "Senior Consultant / Specialist Senior / Senior": {
-    "Consulting Services": {
-      count: 469,
-      salary: { p10: 117660, p25: 126500, p50: 139100, p75: 156800, p90: 175000, mean: 141638 },
-      aip: { p25: 10000, p50: 14600, p75: 21700, mean: 15904 },
-      tc: { p25: 139100, p50: 153500, p75: 177800 },
-    },
-    "Enabling Areas": {
-      count: 12,
-      salary: { p10: 97380, p25: 113325, p50: 130000, p75: 134850, p90: 139920, mean: 123783 },
-      aip: { p25: 4975, p50: 7500, p75: 9850, mean: 7792 },
-      tc: { p25: 117950, p50: 138000, p75: 144250 },
-    },
-  },
-  "Manager / Specialist Master": {
-    "Consulting Services": {
-      count: 417,
-      salary: { p10: 148340, p25: 165500, p50: 186000, p75: 200000, p90: 216000, mean: 183053 },
-      aip: { p25: 18700, p50: 30000, p75: 41000, mean: 30505 },
-      tc: { p25: 189600, p50: 214500, p75: 237800 },
-    },
-    "Enabling Areas": {
-      count: 22,
-      salary: { p10: 119100, p25: 125500, p50: 135150, p75: 145570, p90: 177430, mean: 140786 },
-      aip: { p25: 5200, p50: 9100, p75: 13650, mean: 11332 },
-      tc: { p25: 136375, p50: 141150, p75: 155925 },
-    },
-  },
-  "Senior Manager / Specialist Leader": {
-    "Consulting Services": {
-      count: 142,
-      salary: { p10: 194160, p25: 211125, p50: 225650, p75: 251950, p90: 266350, mean: 228720 },
-      aip: { p25: 25325, p50: 41000, p75: 55300, mean: 44429 },
-      tc: { p25: 242125, p50: 272750, p75: 301675 },
-    },
-  },
-};
-
-// Offering Portfolio stats by level (FY26 portfolio names, n>=30 only)
-export const PORTFOLIO_STATS = {
-  "Analyst / Jr Staff": {
-    "AI & Engineering": {
-      count: 32,
-      salary: { p10: 76280, p25: 89250, p50: 91300, p75: 93550, p90: 96510, mean: 88631 },
-      aip: { p25: 0, p50: 0, p75: 0, mean: 0 },
-      tc: { p25: 89250, p50: 91300, p75: 93550 },
-    },
-    "Customer": {
-      count: 31,
-      salary: { p10: 86620, p25: 89000, p50: 93700, p75: 96950, p90: 99000, mean: 93126 },
-      aip: { p25: 0, p50: 0, p75: 0, mean: 0 },
-      tc: { p25: 89000, p50: 93700, p75: 96950 },
-    },
-  },
-  "Consultant / Staff": {
-    "AI & Engineering": {
-      count: 110,
-      salary: { p10: 96000, p25: 101900, p50: 107450, p75: 114000, p90: 125000, mean: 108663 },
-      aip: { p25: 6200, p50: 8400, p75: 14100, mean: 9941 },
-      tc: { p25: 109625, p50: 117800, p75: 124475 },
-    },
-    "Strategy & Transactions": {
-      count: 75,
-      salary: { p10: 91880, p25: 97950, p50: 103100, p75: 109750, p90: 114960, mean: 102729 },
-      aip: { p25: 6200, p50: 8000, p75: 10800, mean: 8696 },
-      tc: { p25: 105000, p50: 112000, p75: 118350 },
-    },
-    "Customer": {
-      count: 60,
-      salary: { p10: 97790, p25: 101075, p50: 109750, p75: 115000, p90: 120595, mean: 109137 },
-      aip: { p25: 6775, p50: 8000, p75: 13125, mean: 9395 },
-      tc: { p25: 109175, p50: 120100, p75: 126125 },
-    },
-    "Human Capital": {
-      count: 79,
-      salary: { p10: 92080, p25: 96100, p50: 103200, p75: 114850, p90: 123760, mean: 105362 },
-      aip: { p25: 6600, p50: 7500, p75: 12650, mean: 9081 },
-      tc: { p25: 104650, p50: 113200, p75: 125050 },
-    },
-    "Enterprise Performance": {
-      count: 67,
-      salary: { p10: 94760, p25: 96850, p50: 105000, p75: 113550, p90: 126820, mean: 107212 },
-      aip: { p25: 6650, p50: 7800, p75: 10950, mean: 8730 },
-      tc: { p25: 104750, p50: 114900, p75: 123650 },
-    },
-  },
-  "Senior Consultant / Specialist Senior / Senior": {
-    "AI & Engineering": {
-      count: 112,
-      salary: { p10: 123610, p25: 129575, p50: 139700, p75: 159500, p90: 172990, mean: 144531 },
-      aip: { p25: 10775, p50: 15750, p75: 22000, mean: 16399 },
-      tc: { p25: 144025, p50: 157000, p75: 181050 },
-    },
-    "Strategy & Transactions": {
-      count: 72,
-      salary: { p10: 120810, p25: 127225, p50: 143750, p75: 175000, p90: 177980, mean: 148047 },
-      aip: { p25: 9675, p50: 16050, p75: 23125, mean: 16494 },
-      tc: { p25: 146075, p50: 158500, p75: 188800 },
-    },
-    "Customer": {
-      count: 63,
-      salary: { p10: 130000, p25: 133650, p50: 145000, p75: 166750, p90: 175000, mean: 149936 },
-      aip: { p25: 12545, p50: 16900, p75: 23700, mean: 17760 },
-      tc: { p25: 146250, p50: 164300, p75: 187545 },
-    },
-    "Human Capital": {
-      count: 64,
-      salary: { p10: 114120, p25: 121650, p50: 131460, p75: 151975, p90: 170700, mean: 137383 },
-      aip: { p25: 10225, p50: 15950, p75: 22725, mean: 16451 },
-      tc: { p25: 136050, p50: 151100, p75: 170144 },
-    },
-    "Enterprise Performance": {
-      count: 50,
-      salary: { p10: 120620, p25: 129000, p50: 140200, p75: 149750, p90: 159600, mean: 138607 },
-      aip: { p25: 11500, p50: 13800, p75: 20125, mean: 15740 },
-      tc: { p25: 141250, p50: 155300, p75: 168450 },
-    },
-    "Cyber": {
-      count: 30,
-      salary: { p10: 109800, p25: 114300, p50: 122550, p75: 133025, p90: 153510, mean: 127238 },
-      aip: { p25: 7675, p50: 10900, p75: 16900, mean: 12502 },
-      tc: { p25: 124100, p50: 136200, p75: 152525 },
-    },
-    "Other": {
-      count: 41,
-      salary: { p10: 96200, p25: 114000, p50: 121000, p75: 137400, p90: 147500, mean: 124720 },
-      aip: { p25: 6500, p50: 11600, p75: 16500, mean: 11847 },
-      tc: { p25: 118500, p50: 137600, p75: 151600 },
-    },
-  },
-  "Manager / Specialist Master": {
-    "AI & Engineering": {
-      count: 89,
-      salary: { p10: 154080, p25: 172000, p50: 189400, p75: 202000, p90: 213040, mean: 185275 },
-      aip: { p25: 15800, p50: 25200, p75: 38900, mean: 29450 },
-      tc: { p25: 192500, p50: 217000, p75: 239800 },
-    },
-    "Strategy & Transactions": {
-      count: 72,
-      salary: { p10: 150250, p25: 170350, p50: 194200, p75: 217375, p90: 229820, mean: 192240 },
-      aip: { p25: 19000, p50: 32900, p75: 45825, mean: 35348 },
-      tc: { p25: 193650, p50: 230425, p75: 256125 },
-    },
-    "Customer": {
-      count: 62,
-      salary: { p10: 147390, p25: 168000, p50: 188500, p75: 198450, p90: 209420, mean: 183658 },
-      aip: { p25: 22700, p50: 30750, p75: 37800, mean: 31339 },
-      tc: { p25: 196775, p50: 217200, p75: 236425 },
-    },
-    "Human Capital": {
-      count: 55,
-      salary: { p10: 154380, p25: 165150, p50: 180200, p75: 196300, p90: 207220, mean: 180613 },
-      aip: { p25: 19750, p50: 29800, p75: 36900, mean: 29569 },
-      tc: { p25: 193150, p50: 207200, p75: 226950 },
-    },
-    "Enterprise Performance": {
-      count: 54,
-      salary: { p10: 164830, p25: 175250, p50: 185000, p75: 197900, p90: 205210, mean: 184079 },
-      aip: { p25: 21075, p50: 33700, p75: 42500, mean: 30925 },
-      tc: { p25: 198475, p50: 219300, p75: 232362 },
-    },
-    "Cyber": {
-      count: 30,
-      salary: { p10: 144500, p25: 154000, p50: 168500, p75: 185925, p90: 200150, mean: 171298 },
-      aip: { p25: 17475, p50: 24200, p75: 35250, mean: 25963 },
-      tc: { p25: 179078, p50: 191900, p75: 219650 },
-    },
-    "Other": {
-      count: 39,
-      salary: { p10: 118200, p25: 130000, p50: 142000, p75: 177250, p90: 200240, mean: 152367 },
-      aip: { p25: 8050, p50: 12500, p75: 18750, mean: 15574 },
-      tc: { p25: 138350, p50: 155500, p75: 198650 },
-    },
-  },
-  "Senior Manager / Specialist Leader": {
-    "AI & Engineering": {
-      count: 32,
-      salary: { p10: 203200, p25: 215225, p50: 236300, p75: 253850, p90: 268750, mean: 235300 },
-      aip: { p25: 32325, p50: 46200, p75: 54350, mean: 44978 },
-      tc: { p25: 259875, p50: 276750, p75: 306675 },
-    },
-  },
-};
-
-export const totalRespondents = Object.values(LEVEL_STATS).reduce((s, v) => s + v.count, 0);
+export const totalRespondents = 1765;
