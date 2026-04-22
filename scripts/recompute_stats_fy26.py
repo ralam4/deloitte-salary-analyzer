@@ -28,9 +28,46 @@ def load_rows() -> list[dict]:
     return rows
 
 
+LEVEL_ORDER = [
+    "Analyst / Jr Staff",
+    "Consultant / Staff",
+    "Senior Consultant / Specialist Senior / Senior",
+    "Manager / Specialist Master",
+    "Senior Manager / Specialist Leader",
+]
+
+
+def normalize_business(raw: str | None) -> str | None:
+    if not raw:
+        return None
+    s = raw.strip()
+    if s in ("Consulting", "Advisory"):
+        return "Consulting Services"
+    if s in ("Consulting Services", "Audit & Assurance", "Tax", "Enabling Areas"):
+        return s
+    return None
+
+
+def clean(rows: list[dict]) -> list[dict]:
+    out = []
+    for r in rows:
+        fy26 = r.get("FY26 Base Salary (USD)")
+        level = r.get("FY26 Level")
+        if not isinstance(fy26, (int, float)) or fy26 <= 0:
+            continue
+        if level not in LEVEL_ORDER:
+            continue
+        if r.get("Data Quality Concern"):
+            continue
+        out.append(r)
+    return out
+
+
 def main() -> None:
-    rows = load_rows()
-    print(f"Loaded {len(rows)} raw rows", file=sys.stderr)
+    raw = load_rows()
+    rows = clean(raw)
+    print(f"Raw: {len(raw)}  Clean: {len(rows)}", file=sys.stderr)
+    assert 1500 <= len(rows) <= 1900, f"Unexpected clean row count: {len(rows)}"
 
 
 if __name__ == "__main__":
