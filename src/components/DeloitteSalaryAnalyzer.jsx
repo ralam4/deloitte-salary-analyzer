@@ -8,6 +8,7 @@ import {
   BUSINESS_MODELS, EDUCATION_LEVELS,
   GPS_COMMERCIAL_STATS, MBA_STATS, PORTFOLIO_STATS, BUSINESS_STATS, USDC_STATS,
   MBA_PREMIUM, PROMOTION_RAISES, NON_PROMOTION_RAISE, NEXT_LEVEL,
+  YEARS_AT_LEVEL_MANAGER,
   totalRespondents,
 } from "../data/salaryData";
 
@@ -121,6 +122,7 @@ export default function DeloitteSalaryAnalyzer() {
     portfolio: "",
     gpsComm: "",
     education: "",
+    yearsAtLevel: "",
   });
 
   // Compare toggle state (results page only, independent of form)
@@ -211,7 +213,7 @@ export default function DeloitteSalaryAnalyzer() {
     if (vsMedian > 0) insights.push({ text: `+${fmt(vsMedian)} above median`, type: "good" });
     else if (vsMedian < 0) insights.push({ text: `${fmt(vsMedian)} below median`, type: "bad" });
 
-    if (currentAip > 0) {
+    if (currentAip > 0 && stats.aip?.p50 != null) {
       const aipVsMedian = currentAip - stats.aip.p50;
       if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(currentAip)} — +${fmt(aipVsMedian)} above median`, type: "good" });
       else insights.push({ text: `AIP ${fmt(currentAip)} — ${fmt(aipVsMedian)} vs median`, type: "warn" });
@@ -245,6 +247,14 @@ export default function DeloitteSalaryAnalyzer() {
     const nextLevelKey = NEXT_LEVEL[form.level];
     const promoNext = nextLevelKey ? PROMOTION_RAISES[nextLevelKey] || null : null;
 
+    // Years-at-level context (Manager only)
+    let yearsContext = null;
+    if (form.level === "Manager / Specialist Master") {
+      const parsedYears = parseInt(form.yearsAtLevel, 10);
+      const userYear = Number.isFinite(parsedYears) && parsedYears >= 1 ? Math.min(parsedYears, 5) : null;
+      yearsContext = { buckets: YEARS_AT_LEVEL_MANAGER, userYear };
+    }
+
     return {
       currentSal, currentAip, currentTc,
       raiseRate, raiseContext,
@@ -256,6 +266,7 @@ export default function DeloitteSalaryAnalyzer() {
       usdcData,
       promoInto,
       promoNext,
+      yearsContext,
       insights,
     };
   }, [form, step, compareGroup, compareEdu, comparePortfolio]);
@@ -466,6 +477,23 @@ export default function DeloitteSalaryAnalyzer() {
                     {EDUCATION_LEVELS.map((ed) => <option key={ed} value={ed}>{ed}</option>)}
                   </select>
                 </div>
+
+                {form.level === "Manager / Specialist Master" && (
+                  <div>
+                    <label className={labelClasses}>
+                      Years at Manager level <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
+                    </label>
+                    <select className={inputClasses} value={form.yearsAtLevel}
+                      onChange={(e) => update("yearsAtLevel", e.target.value)}>
+                      <option value="">Select...</option>
+                      <option value="1">1 year</option>
+                      <option value="2">2 years</option>
+                      <option value="3">3 years</option>
+                      <option value="4">4 years</option>
+                      <option value="5">5+ years</option>
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -819,6 +847,29 @@ export default function DeloitteSalaryAnalyzer() {
             </ul>
             <p className="mt-3 text-[12px] text-stone-400">FY27 survey expected June/July 2026.</p>
           </div>
+
+          {/* Years at Manager Level */}
+          {analysis.yearsContext && (
+            <div className="mb-6 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-3">
+                Manager Base by Years at Level
+              </div>
+              <div className="grid grid-cols-5 gap-2">
+                {Object.entries(analysis.yearsContext.buckets).map(([year, d]) => {
+                  const isUser = analysis.yearsContext.userYear === parseInt(year, 10);
+                  const smallN = d.n < 30;
+                  return (
+                    <div key={year} className={`text-center p-3 rounded-xl ${isUser ? "bg-violet-50 border border-violet-200" : "bg-stone-50"}`}>
+                      <div className="text-[10px] text-stone-400 font-semibold mb-1">{year === "5" ? "5+ yrs" : `${year} yr${year === "1" ? "" : "s"}`}</div>
+                      <div className={`text-base font-bold font-mono ${isUser ? "text-violet-700" : "text-stone-700"}`}>{fmt(d.median)}</div>
+                      <div className={`text-[10px] font-mono mt-0.5 ${smallN ? "text-amber-500" : "text-stone-300"}`}>n={d.n}{smallN ? " ⚠" : ""}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-[11px] text-stone-400">Median base salary by tenure at Manager level. {Object.values(analysis.yearsContext.buckets).some(d => d.n < 30) && <span className="text-amber-600">⚠ = small sample (n&lt;30)</span>}</p>
+            </div>
+          )}
 
           {/* Promotion Raise Benchmarks */}
           <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
