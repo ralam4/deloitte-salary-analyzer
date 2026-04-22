@@ -2,3 +2,6 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# Raw survey data (not committed — used locally by scripts/recompute_stats_fy26.py)
+2025 Deloitte Salary Survey Responses.xlsx
