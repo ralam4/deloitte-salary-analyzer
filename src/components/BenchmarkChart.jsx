@@ -9,57 +9,59 @@ export default function BenchmarkChart({ userSalary, levelStats, groupMedian, gr
   if (!s) return null;
 
   const data = [
-    { name: "P10", value: s.p10, fill: "#e7e5e4" },
-    { name: "P25", value: s.p25, fill: "#d6d3d1" },
-    { name: "Median", value: s.p50, fill: "#8b5cf6" },
-    { name: "P75", value: s.p75, fill: "#d6d3d1" },
-    { name: "P90", value: s.p90, fill: "#e7e5e4" },
-    { name: "You", value: userSalary, fill: "#10b981" },
+    { name: "P10", value: s.p10, fill: "#e2e8f0" },
+    { name: "P25", value: s.p25, fill: "#cbd5e1" },
+    { name: "Median", value: s.p50, fill: "#2563eb" },
+    { name: "P75", value: s.p75, fill: "#cbd5e1" },
+    { name: "P90", value: s.p90, fill: "#e2e8f0" },
+    { name: "You", value: userSalary, fill: "#f97316" },
   ];
 
   return (
     <ResponsiveContainer width="100%" height={220}>
       <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f4" vertical={false} />
+        <CartesianGrid strokeDasharray="2 3" stroke="#f1f5f9" vertical={false} />
         <XAxis
           dataKey="name"
-          tick={{ fill: "#a8a29e", fontSize: 11, fontFamily: "'Plus Jakarta Sans'" }}
+          tick={{ fill: "#64748b", fontSize: 11, fontFamily: "'Fira Sans'" }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: "#a8a29e", fontSize: 10, fontFamily: "'Geist Mono'" }}
+          tick={{ fill: "#64748b", fontSize: 10, fontFamily: "'Fira Code'" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
         />
         <Tooltip
+          cursor={{ fill: "#f1f5f9" }}
           contentStyle={{
             background: "white",
-            border: "1px solid #e7e5e4",
-            borderRadius: 12,
-            color: "#1a1a1a",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-            fontFamily: "'Plus Jakarta Sans'",
-            fontSize: 13,
+            border: "1px solid #e2e8f0",
+            borderRadius: 4,
+            color: "#1e293b",
+            boxShadow: "none",
+            fontFamily: "'Fira Code'",
+            fontSize: 12,
+            padding: "6px 10px",
           }}
           formatter={(v) => [fmt(v), "Base Salary"]}
         />
-        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+        <Bar dataKey="value" radius={[2, 2, 0, 0]}>
           {data.map((entry, i) => (
             <Cell key={i} fill={entry.fill} />
           ))}
         </Bar>
         {userSalary && (
-          <ReferenceLine y={userSalary} stroke="#10b981" strokeDasharray="4 4" strokeWidth={1.5} />
+          <ReferenceLine y={userSalary} stroke="#f97316" strokeDasharray="3 3" strokeWidth={1} />
         )}
         {groupMedian && (
           <ReferenceLine
             y={groupMedian}
-            stroke="#8b5cf6"
-            strokeDasharray="6 3"
-            strokeWidth={1.5}
-            label={{ value: groupLabel, position: "right", fill: "#8b5cf6", fontSize: 10 }}
+            stroke="#2563eb"
+            strokeDasharray="5 3"
+            strokeWidth={1}
+            label={{ value: groupLabel, position: "right", fill: "#2563eb", fontSize: 10, fontFamily: "'Fira Code'" }}
           />
         )}
       </BarChart>

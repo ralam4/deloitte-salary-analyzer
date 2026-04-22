@@ -32,8 +32,8 @@ function getPercentile(value, salaryStats) {
   return Math.min(99, 90 + Math.round(10 * (value - s.p90) / (s.p90 - s.p75)));
 }
 
-const inputClasses = "w-full bg-white border border-stone-200 rounded-xl px-4 py-3 text-stone-900 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-50 transition-all placeholder:text-stone-300 font-sans";
-const labelClasses = "text-[10px] text-stone-400 uppercase tracking-[0.12em] mb-1.5 block font-semibold";
+const inputClasses = "w-full bg-white border border-slate-200 rounded-sm px-4 py-3 text-slate-900 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-50 transition-all placeholder:text-slate-300 font-sans";
+const labelClasses = "text-[10px] text-slate-400 uppercase tracking-[0.12em] mb-1.5 block font-semibold";
 
 function UsdcContext({ usdcData, level }) {
   const [showCore, setShowCore] = useState(false);
@@ -42,20 +42,20 @@ function UsdcContext({ usdcData, level }) {
   const shortLevel = level.split("/")[0].trim();
 
   return (
-    <div className="mb-6 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
+    <div className="mb-6 bg-white rounded-md p-5 sm:p-6 border border-slate-200">
       <div className="flex items-center justify-between mb-4">
-        <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+        <div className="text-[10px] font-semibold text-brand-500 uppercase tracking-[0.12em] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
           USDC Benchmarks — {shortLevel}
         </div>
-        <span className="text-[11px] text-stone-300 font-mono">n={usdc.count} USDC peers</span>
+        <span className="text-[11px] text-slate-300 font-mono">n={usdc.count} USDC peers</span>
       </div>
 
       <div className="grid grid-cols-3 gap-3 mb-4">
         {[["P25", usdc.salary.p25], ["Median", usdc.salary.p50], ["P75", usdc.salary.p75]].map(([label, val]) => (
-          <div key={label} className="text-center p-3 bg-stone-50 rounded-xl">
-            <div className="text-[10px] text-stone-400 font-semibold mb-1">{label}</div>
-            <div className="text-lg font-bold font-mono text-stone-700">{fmt(val)}</div>
+          <div key={label} className="text-center p-3 bg-slate-50 rounded-sm">
+            <div className="text-[10px] text-slate-400 font-semibold mb-1">{label}</div>
+            <div className="text-lg font-semibold font-mono text-slate-700">{fmt(val)}</div>
           </div>
         ))}
       </div>
@@ -68,7 +68,7 @@ function UsdcContext({ usdcData, level }) {
 
       <button
         onClick={() => setShowCore(!showCore)}
-        className="text-[12px] text-violet-500 hover:text-violet-700 font-medium cursor-pointer transition-colors"
+        className="text-[12px] text-brand-500 hover:text-brand-700 font-medium cursor-pointer transition-colors"
       >
         {showCore ? "Hide" : "Compare to"} Core (Traditional) &middot; n={core.count}
       </button>
@@ -76,9 +76,9 @@ function UsdcContext({ usdcData, level }) {
       {showCore && (
         <div className="mt-3 grid grid-cols-3 gap-3">
           {[["P25", core.salary.p25], ["Median", core.salary.p50], ["P75", core.salary.p75]].map(([label, val]) => (
-            <div key={label} className="text-center p-3 bg-violet-50/50 rounded-xl border border-violet-100/50">
-              <div className="text-[10px] text-violet-400 font-semibold mb-1">Core {label}</div>
-              <div className="text-lg font-bold font-mono text-violet-700">{fmt(val)}</div>
+            <div key={label} className="text-center p-3 bg-brand-50/50 rounded-sm border border-brand-100/50">
+              <div className="text-[10px] text-brand-400 font-semibold mb-1">Core {label}</div>
+              <div className="text-lg font-semibold font-mono text-brand-700">{fmt(val)}</div>
             </div>
           ))}
         </div>
@@ -90,7 +90,7 @@ function UsdcContext({ usdcData, level }) {
 function CompareToggle({ label, options, value, onChange }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[10px] text-stone-400 uppercase tracking-[0.1em] font-semibold shrink-0">{label}</span>
+      <span className="text-[10px] text-slate-400 uppercase tracking-[0.1em] font-semibold shrink-0">{label}</span>
       <div className="flex gap-1">
         {options.map((opt) => (
           <button
@@ -98,8 +98,8 @@ function CompareToggle({ label, options, value, onChange }) {
             onClick={() => onChange(opt.value)}
             className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium cursor-pointer transition-all whitespace-nowrap ${
               value === opt.value
-                ? "bg-stone-900 text-white shadow-sm"
-                : "bg-stone-100 text-stone-500 hover:bg-stone-200"
+                ? "bg-slate-900 text-white"
+                : "bg-slate-100 text-slate-500 hover:bg-slate-200"
             }`}
           >
             {opt.label}
@@ -123,6 +123,7 @@ export default function DeloitteSalaryAnalyzer() {
     gpsComm: "",
     education: "",
     yearsAtLevel: "",
+    promotedLastCycle: false,
   });
 
   // Compare toggle state (results page only, independent of form)
@@ -228,24 +229,23 @@ export default function DeloitteSalaryAnalyzer() {
       });
     }
 
-    // Raise-vs-peers context
-    let raiseContext = null;
-    if (raiseRate != null) {
-      const vsOverall = raiseRate - NON_PROMOTION_RAISE.median;
-      raiseContext = {
-        userPct: raiseRate,
-        peerMedian: NON_PROMOTION_RAISE.median,
-        peerP25: NON_PROMOTION_RAISE.p25,
-        peerP75: NON_PROMOTION_RAISE.p75,
-        peerN: NON_PROMOTION_RAISE.n,
-        vsOverall,
-      };
-    }
-
     // Promotion context — into your level + out to next level
     const promoInto = PROMOTION_RAISES[form.level] || null;
     const nextLevelKey = NEXT_LEVEL[form.level];
     const promoNext = nextLevelKey ? PROMOTION_RAISES[nextLevelKey] || null : null;
+
+    // Raise verdict: route comparison to the right cohort
+    const promotedLastCycle = !!form.promotedLastCycle;
+    let raiseVerdict = null;
+    if (raiseRate != null) {
+      const target = promotedLastCycle && promoInto
+        ? { median: promoInto.median, n: promoInto.n, cohort: "promoted", label: `promotion to ${promoInto.toLabel}` }
+        : { median: NON_PROMOTION_RAISE.median, n: NON_PROMOTION_RAISE.n, cohort: "same-level", label: `staying at ${form.level.split("/")[0].trim()}` };
+      const deltaPp = raiseRate - target.median;
+      const band = target.median * 0.1; // ±10% of target = "in line"
+      const verdict = Math.abs(deltaPp) <= band ? "in line" : deltaPp > 0 ? "above" : "below";
+      raiseVerdict = { ...target, userPct: raiseRate, deltaPp, verdict };
+    }
 
     // Years-at-level context (Manager only)
     let yearsContext = null;
@@ -257,7 +257,7 @@ export default function DeloitteSalaryAnalyzer() {
 
     return {
       currentSal, currentAip, currentTc,
-      raiseRate, raiseContext,
+      raiseRate, raiseVerdict, promotedLastCycle,
       stats,
       pct, vsMedian,
       gpsCommDelta,
@@ -279,19 +279,16 @@ export default function DeloitteSalaryAnalyzer() {
     return (
       <div className="min-h-screen font-sans relative overflow-hidden">
         {/* CSS mesh gradient background */}
-        <div className="mesh-gradient animate-mesh-move fixed inset-0 -z-10" />
-        <div className="fixed inset-0 bg-[#faf9f7]/50 -z-[5]" />
-        <div className="grain-overlay" />
 
         {/* Nav */}
         <nav className="relative z-10 max-w-[1100px] mx-auto px-6 pt-8 flex items-center justify-between opacity-0 animate-fade-up">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-violet-500" />
-            <span className="text-[13px] font-semibold text-stone-500 tracking-wide uppercase">Salary Analyzer</span>
+            <div className="w-2 h-2 rounded-full bg-brand-500" />
+            <span className="text-[13px] font-semibold text-slate-500 tracking-wide uppercase">Salary Analyzer</span>
           </div>
           <div className="flex items-center gap-6">
-            <span className="text-[12px] text-stone-400 font-mono">{totalRespondents.toLocaleString()} respondents</span>
-            <span className="text-[12px] text-stone-400">FY26 Benchmark</span>
+            <span className="text-[12px] text-slate-400 font-mono">{totalRespondents.toLocaleString()} respondents</span>
+            <span className="text-[12px] text-slate-400">FY26 Benchmark</span>
           </div>
         </nav>
 
@@ -299,32 +296,32 @@ export default function DeloitteSalaryAnalyzer() {
         <div className="relative z-10 max-w-[1100px] mx-auto px-6 pt-24 sm:pt-32 pb-20">
           <div className="max-w-[720px]">
             <div className="opacity-0 animate-fade-up">
-              <div className="inline-flex items-center gap-2 bg-white/80 border border-stone-200/60 rounded-full px-4 py-1.5 mb-8 shadow-sm">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[12px] text-stone-500 font-medium">Crowdsourced from Fishbowl — No Data Collected</span>
+              <div className="inline-flex items-center gap-2 bg-white/80 border border-slate-200 rounded-full px-4 py-1.5 mb-8">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                <span className="text-[11px] text-slate-500 font-medium font-mono tabular-nums">FY26 · 1,765 respondents · crowdsourced</span>
               </div>
             </div>
 
-            <h1 className="opacity-0 animate-fade-up-1 font-serif text-5xl sm:text-7xl leading-[1.05] tracking-tight text-stone-900 mb-6">
+            <h1 className="opacity-0 animate-fade-up-1 text-4xl sm:text-6xl font-semibold leading-[1.05] tracking-tight text-slate-900 mb-6">
               Know exactly where
               <br />
-              <span className="italic text-violet-600">your comp</span> stands.
+              <span className="text-brand-600">your comp</span> stands.
             </h1>
 
-            <p className="opacity-0 animate-fade-up-2 text-lg sm:text-xl text-stone-400 leading-relaxed max-w-[540px] mb-10">
-              Benchmark your Deloitte salary, bonus, and total compensation against {totalRespondents.toLocaleString()} verified US responses. See your percentile, compare raises, and understand your market position.
+            <p className="opacity-0 animate-fade-up-2 text-base sm:text-lg text-slate-500 leading-relaxed max-w-[560px] mb-10">
+              Benchmark your Deloitte salary, bonus, and total compensation against <span className="font-mono tabular-nums text-slate-700">{totalRespondents.toLocaleString()}</span> verified US responses. See your percentile, compare raises, and understand your market position.
             </p>
 
             <div className="opacity-0 animate-fade-up-3 flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setStep(1)}
-                className="bg-stone-900 text-white px-8 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
+                className="bg-slate-900 text-white px-8 py-4 rounded-md text-[15px] font-semibold cursor-pointer transition-all hover:bg-slate-800 hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 Analyze My Compensation
               </button>
               <a
                 href="#how-it-works"
-                className="text-stone-400 px-6 py-4 text-[15px] font-medium hover:text-stone-600 transition-colors text-center cursor-pointer"
+                className="text-slate-400 px-6 py-4 text-[15px] font-medium hover:text-slate-600 transition-colors text-center cursor-pointer"
               >
                 How it works &darr;
               </a>
@@ -339,19 +336,22 @@ export default function DeloitteSalaryAnalyzer() {
               { level: "Manager", key: "Manager / Specialist Master" },
               { level: "Sr. Manager", key: "Senior Manager / Specialist Leader" },
             ].map((card) => (
-              <div key={card.level} className="bg-white/70 backdrop-blur-sm border border-stone-200/60 rounded-2xl p-4 sm:p-5 hover:bg-white/90 transition-all">
-                <div className="text-[10px] text-stone-400 uppercase tracking-[0.1em] font-semibold">{card.level}</div>
-                <div className="text-xl sm:text-2xl font-bold font-mono text-stone-900 mt-1 tracking-tight">{fmt(LEVEL_STATS[card.key].salary.p50)}</div>
-                <div className="text-[11px] text-stone-300 mt-1">{LEVEL_STATS[card.key].count} responses</div>
+              <div key={card.level} className="relative bg-white border border-slate-200 rounded-md p-4 sm:p-5 hover:border-slate-300 transition-colors">
+                <div className="absolute top-0 left-0 h-full w-[2px] bg-brand-500" />
+                <div className="pl-2">
+                  <div className="text-[10px] text-slate-500 uppercase tracking-[0.14em] font-semibold font-mono">{card.level}</div>
+                  <div className="text-xl sm:text-2xl font-semibold font-mono tabular-nums text-slate-900 mt-1 tracking-tight">{fmt(LEVEL_STATS[card.key].salary.p50)}</div>
+                  <div className="text-[10px] text-slate-400 mt-1 font-mono tabular-nums">n={LEVEL_STATS[card.key].count}</div>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* How it works section */}
-        <div id="how-it-works" className="relative z-10 border-t border-stone-200/60">
+        <div id="how-it-works" className="relative z-10 border-t border-slate-200">
           <div className="max-w-[1100px] mx-auto px-6 py-20">
-            <h2 className="font-serif text-3xl sm:text-4xl text-stone-900 mb-12 tracking-tight">How it works</h2>
+            <h2 className="text-3xl sm:text-4xl text-slate-900 mb-12 tracking-tight">How it works</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               {[
                 {
@@ -371,14 +371,14 @@ export default function DeloitteSalaryAnalyzer() {
                 },
               ].map((s) => (
                 <div key={s.num} className="group">
-                  <div className="text-[11px] font-mono text-violet-400 font-medium mb-3">{s.num}</div>
-                  <h3 className="text-lg font-semibold text-stone-900 mb-2">{s.title}</h3>
-                  <p className="text-sm text-stone-400 leading-relaxed">{s.desc}</p>
+                  <div className="text-[11px] font-mono text-brand-400 font-medium mb-3">{s.num}</div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">{s.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{s.desc}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-12 pt-8 border-t border-stone-200/40">
-              <p className="text-xs text-stone-400 max-w-[640px] leading-relaxed">
+            <div className="mt-12 pt-8 border-t border-slate-200/40">
+              <p className="text-xs text-slate-400 max-w-[640px] leading-relaxed">
                 This tool does not collect, store, or transmit any data — all analysis runs entirely in your browser. Compensation data is crowdsourced from the 2025 Deloitte salary survey on Fishbowl ({totalRespondents.toLocaleString()} US respondents, filtered for quality). Not affiliated with Deloitte. For informational purposes only.
               </p>
             </div>
@@ -392,36 +392,33 @@ export default function DeloitteSalaryAnalyzer() {
   if (step === 1) {
     return (
       <div className="min-h-screen font-sans relative">
-        <div className="mesh-gradient animate-mesh-move fixed inset-0 -z-10" />
-        <div className="fixed inset-0 bg-[#faf9f7]/60 -z-[5]" />
-        <div className="grain-overlay" />
 
         {/* Nav */}
         <nav className="relative z-10 max-w-[920px] mx-auto px-6 pt-8 pb-6 flex items-center justify-between">
           <button
             onClick={() => setStep(0)}
-            className="text-[13px] text-stone-400 hover:text-stone-600 transition-colors cursor-pointer font-medium flex items-center gap-1.5"
+            className="text-[13px] text-slate-400 hover:text-slate-600 transition-colors cursor-pointer font-medium flex items-center gap-1.5"
           >
             <span>&larr;</span> Back
           </button>
-          <span className="text-[12px] text-stone-300 font-mono">Step 1 of 2</span>
+          <span className="text-[12px] text-slate-300 font-mono">Step 1 of 2</span>
         </nav>
 
         <main className="relative z-10 max-w-[920px] mx-auto px-6 pb-16">
           <div className="mb-8 opacity-0 animate-fade-up">
-            <h1 className="font-serif text-3xl sm:text-4xl text-stone-900 tracking-tight mb-2">
+            <h1 className="text-3xl sm:text-4xl text-slate-900 tracking-tight mb-2">
               Your compensation details
             </h1>
-            <p className="text-stone-400 text-[15px]">
+            <p className="text-slate-400 text-[15px]">
               Fill in what you know — only level and salary are required.
             </p>
           </div>
 
           <div className="opacity-0 animate-fade-up-1 grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Left card */}
-            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
+            <div className="bg-white rounded-md p-6 border border-slate-200">
+              <div className="text-[10px] font-semibold text-brand-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
                 Level & Role
               </div>
 
@@ -481,7 +478,7 @@ export default function DeloitteSalaryAnalyzer() {
                 {form.level === "Manager / Specialist Master" && (
                   <div>
                     <label className={labelClasses}>
-                      Years at Manager level <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
+                      Years at Manager level <span className="text-slate-300 font-normal normal-case tracking-normal">— optional</span>
                     </label>
                     <select className={inputClasses} value={form.yearsAtLevel}
                       onChange={(e) => update("yearsAtLevel", e.target.value)}>
@@ -498,9 +495,9 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
 
             {/* Right card */}
-            <div className="bg-white rounded-2xl p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-emerald-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="bg-white rounded-md p-6 border border-slate-200">
+              <div className="text-[10px] font-semibold text-accent-600 uppercase tracking-[0.14em] mb-5 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-sm bg-accent-500" />
                 Current Compensation
               </div>
               <div className="space-y-4 mb-6">
@@ -511,24 +508,33 @@ export default function DeloitteSalaryAnalyzer() {
                 </div>
                 <div>
                   <label className={labelClasses}>
-                    AIP received <span className="text-stone-300 font-normal normal-case tracking-normal">— optional</span>
+                    AIP received <span className="text-slate-300 font-normal normal-case tracking-normal">— optional</span>
                   </label>
                   <input type="number" inputMode="numeric" placeholder="e.g. 15000" className={inputClasses}
                     value={form.currentAip} onChange={(e) => update("currentAip", e.target.value)} />
                 </div>
               </div>
 
-              <div className="border-t border-stone-100 mb-6" />
+              <div className="border-t border-slate-100 mb-6" />
 
-              <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-                Last Raise <span className="text-stone-300 font-normal normal-case tracking-normal">— optional, compares your June 2025 bump to peers</span>
+              <div className="text-[10px] font-semibold text-brand-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+                Last Raise <span className="text-slate-300 font-normal normal-case tracking-normal">— optional, compares your June 2025 bump to peers</span>
               </div>
               <div>
                 <label className={labelClasses}>Raise %</label>
                 <input type="text" inputMode="decimal" placeholder="e.g. 7 or 7%" className={inputClasses}
                   value={form.lastRaisePct} onChange={(e) => update("lastRaisePct", e.target.value)} />
               </div>
+              <label className="flex items-center gap-2 mt-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded-sm border-slate-300 text-accent-600 focus:ring-accent-500 cursor-pointer"
+                  checked={form.promotedLastCycle}
+                  onChange={(e) => update("promotedLastCycle", e.target.checked)}
+                />
+                <span className="text-[12px] text-slate-600 font-mono">I was promoted in this cycle</span>
+              </label>
             </div>
           </div>
 
@@ -554,12 +560,12 @@ export default function DeloitteSalaryAnalyzer() {
                 }
                 setStep(2);
               }}
-              className="w-full sm:w-auto bg-stone-900 text-white px-10 py-4 rounded-2xl text-[15px] font-semibold cursor-pointer transition-all hover:bg-stone-800 hover:-translate-y-0.5 disabled:opacity-20 disabled:cursor-not-allowed disabled:translate-y-0 shadow-xl shadow-stone-900/10 active:scale-[0.98]"
+              className="w-full sm:w-auto bg-slate-900 text-white px-10 py-4 rounded-md text-[15px] font-semibold cursor-pointer transition-all hover:bg-slate-800 hover:-translate-y-0.5 disabled:opacity-20 disabled:cursor-not-allowed disabled:translate-y-0 active:scale-[0.98]"
             >
               See My Results &rarr;
             </button>
             {!canSubmit && (
-              <span className="text-[12px] text-stone-300">Level and base salary are required</span>
+              <span className="text-[12px] text-slate-300">Level and base salary are required</span>
             )}
           </div>
         </main>
@@ -570,21 +576,18 @@ export default function DeloitteSalaryAnalyzer() {
   // ─── RESULTS ───
   return (
     <div className="min-h-screen font-sans relative">
-      <div className="mesh-gradient animate-mesh-move fixed inset-0 -z-10" />
-      <div className="fixed inset-0 bg-[#faf9f7]/60 -z-[5]" />
-      <div className="grain-overlay" />
 
       {/* Nav */}
       <nav className="relative z-10 max-w-[1000px] mx-auto px-6 pt-8 pb-4 flex items-center justify-between">
         <button
           onClick={() => setStep(1)}
-          className="text-[13px] text-stone-400 hover:text-stone-600 transition-colors cursor-pointer font-medium flex items-center gap-1.5"
+          className="text-[13px] text-slate-400 hover:text-slate-600 transition-colors cursor-pointer font-medium flex items-center gap-1.5"
         >
           <span>&larr;</span> Edit inputs
         </button>
         <button
           onClick={() => setStep(0)}
-          className="text-[12px] text-stone-300 hover:text-stone-500 transition-colors cursor-pointer font-medium"
+          className="text-[12px] text-slate-300 hover:text-slate-500 transition-colors cursor-pointer font-medium"
         >
           Start over
         </button>
@@ -602,7 +605,7 @@ export default function DeloitteSalaryAnalyzer() {
               form.gpsComm,
               form.education,
             ].filter(Boolean).map((tag) => (
-              <span key={tag} className="inline-flex items-center bg-stone-100 text-stone-600 rounded-full px-3 py-1 text-[12px] font-medium">
+              <span key={tag} className="inline-flex items-center bg-slate-100 text-slate-600 rounded-full px-3 py-1 text-[12px] font-medium">
                 {tag}
               </span>
             ))}
@@ -610,12 +613,12 @@ export default function DeloitteSalaryAnalyzer() {
 
           {/* Results header */}
           <div className="mb-8 opacity-0 animate-fade-up">
-            <div className="text-[10px] text-stone-400 uppercase tracking-[0.12em] font-semibold mb-3">Your Compensation Analysis</div>
-            <h1 className="font-serif text-4xl sm:text-5xl text-stone-900 tracking-tight mb-3">
+            <div className="text-[10px] text-slate-400 uppercase tracking-[0.12em] font-semibold mb-3">Your Compensation Analysis</div>
+            <h1 className="text-4xl sm:text-5xl text-slate-900 tracking-tight mb-3">
               {analysis.pct}<span className="text-3xl align-top">th</span>
-              <span className="text-stone-300 font-sans text-2xl font-normal ml-3">percentile</span>
+              <span className="text-slate-300 font-sans text-2xl font-normal ml-3">percentile</span>
             </h1>
-            <p className="text-stone-400 text-sm">
+            <p className="text-slate-400 text-sm">
               {form.level} &middot; {form.business || "All"}{form.gpsComm ? ` (${form.gpsComm})` : ""} &middot; n={analysis.stats.count} {analysis.peerLabel}
               {analysis.usdcData && <span> &middot; USDC</span>}
             </p>
@@ -674,25 +677,25 @@ export default function DeloitteSalaryAnalyzer() {
           )}
 
           {analysis.gpsCommDelta != null && !compareEdu && !comparePortfolio && (
-            <div className="mb-6 opacity-0 animate-fade-up-1 bg-white rounded-2xl px-5 py-4 border border-stone-200/60 shadow-sm flex items-center justify-between">
+            <div className="mb-6 opacity-0 animate-fade-up-1 bg-white rounded-md px-5 py-4 border border-slate-200 flex items-center justify-between">
               <div>
-                <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-1">GPS vs Commercial Split</div>
-                <p className="text-sm text-stone-500">
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.12em] mb-1">GPS vs Commercial Split</div>
+                <p className="text-sm text-slate-500">
                   Commercial peers at your level earn a median of{" "}
-                  <span className="font-mono font-semibold text-stone-700">{fmt(analysis.gpsCommDelta)}</span>{" "}
+                  <span className="font-mono font-semibold text-slate-700">{fmt(analysis.gpsCommDelta)}</span>{" "}
                   more than GPS peers.
                 </p>
               </div>
               <div className="flex gap-3 text-center shrink-0 ml-4">
                 <div>
-                  <div className="text-[10px] text-stone-400 font-semibold">GPS</div>
-                  <div className="text-sm font-mono font-bold text-stone-700">
+                  <div className="text-[10px] text-slate-400 font-semibold">GPS</div>
+                  <div className="text-sm font-mono font-semibold text-slate-700">
                     {fmt(GPS_COMMERCIAL_STATS[form.level]?.GPS.salary.p50)}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-stone-400 font-semibold">Commercial</div>
-                  <div className="text-sm font-mono font-bold text-stone-700">
+                  <div className="text-[10px] text-slate-400 font-semibold">Commercial</div>
+                  <div className="text-sm font-mono font-semibold text-slate-700">
                     {fmt(GPS_COMMERCIAL_STATS[form.level]?.Commercial.salary.p50)}
                   </div>
                 </div>
@@ -734,8 +737,8 @@ export default function DeloitteSalaryAnalyzer() {
 
           {/* Chart + Percentile */}
           <div className="opacity-0 animate-fade-up-3 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4 mb-4">
-            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-5">
+            <div className="bg-white rounded-md p-5 sm:p-6 border border-slate-200">
+              <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.1em] mb-5">
                 Salary Distribution — Your Level
               </div>
               <BenchmarkChart
@@ -746,83 +749,66 @@ export default function DeloitteSalaryAnalyzer() {
               />
             </div>
 
-            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-5">
+            <div className="bg-white rounded-md p-5 sm:p-6 border border-slate-200">
+              <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.1em] mb-5">
                 Percentile Position
               </div>
               <div className="text-center mb-5">
-                <div className="text-6xl font-bold font-mono text-stone-900 tracking-tighter leading-none">
-                  {analysis.pct}<span className="text-2xl text-stone-300 align-top ml-0.5">th</span>
+                <div className="text-6xl font-semibold font-mono text-slate-900 tracking-tighter leading-none">
+                  {analysis.pct}<span className="text-2xl text-slate-300 align-top ml-0.5">th</span>
                 </div>
-                <div className="text-[11px] text-stone-400 mt-2">base salary percentile</div>
+                <div className="text-[11px] text-slate-400 mt-2">base salary percentile</div>
               </div>
               <PercentileBar percentile={analysis.pct} />
               <div className="mt-5 grid grid-cols-2 gap-2">
                 {[["P25", analysis.stats.salary.p25], ["Median", analysis.stats.salary.p50],
                   ["P75", analysis.stats.salary.p75], ["P90", analysis.stats.salary.p90]].map(([label, val]) => (
-                  <div key={label} className="bg-stone-50 rounded-xl px-3 py-2.5">
-                    <div className="text-[10px] text-stone-400 font-medium">{label}</div>
-                    <div className="text-[14px] font-semibold font-mono text-stone-700">{fmt(val)}</div>
+                  <div key={label} className="bg-slate-50 rounded-sm px-3 py-2.5">
+                    <div className="text-[10px] text-slate-400 font-medium">{label}</div>
+                    <div className="text-[14px] font-semibold font-mono text-slate-700">{fmt(val)}</div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {analysis.raiseContext && (
-            <div className="mb-6 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-emerald-500 uppercase tracking-[0.12em] mb-3">Your Raise vs Peers</div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold font-mono text-stone-900">{(analysis.raiseContext.userPct * 100).toFixed(1)}%</span>
-                <span className="text-stone-400 text-sm">your raise</span>
-              </div>
-              <p className="mt-2 text-sm text-stone-600">
-                Peer median (same-level): <span className="font-mono font-semibold">{(analysis.raiseContext.peerMedian * 100).toFixed(1)}%</span>
-                {" "}(P25 {(analysis.raiseContext.peerP25 * 100).toFixed(1)}% · P75 {(analysis.raiseContext.peerP75 * 100).toFixed(1)}%, n={analysis.raiseContext.peerN})
-              </p>
-              <p className="mt-1 text-[12px] text-stone-400">
-                {analysis.raiseContext.vsOverall >= 0 ? "+" : ""}{(analysis.raiseContext.vsOverall * 100).toFixed(1)}pp vs peer median
-              </p>
-            </div>
-          )}
-
           {/* Full Salary Range */}
           <div className="opacity-0 animate-fade-up-4 mb-4">
-            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">Full Salary Range</div>
-              <div className="relative h-2 bg-stone-100 rounded-full my-6">
+            <div className="bg-white rounded-md p-5 sm:p-6 border border-slate-200">
+              <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.1em] mb-4">Full Salary Range</div>
+              <div className="relative h-2 bg-slate-100 rounded-full my-6">
                 <div
-                  className="absolute h-full bg-gradient-to-r from-violet-300 to-violet-500 rounded-full"
+                  className="absolute h-full bg-gradient-to-r from-brand-300 to-brand-500 rounded-full"
                   style={{
                     left: `${((analysis.stats.salary.p25 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
                     right: `${100 - ((analysis.stats.salary.p75 - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100}%`,
                   }}
                 />
                 <div
-                  className="absolute w-4 h-4 bg-emerald-500 rounded-full top-1/2 -mt-2 border-2 border-white shadow-md shadow-emerald-200"
+                  className="absolute w-3 h-3 bg-accent-500 rounded-sm top-1/2 -mt-1.5 border-2 border-white"
                   style={{
                     left: `${Math.min(100, Math.max(0, ((analysis.currentSal - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100))}%`,
                     transform: "translateX(-50%)",
                   }}
                 />
               </div>
-              <div className="flex justify-between text-[10px] text-stone-400 font-mono mb-4">
+              <div className="flex justify-between text-[10px] text-slate-400 font-mono mb-4">
                 <span>{fmt(analysis.stats.salary.p10)}</span>
                 <span>{fmt(analysis.stats.salary.p90)}</span>
               </div>
-              <div className="flex items-center gap-4 text-[11px] text-stone-400 mb-3">
-                <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-violet-400 mr-1 align-middle" /> P25–P75</span>
-                <span><span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1 align-middle" /> You</span>
+              <div className="flex items-center gap-4 text-[11px] text-slate-400 mb-3">
+                <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-brand-400 mr-1 align-middle" /> P25–P75</span>
+                <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-accent-500 mr-1 align-middle" /> You</span>
               </div>
-              <div className="bg-stone-50 rounded-xl p-3">
-                <div className="text-[12px] text-stone-500">
+              <div className="bg-slate-50 rounded-sm p-3">
+                <div className="text-[12px] text-slate-500">
                   Gap to P75:{" "}
                   <span className={`font-mono font-semibold ${analysis.currentSal >= analysis.stats.salary.p75 ? "text-emerald-600" : "text-amber-600"}`}>
                     {analysis.currentSal >= analysis.stats.salary.p75 ? "Above P75" : fmt(analysis.stats.salary.p75 - analysis.currentSal)}
                   </span>
                 </div>
                 {analysis.currentSal < analysis.stats.salary.p75 && (
-                  <div className="text-[11px] text-stone-400 mt-1">
+                  <div className="text-[11px] text-slate-400 mt-1">
                     Gap to P90: <span className="font-mono">{fmt(analysis.stats.salary.p90 - analysis.currentSal)}</span>
                   </div>
                 )}
@@ -830,28 +816,95 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
           </div>
 
-          {/* Looking Ahead — FY27 Raise Context */}
-          <div className="mb-6 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
-            <div className="text-[10px] font-semibold text-violet-500 uppercase tracking-[0.12em] mb-3 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-              Looking Ahead — FY27 Raise Context
+          {/* Raise Benchmarks — consolidated */}
+          <div className="mb-6 bg-white rounded-md border border-slate-200">
+            <div className="px-5 sm:px-6 py-4 border-b border-slate-200 flex items-baseline justify-between">
+              <div>
+                <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.14em]">
+                  Raise Benchmarks
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5 font-mono">FY25 → FY26 survey · n={NON_PROMOTION_RAISE.n + Object.values(PROMOTION_RAISES).reduce((s, d) => s + d.n, 0)}</div>
+              </div>
+              <div className="text-[10px] text-slate-400 font-mono tabular-nums">FY27 survey · Jun/Jul 2026</div>
             </div>
-            <p className="text-sm text-stone-600 leading-relaxed">
-              Deloitte changed the rating system this cycle, so we can't project your FY27 raise from your new rating. For reference, last year's FY25→FY26 data shows:
-            </p>
-            <ul className="mt-3 space-y-1.5 text-sm text-stone-700">
-              <li>• Overall median raise (same-level): <span className="font-mono font-semibold">{(NON_PROMOTION_RAISE.median * 100).toFixed(1)}%</span> (n={NON_PROMOTION_RAISE.n})</li>
-              {Object.entries(PROMOTION_RAISES).map(([lvl, d]) => (
-                <li key={lvl}>• Promotion {d.fromLabel} → {d.toLabel}: <span className="font-mono font-semibold">{(d.median * 100).toFixed(1)}%</span> (n={d.n})</li>
-              ))}
-            </ul>
-            <p className="mt-3 text-[12px] text-stone-400">FY27 survey expected June/July 2026.</p>
+
+            <div className="px-5 sm:px-6 py-4 bg-amber-50/40 border-b border-slate-200">
+              <div className="flex items-start gap-2 text-[12px] text-slate-600 leading-relaxed">
+                <div className="w-1 h-1 mt-1.5 rounded-full bg-amber-500 shrink-0" />
+                <span>Rating system changed this cycle — we can't project your FY27 raise from your new rating. Reference ranges below are from last year's data.</span>
+              </div>
+            </div>
+
+            {(() => {
+              const highlightedCohort = analysis.raiseVerdict?.cohort
+                ?? (analysis.promoNext ? "next-promo" : null);
+              const Tile = ({ k, label, value, n, sub, highlighted }) => (
+                <div key={k} className="bg-white p-4 relative">
+                  {highlighted && <div className="absolute top-0 left-0 h-full w-[2px] bg-accent-500" />}
+                  <div className={`text-[9px] uppercase tracking-[0.14em] font-semibold mb-2 font-mono ${highlighted ? "text-accent-700" : "text-slate-400"}`}>{label}</div>
+                  <div className={`text-2xl font-semibold font-mono tabular-nums ${highlighted ? "text-accent-600" : "text-slate-900"}`}>{value}</div>
+                  <div className={`text-[10px] mt-1 font-mono ${highlighted ? "text-accent-700" : "text-slate-400"}`}>{sub} · n={n}</div>
+                </div>
+              );
+              return (
+                <div className={`grid gap-px bg-slate-100 ${analysis.promoNext ? "grid-cols-3" : "grid-cols-2"}`}>
+                  {analysis.promoInto && Tile({
+                    k: "into",
+                    label: `${analysis.promoInto.fromLabel} → ${analysis.promoInto.toLabel}`,
+                    value: `${(analysis.promoInto.median * 100).toFixed(1)}%`,
+                    n: analysis.promoInto.n,
+                    sub: highlightedCohort === "promoted" ? "your promotion" : "promoted into level",
+                    highlighted: highlightedCohort === "promoted",
+                  })}
+                  {analysis.promoNext && Tile({
+                    k: "next",
+                    label: `${analysis.promoNext.fromLabel} → ${analysis.promoNext.toLabel}`,
+                    value: `${(analysis.promoNext.median * 100).toFixed(1)}%`,
+                    n: analysis.promoNext.n,
+                    sub: "next promotion",
+                    highlighted: highlightedCohort === "next-promo",
+                  })}
+                  {Tile({
+                    k: "same",
+                    label: "Stayed Same Level",
+                    value: `${(NON_PROMOTION_RAISE.median * 100).toFixed(1)}%`,
+                    n: NON_PROMOTION_RAISE.n,
+                    sub: highlightedCohort === "same-level" ? "your cohort" : "median",
+                    highlighted: highlightedCohort === "same-level",
+                  })}
+                </div>
+              );
+            })()}
+
+            {analysis.raiseVerdict && (
+              <div className="px-5 sm:px-6 py-3 bg-slate-50 border-t border-slate-200 text-[12px] text-slate-600 font-mono">
+                Your raise: <span className="font-semibold text-slate-900">{fmtPct(analysis.raiseRate)}</span>
+                {analysis.raiseVerdict.verdict === "in line"
+                  ? <span className="text-emerald-700"> — in line with the {(analysis.raiseVerdict.median * 100).toFixed(1)}% typical for {analysis.raiseVerdict.label}.</span>
+                  : analysis.raiseVerdict.verdict === "above"
+                  ? <span className="text-emerald-700"> — {(analysis.raiseVerdict.deltaPp * 100).toFixed(1)}pp above the {(analysis.raiseVerdict.median * 100).toFixed(1)}% typical for {analysis.raiseVerdict.label}.</span>
+                  : <span className="text-amber-700"> — {(analysis.raiseVerdict.deltaPp * 100).toFixed(1)}pp below the {(analysis.raiseVerdict.median * 100).toFixed(1)}% typical for {analysis.raiseVerdict.label}.</span>
+                }
+              </div>
+            )}
+
+            <div className="px-5 sm:px-6 py-3 border-t border-slate-200 bg-slate-50/50">
+              <div className="text-[10px] text-slate-400 uppercase tracking-[0.14em] font-semibold mb-2 font-mono">All Promotion Paths · Reference</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-1.5 text-[11px] font-mono tabular-nums">
+                {Object.entries(PROMOTION_RAISES).map(([lvl, d]) => (
+                  <div key={lvl} className="flex items-baseline justify-between">
+                    <span className="text-slate-500 truncate">{d.fromLabel} → {d.toLabel}</span>
+                    <span className="text-slate-900 font-semibold tabular-nums ml-2">{(d.median * 100).toFixed(1)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Years at Manager Level */}
           {analysis.yearsContext && (
-            <div className="mb-6 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm">
-              <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.12em] mb-3">
+            <div className="mb-6 bg-white rounded-md p-5 sm:p-6 border border-slate-200">
+              <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.12em] mb-3">
                 Manager Base by Years at Level
               </div>
               <div className="grid grid-cols-5 gap-2">
@@ -859,98 +912,46 @@ export default function DeloitteSalaryAnalyzer() {
                   const isUser = analysis.yearsContext.userYear === parseInt(year, 10);
                   const smallN = d.n < 30;
                   return (
-                    <div key={year} className={`text-center p-3 rounded-xl ${isUser ? "bg-violet-50 border border-violet-200" : "bg-stone-50"}`}>
-                      <div className="text-[10px] text-stone-400 font-semibold mb-1">{year === "5" ? "5+ yrs" : `${year} yr${year === "1" ? "" : "s"}`}</div>
-                      <div className={`text-base font-bold font-mono ${isUser ? "text-violet-700" : "text-stone-700"}`}>{fmt(d.median)}</div>
-                      <div className={`text-[10px] font-mono mt-0.5 ${smallN ? "text-amber-500" : "text-stone-300"}`}>n={d.n}{smallN ? " ⚠" : ""}</div>
+                    <div key={year} className={`text-center p-3 rounded-sm ${isUser ? "bg-brand-50 border border-brand-200" : "bg-slate-50"}`}>
+                      <div className="text-[10px] text-slate-400 font-semibold mb-1">{year === "5" ? "5+ yrs" : `${year} yr${year === "1" ? "" : "s"}`}</div>
+                      <div className={`text-base font-semibold font-mono ${isUser ? "text-brand-700" : "text-slate-700"}`}>{fmt(d.median)}</div>
+                      <div className={`text-[10px] font-mono mt-0.5 ${smallN ? "text-amber-500" : "text-slate-300"}`}>n={d.n}{smallN ? " ⚠" : ""}</div>
                     </div>
                   );
                 })}
               </div>
-              <p className="mt-3 text-[11px] text-stone-400">Median base salary by tenure at Manager level. {Object.values(analysis.yearsContext.buckets).some(d => d.n < 30) && <span className="text-amber-600">⚠ = small sample (n&lt;30)</span>}</p>
+              <p className="mt-3 text-[11px] text-slate-400">Median base salary by tenure at Manager level. {Object.values(analysis.yearsContext.buckets).some(d => d.n < 30) && <span className="text-amber-600">⚠ = small sample (n&lt;30)</span>}</p>
             </div>
           )}
 
-          {/* Promotion Raise Benchmarks */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
-            <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-1">
-              Promotion Raise Benchmarks
-            </div>
-            <p className="text-[12px] text-stone-400 mb-4 leading-relaxed">
-              Median salary increase from last year's survey for respondents who changed levels, compared to those who stayed at the same level.
-            </p>
-            <div className={`grid gap-3 mb-4 ${analysis.promoNext ? "grid-cols-3" : "grid-cols-2"}`}>
-              {analysis.promoInto && (
-                <div className="text-center p-4 bg-stone-50 rounded-xl">
-                  <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">
-                    {analysis.promoInto.fromLabel} → {analysis.promoInto.toLabel}
-                  </div>
-                  <div className="text-2xl font-bold font-mono text-stone-600">
-                    {(analysis.promoInto.median * 100).toFixed(1)}%
-                  </div>
-                  <div className="text-[11px] text-stone-400 mt-1">
-                    median raise (n={analysis.promoInto.n})
-                  </div>
-                </div>
-              )}
-              {analysis.promoNext && (
-                <div className="text-center p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-2 font-semibold">
-                    {analysis.promoNext.fromLabel} → {analysis.promoNext.toLabel}
-                  </div>
-                  <div className="text-2xl font-bold font-mono text-emerald-700">
-                    {(analysis.promoNext.median * 100).toFixed(1)}%
-                  </div>
-                  <div className="text-[11px] text-emerald-500 mt-1">
-                    your next promotion (n={analysis.promoNext.n})
-                  </div>
-                </div>
-              )}
-              <div className="text-center p-4 bg-stone-50 rounded-xl">
-                <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">Not Promoted</div>
-                <div className="text-2xl font-bold font-mono text-stone-600">{(NON_PROMOTION_RAISE.median * 100).toFixed(1)}%</div>
-                <div className="text-[11px] text-stone-400 mt-1">median raise (n={NON_PROMOTION_RAISE.n})</div>
-              </div>
-            </div>
-
-            {analysis.raiseRate !== null && analysis.promoNext && (
-              <div className="px-4 py-3 bg-stone-50 rounded-xl text-[12px] text-stone-500">
-                Your raise of <span className="font-mono font-semibold text-stone-700">{fmtPct(analysis.raiseRate)}</span>
-                {analysis.raiseRate >= analysis.promoNext.median * 0.9
-                  ? ` is consistent with a promotion to ${analysis.promoNext.toLabel}.`
-                  : ` is below the typical ${(analysis.promoNext.median * 100).toFixed(1)}% raise for promotion to ${analysis.promoNext.toLabel}.`
-                }
-              </div>
-            )}
-          </div>
 
           {/* AIP comparison */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200/60 shadow-sm mb-4">
-            <div className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.1em] mb-4">
+          <div className="bg-white rounded-md p-5 sm:p-6 border border-slate-200 mb-4">
+            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.1em] mb-4">
               AIP Benchmarks — {form.level}
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                ["Your AIP", analysis.currentAip > 0 ? fmt(analysis.currentAip) : "—", analysis.currentAip > 0 && analysis.currentAip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-stone-400"],
-                ["P25 AIP", fmt(analysis.stats.aip.p25), "text-stone-500"],
-                ["Median AIP", fmt(analysis.stats.aip.p50), "text-violet-600"],
-                ["P75 AIP", fmt(analysis.stats.aip.p75), "text-stone-500"],
+                ["Your AIP", analysis.currentAip > 0 ? fmt(analysis.currentAip) : "—", analysis.currentAip > 0 && analysis.currentAip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-slate-400"],
+                ["P25 AIP", fmt(analysis.stats.aip.p25), "text-slate-500"],
+                ["Median AIP", fmt(analysis.stats.aip.p50), "text-brand-600"],
+                ["P75 AIP", fmt(analysis.stats.aip.p75), "text-slate-500"],
               ].map(([label, val, colorClass]) => (
-                <div key={label} className="text-center p-4 bg-stone-50 rounded-xl">
-                  <div className="text-[10px] text-stone-400 uppercase tracking-wider mb-2 font-semibold">{label}</div>
-                  <div className={`text-xl font-bold font-mono ${colorClass}`}>{val}</div>
+                <div key={label} className="text-center p-4 bg-slate-50 rounded-sm">
+                  <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-2 font-semibold">{label}</div>
+                  <div className={`text-xl font-semibold font-mono ${colorClass}`}>{val}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Footnote */}
-          <div className="p-4 border-t border-stone-100 mt-8 space-y-2">
-            <p className="text-[11px] text-stone-300 leading-relaxed">
-              <strong className="text-stone-400">Source:</strong> Crowdsourced from the 2025 Deloitte compensation survey on Fishbowl &middot; {totalRespondents.toLocaleString()} US respondents &middot; Not affiliated with Deloitte
+          <div className="p-4 border-t border-slate-100 mt-8 space-y-2">
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              <strong className="text-slate-400">Source:</strong> Crowdsourced from the 2025 Deloitte compensation survey on Fishbowl &middot; {totalRespondents.toLocaleString()} US respondents &middot; Not affiliated with Deloitte
             </p>
-            <p className="text-[11px] text-stone-300 leading-relaxed">
-              <strong className="text-stone-400">Privacy:</strong> No data is collected, stored, or transmitted. All analysis runs entirely in your browser.
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              <strong className="text-slate-400">Privacy:</strong> No data is collected, stored, or transmitted. All analysis runs entirely in your browser.
             </p>
           </div>
         </main>

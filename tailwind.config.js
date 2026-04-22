@@ -7,28 +7,39 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],
-        serif: ["'Instrument Serif'", "Georgia", "serif"],
-        mono: ["'Geist Mono'", "monospace"],
+        sans: ["'Fira Sans'", "system-ui", "sans-serif"],
+        mono: ["'Fira Code'", "ui-monospace", "monospace"],
+      },
+      colors: {
+        brand: {
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          500: "#3b82f6",
+          600: "#2563eb",
+          700: "#1d4ed8",
+          900: "#1e3a8a",
+        },
+        accent: {
+          50: "#fff7ed",
+          100: "#ffedd5",
+          500: "#f97316",
+          600: "#ea580c",
+          700: "#c2410c",
+        },
       },
       keyframes: {
         "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(16px)" },
+          "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "mesh-move": {
-          "0%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-          "100%": { backgroundPosition: "0% 50%" },
         },
       },
       animation: {
-        "fade-up": "fade-up 0.6s ease-out forwards",
-        "fade-up-1": "fade-up 0.6s ease-out 0.1s forwards",
-        "fade-up-2": "fade-up 0.6s ease-out 0.2s forwards",
-        "fade-up-3": "fade-up 0.6s ease-out 0.3s forwards",
-        "fade-up-4": "fade-up 0.6s ease-out 0.4s forwards",
-        "mesh-move": "mesh-move 20s ease-in-out infinite",
+        "fade-up": "fade-up 0.3s ease-out forwards",
+        "fade-up-1": "fade-up 0.3s ease-out 0.06s forwards",
+        "fade-up-2": "fade-up 0.3s ease-out 0.12s forwards",
+        "fade-up-3": "fade-up 0.3s ease-out 0.18s forwards",
+        "fade-up-4": "fade-up 0.3s ease-out 0.24s forwards",
       },
     },
   },

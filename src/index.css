@@ -11,28 +11,33 @@
     margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #faf9f7;
-    color: #1a1a1a;
+    background: #f8fafc;
+    color: #1e293b;
+    font-feature-settings: "cv11", "ss01", "tnum";
   }
 
   select option {
     background: white;
-    color: #1a1a1a;
+    color: #1e293b;
   }
 
   input::placeholder {
-    color: #c4c0b8;
+    color: #cbd5e1;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #d6d3cd;
-    border-radius: 3px;
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 
   input[type="number"]::-webkit-inner-spin-button,
@@ -43,26 +48,9 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
-}
 
-.mesh-gradient {
-  background: linear-gradient(
-    -45deg,
-    #f0e6ff,
-    #e0f0ff,
-    #fce7f3,
-    #dbeafe,
-    #ede9fe,
-    #fdf2f8
-  );
-  background-size: 400% 400%;
-}
-
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  /* Tabular figures for data */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
 }
