@@ -63,11 +63,54 @@ def clean(rows: list[dict]) -> list[dict]:
     return out
 
 
+def pct_block(values: list[float], *, include_p10_p90: bool = True) -> dict:
+    arr = np.array([v for v in values if isinstance(v, (int, float)) and v > 0], dtype=float)
+    if len(arr) == 0:
+        return {}
+    out = {
+        "p25": float(np.percentile(arr, 25)),
+        "p50": float(np.percentile(arr, 50)),
+        "p75": float(np.percentile(arr, 75)),
+        "mean": float(arr.mean()),
+    }
+    if include_p10_p90:
+        out["p10"] = float(np.percentile(arr, 10))
+        out["p90"] = float(np.percentile(arr, 90))
+    return out
+
+
+def salary_stats(rows: list[dict]) -> dict:
+    salary = pct_block([r["FY26 Base Salary (USD)"] for r in rows])
+    aip = pct_block([r.get("AIP (USD)") or 0 for r in rows], include_p10_p90=False)
+    tc_values = [
+        (r["FY26 Base Salary (USD)"] or 0) + (r.get("AIP (USD)") or 0)
+        for r in rows
+    ]
+    tc = pct_block(tc_values, include_p10_p90=False)
+    return {
+        "count": len(rows),
+        "salary": {k: round(v) for k, v in salary.items()},
+        "aip": {k: round(v) for k, v in aip.items()},
+        "tc": {k: round(v) for k, v in tc.items() if k in ("p25", "p50", "p75")},
+    }
+
+
+def level_stats(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER:
+        subset = [r for r in rows if r["FY26 Level"] == lvl]
+        out[lvl] = salary_stats(subset)
+        assert out[lvl]["salary"]["p25"] <= out[lvl]["salary"]["p50"] <= out[lvl]["salary"]["p75"], lvl
+    return out
+
+
 def main() -> None:
     raw = load_rows()
     rows = clean(raw)
     print(f"Raw: {len(raw)}  Clean: {len(rows)}", file=sys.stderr)
     assert 1500 <= len(rows) <= 1900, f"Unexpected clean row count: {len(rows)}"
+    level = level_stats(rows)
+    print(json.dumps({"LEVEL_STATS": level}, indent=2), file=sys.stderr)
 
 
 if __name__ == "__main__":
