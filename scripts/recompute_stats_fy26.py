@@ -104,6 +104,58 @@ def level_stats(rows: list[dict]) -> dict:
     return out
 
 
+PORTFOLIO_ORDER = [
+    "AI & Engineering",
+    "Strategy & Transactions",
+    "Customer",
+    "Human Capital",
+    "Enterprise Performance",
+    "Cyber",
+    "Finance Transformation",
+    "Regulatory, Risk & Forensic",
+    "Other",
+]
+MIN_N_PORTFOLIO = 30
+
+
+def business_stats(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER:
+        lvl_rows = [r for r in rows if r["FY26 Level"] == lvl]
+        out[lvl] = {}
+        for biz in ("Consulting Services", "Audit & Assurance", "Tax", "Enabling Areas"):
+            subset = [r for r in lvl_rows if normalize_business(r.get("FY26 Global Business")) == biz]
+            if len(subset) >= 10:
+                out[lvl][biz] = salary_stats(subset)
+    return out
+
+
+def gps_commercial_stats(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER:
+        lvl_rows = [r for r in rows if r["FY26 Level"] == lvl]
+        out[lvl] = {}
+        for key in ("GPS", "Commercial"):
+            subset = [r for r in lvl_rows if (r.get("GPS or Commercial") or "").strip() == key]
+            if len(subset) >= 10:
+                out[lvl][key] = salary_stats(subset)
+    return out
+
+
+def portfolio_stats(rows: list[dict]) -> dict:
+    out = {}
+    for lvl in LEVEL_ORDER:
+        lvl_rows = [r for r in rows if r["FY26 Level"] == lvl]
+        level_block = {}
+        for p in PORTFOLIO_ORDER:
+            subset = [r for r in lvl_rows if (r.get("FY26 Offering Portfolio") or "").strip() == p]
+            if len(subset) >= MIN_N_PORTFOLIO:
+                level_block[p] = salary_stats(subset)
+        if level_block:
+            out[lvl] = level_block
+    return out
+
+
 def main() -> None:
     raw = load_rows()
     rows = clean(raw)
@@ -111,6 +163,12 @@ def main() -> None:
     assert 1500 <= len(rows) <= 1900, f"Unexpected clean row count: {len(rows)}"
     level = level_stats(rows)
     print(json.dumps({"LEVEL_STATS": level}, indent=2), file=sys.stderr)
+    biz = business_stats(rows)
+    gps = gps_commercial_stats(rows)
+    port = portfolio_stats(rows)
+    print(f"Businesses per level: {[len(biz[l]) for l in LEVEL_ORDER]}", file=sys.stderr)
+    print(f"GPS/Comm per level:   {[len(gps[l]) for l in LEVEL_ORDER]}", file=sys.stderr)
+    print(f"Portfolios per level: {[len(port.get(l, {})) for l in LEVEL_ORDER]}", file=sys.stderr)
 
 
 if __name__ == "__main__":
