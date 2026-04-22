@@ -147,7 +147,7 @@ export default function DeloitteSalaryAnalyzer() {
       const cleaned = String(form.lastRaisePct).replace("%", "").trim();
       const parsed = parseFloat(cleaned);
       if (Number.isFinite(parsed)) {
-        raiseRate = parsed > 1 ? parsed / 100 : parsed;
+        raiseRate = Math.abs(parsed) > 1 ? parsed / 100 : parsed;
       }
     }
 
@@ -196,7 +196,7 @@ export default function DeloitteSalaryAnalyzer() {
     const vsMedian = currentSal - stats.salary.p50;
 
     // GPS/Commercial delta
-    const gpsCommDelta = gpsCommSplit
+    const gpsCommDelta = (gpsCommSplit?.Commercial && gpsCommSplit?.GPS)
       ? gpsCommSplit.Commercial.salary.p50 - gpsCommSplit.GPS.salary.p50
       : null;
 
@@ -248,13 +248,12 @@ export default function DeloitteSalaryAnalyzer() {
     return {
       currentSal, currentAip, currentTc,
       raiseRate, raiseContext,
-      stats, blendedStats,
+      stats,
       pct, vsMedian,
       gpsCommDelta,
       peerLabel,
       hasFilteredStats,
       usdcData,
-      mbaPremium,
       promoInto,
       promoNext,
       insights,
