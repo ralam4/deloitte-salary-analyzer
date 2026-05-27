@@ -114,16 +114,17 @@ export default function DeloitteSalaryAnalyzer() {
   const [step, setStep] = useState(0); // 0=hero, 1=form, 2=results
   const [form, setForm] = useState({
     level: "",
-    currentSalary: "",
-    currentAip: "",
-    lastRaisePct: "",
+    fy26Base: "",
+    fy26Aip: "",
+    fy27Base: "",
+    fy27Aip: "",
     business: "",
     businessModel: "",
     portfolio: "",
     gpsComm: "",
     education: "",
     yearsAtLevel: "",
-    promotedLastCycle: false,
+    promotedThisCycle: false,
   });
 
   // Compare toggle state (results page only, independent of form)
@@ -137,22 +138,21 @@ export default function DeloitteSalaryAnalyzer() {
   };
 
   const analysis = useMemo(() => {
-    if (!form.level || !form.currentSalary) return null;
-    const currentSal = parseFloat(form.currentSalary);
-    if (!Number.isFinite(currentSal) || currentSal <= 0) return null;
+    if (!form.level || !form.fy27Base) return null;
+    const fy27Base = parseFloat(form.fy27Base);
+    if (!Number.isFinite(fy27Base) || fy27Base <= 0) return null;
 
-    const rawAip = parseFloat(form.currentAip);
-    const currentAip = Number.isFinite(rawAip) && rawAip >= 0 ? rawAip : 0;
-    const currentTc = currentSal + currentAip;
+    const rawFy27Aip = parseFloat(form.fy27Aip);
+    const fy27Aip = Number.isFinite(rawFy27Aip) && rawFy27Aip >= 0 ? rawFy27Aip : 0;
+    const fy27Tc = fy27Base + fy27Aip;
 
-    let raiseRate = null;
-    if (form.lastRaisePct) {
-      const cleaned = String(form.lastRaisePct).replace("%", "").trim();
-      const parsed = parseFloat(cleaned);
-      if (Number.isFinite(parsed)) {
-        raiseRate = Math.abs(parsed) > 1 ? parsed / 100 : parsed;
-      }
-    }
+    const rawFy26Base = parseFloat(form.fy26Base);
+    const fy26Base = Number.isFinite(rawFy26Base) && rawFy26Base > 0 ? rawFy26Base : null;
+
+    const rawFy26Aip = parseFloat(form.fy26Aip);
+    const fy26Aip = Number.isFinite(rawFy26Aip) && rawFy26Aip >= 0 ? rawFy26Aip : null;
+
+    const actualRaisePct = fy26Base != null ? (fy27Base - fy26Base) / fy26Base : null;
 
     // Pick stats based on compare toggles (results page) or form (initial)
     const allLevelStats = LEVEL_STATS[form.level];
@@ -194,9 +194,9 @@ export default function DeloitteSalaryAnalyzer() {
     // USDC context (not primary benchmark)
     const usdcData = form.businessModel === "USDC" ? USDC_STATS[form.level] : null;
 
-    // Primary benchmark is current salary vs FY26 survey data
-    const pct = getPercentile(currentSal, stats.salary);
-    const vsMedian = currentSal - stats.salary.p50;
+    // Primary benchmark is FY27 base vs FY26 survey data
+    const pct = getPercentile(fy27Base, stats.salary);
+    const vsMedian = fy27Base - stats.salary.p50;
 
     // GPS/Commercial delta
     const gpsCommDelta = (gpsCommSplit?.Commercial && gpsCommSplit?.GPS)
@@ -214,10 +214,10 @@ export default function DeloitteSalaryAnalyzer() {
     if (vsMedian > 0) insights.push({ text: `+${fmt(vsMedian)} above median`, type: "good" });
     else if (vsMedian < 0) insights.push({ text: `${fmt(vsMedian)} below median`, type: "bad" });
 
-    if (currentAip > 0 && stats.aip?.p50 != null) {
-      const aipVsMedian = currentAip - stats.aip.p50;
-      if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(currentAip)} — +${fmt(aipVsMedian)} above median`, type: "good" });
-      else insights.push({ text: `AIP ${fmt(currentAip)} — ${fmt(aipVsMedian)} vs median`, type: "warn" });
+    if (fy27Aip > 0 && stats.aip?.p50 != null) {
+      const aipVsMedian = fy27Aip - stats.aip.p50;
+      if (aipVsMedian > 0) insights.push({ text: `AIP ${fmt(fy27Aip)} — +${fmt(aipVsMedian)} above median`, type: "good" });
+      else insights.push({ text: `AIP ${fmt(fy27Aip)} — ${fmt(aipVsMedian)} vs median`, type: "warn" });
     }
 
     // MBA premium insight
@@ -234,17 +234,26 @@ export default function DeloitteSalaryAnalyzer() {
     const nextLevelKey = NEXT_LEVEL[form.level];
     const promoNext = nextLevelKey ? PROMOTION_RAISES[nextLevelKey] || null : null;
 
-    // Raise verdict: route comparison to the right cohort
-    const promotedLastCycle = !!form.promotedLastCycle;
-    let raiseVerdict = null;
-    if (raiseRate != null) {
-      const target = promotedLastCycle && promoInto
+    // Raise verdict + prediction: route comparison to the right cohort
+    const promotedThisCycle = !!form.promotedThisCycle;
+    let raiseAnalysis = null;
+    if (actualRaisePct != null) {
+      const target = promotedThisCycle && promoInto
         ? { median: promoInto.median, n: promoInto.n, cohort: "promoted", label: `promotion to ${promoInto.toLabel}` }
         : { median: NON_PROMOTION_RAISE.median, n: NON_PROMOTION_RAISE.n, cohort: "same-level", label: `staying at ${form.level.split("/")[0].trim()}` };
-      const deltaPp = raiseRate - target.median;
-      const band = target.median * 0.1; // ±10% of target = "in line"
+      const predictedBase = fy26Base * (1 + target.median);
+      const predictedDelta = fy27Base - predictedBase;
+      const deltaPp = actualRaisePct - target.median;
+      const band = target.median * 0.1; // ±10% of typical = "in line"
       const verdict = Math.abs(deltaPp) <= band ? "in line" : deltaPp > 0 ? "above" : "below";
-      raiseVerdict = { ...target, userPct: raiseRate, deltaPp, verdict };
+      raiseAnalysis = {
+        ...target,
+        actualPct: actualRaisePct,
+        predictedBase,
+        predictedDelta,
+        deltaPp,
+        verdict,
+      };
     }
 
     // Years-at-level context (Manager only)
@@ -255,9 +264,19 @@ export default function DeloitteSalaryAnalyzer() {
       yearsContext = { buckets: YEARS_AT_LEVEL_MANAGER, userYear };
     }
 
+    if (raiseAnalysis) {
+      const symbol = raiseAnalysis.predictedDelta >= 0 ? "+" : "-";
+      const absAmt = Math.abs(Math.round(raiseAnalysis.predictedDelta)).toLocaleString();
+      insights.unshift({
+        text: `${raiseAnalysis.verdict === "above" ? "Beat" : raiseAnalysis.verdict === "below" ? "Below" : "Met"} prediction by ${symbol}$${absAmt}`,
+        type: raiseAnalysis.verdict === "below" ? "warn" : "good",
+      });
+    }
+
     return {
-      currentSal, currentAip, currentTc,
-      raiseRate, raiseVerdict, promotedLastCycle,
+      fy27Base, fy27Aip, fy27Tc,
+      fy26Base, fy26Aip,
+      actualRaisePct, raiseAnalysis, promotedThisCycle,
       stats,
       pct, vsMedian,
       gpsCommDelta,
@@ -271,8 +290,8 @@ export default function DeloitteSalaryAnalyzer() {
     };
   }, [form, step, compareGroup, compareEdu, comparePortfolio]);
 
-  const parsedSalary = parseFloat(form.currentSalary);
-  const canSubmit = form.level && form.currentSalary && Number.isFinite(parsedSalary) && parsedSalary > 0;
+  const parsedFy27 = parseFloat(form.fy27Base);
+  const canSubmit = form.level && form.fy27Base && Number.isFinite(parsedFy27) && parsedFy27 > 0;
 
   // ─── HERO / LANDING ───
   if (step === 0) {
@@ -287,8 +306,7 @@ export default function DeloitteSalaryAnalyzer() {
             <span className="text-[13px] font-semibold text-slate-500 tracking-wide uppercase">Salary Analyzer</span>
           </div>
           <div className="flex items-center gap-6">
-            <span className="text-[12px] text-slate-400 font-mono">{totalRespondents.toLocaleString()} respondents</span>
-            <span className="text-[12px] text-slate-400">FY26 Benchmark</span>
+            <span className="text-[12px] text-slate-400 font-mono">FY26 Benchmark · {totalRespondents.toLocaleString()} respondents</span>
           </div>
         </nav>
 
@@ -298,18 +316,18 @@ export default function DeloitteSalaryAnalyzer() {
             <div className="opacity-0 animate-fade-up">
               <div className="inline-flex items-center gap-2 bg-white/80 border border-slate-200 rounded-full px-4 py-1.5 mb-8">
                 <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-                <span className="text-[11px] text-slate-500 font-medium font-mono tabular-nums">FY26 · 1,765 respondents · crowdsourced</span>
+                <span className="text-[11px] text-slate-500 font-medium font-mono tabular-nums">FY27 comp letter · benchmarked against {totalRespondents.toLocaleString()} FY26 responses</span>
               </div>
             </div>
 
             <h1 className="opacity-0 animate-fade-up-1 text-4xl sm:text-6xl font-semibold leading-[1.05] tracking-tight text-slate-900 mb-6">
-              Know exactly where
+              Just got your FY27 comp letter?
               <br />
-              <span className="text-brand-600">your comp</span> stands.
+              <span className="text-brand-600">See where you stand.</span>
             </h1>
 
             <p className="opacity-0 animate-fade-up-2 text-base sm:text-lg text-slate-500 leading-relaxed max-w-[560px] mb-10">
-              Benchmark your Deloitte salary, bonus, and total compensation against <span className="font-mono tabular-nums text-slate-700">{totalRespondents.toLocaleString()}</span> verified US responses. See your percentile, compare raises, and understand your market position.
+              Enter your FY26 and FY27 compensation. See your new percentile against <span className="font-mono tabular-nums text-slate-700">{totalRespondents.toLocaleString()}</span> FY26 responses, and how your raise compares to what FY26 trends would have predicted for your cohort. All client-side — nothing leaves your browser.
             </p>
 
             <div className="opacity-0 animate-fade-up-3 flex flex-col sm:flex-row gap-3">
@@ -317,7 +335,7 @@ export default function DeloitteSalaryAnalyzer() {
                 onClick={() => setStep(1)}
                 className="bg-slate-900 text-white px-8 py-4 rounded-md text-[15px] font-semibold cursor-pointer transition-all hover:bg-slate-800 hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                Analyze My Compensation
+                Analyze My FY27 Comp
               </button>
               <a
                 href="#how-it-works"
@@ -356,13 +374,13 @@ export default function DeloitteSalaryAnalyzer() {
               {[
                 {
                   num: "01",
-                  title: "Enter your details",
-                  desc: "Your level, salary, bonus, and years of experience. No data is collected — everything runs entirely in your browser.",
+                  title: "Enter both years",
+                  desc: "Your level, plus FY26 and FY27 base and AIP. Only level and FY27 base are required — everything runs entirely in your browser.",
                 },
                 {
                   num: "02",
                   title: "Get benchmarked",
-                  desc: "See exactly where you fall among peers at your level — your percentile, gap to median, and how your raise compares.",
+                  desc: "See your new FY27 percentile AND your predicted-vs-actual raise — how your FY26→FY27 bump compares to what FY26 trends would have predicted.",
                 },
                 {
                   num: "03",
@@ -380,6 +398,9 @@ export default function DeloitteSalaryAnalyzer() {
             <div className="mt-12 pt-8 border-t border-slate-200/40">
               <p className="text-xs text-slate-400 max-w-[640px] leading-relaxed">
                 This tool does not collect, store, or transmit any data — all analysis runs entirely in your browser. Compensation data is crowdsourced from the 2025 Deloitte salary survey on Fishbowl ({totalRespondents.toLocaleString()} US respondents, filtered for quality). Not affiliated with Deloitte. For informational purposes only.
+              </p>
+              <p className="text-xs text-slate-400 max-w-[640px] leading-relaxed mt-2">
+                FY27 survey data isn't out yet — we benchmark your new comp against FY26 responses. We'll refresh when new data is available.
               </p>
             </div>
           </div>
@@ -410,7 +431,7 @@ export default function DeloitteSalaryAnalyzer() {
               Your compensation details
             </h1>
             <p className="text-slate-400 text-[15px]">
-              Fill in what you know — only level and salary are required.
+              Fill in what you know — only level and FY27 base are required.
             </p>
           </div>
 
@@ -496,45 +517,58 @@ export default function DeloitteSalaryAnalyzer() {
 
             {/* Right card */}
             <div className="bg-white rounded-md p-6 border border-slate-200">
-              <div className="text-[10px] font-semibold text-accent-600 uppercase tracking-[0.14em] mb-5 flex items-center gap-2">
+              <div className="text-[10px] font-semibold text-accent-600 uppercase tracking-[0.14em] mb-1 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-sm bg-accent-500" />
-                Current Compensation
+                Your Compensation
               </div>
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className={labelClasses}>Current base salary *</label>
-                  <input type="number" inputMode="numeric" placeholder="e.g. 145000" className={inputClasses}
-                    value={form.currentSalary} onChange={(e) => update("currentSalary", e.target.value)} />
+              <div className="text-[11px] text-slate-400 font-mono mb-5 ml-3.5">FY26 &rarr; FY27</div>
+
+              <div className="grid grid-cols-2 gap-4 mb-5">
+                <div className="space-y-4">
+                  <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.12em]">FY26 <span className="text-slate-300 font-normal normal-case tracking-normal">(last year)</span></div>
+                  <div>
+                    <label className={labelClasses}>
+                      Base <span className="text-slate-300 font-normal normal-case tracking-normal">— optional</span>
+                    </label>
+                    <input type="number" inputMode="numeric" placeholder="e.g. 135000" className={inputClasses}
+                      value={form.fy26Base} onChange={(e) => update("fy26Base", e.target.value)} />
+                  </div>
+                  <div>
+                    <label className={labelClasses}>
+                      AIP <span className="text-slate-300 font-normal normal-case tracking-normal">— optional</span>
+                    </label>
+                    <input type="number" inputMode="numeric" placeholder="e.g. 12000" className={inputClasses}
+                      value={form.fy26Aip} onChange={(e) => update("fy26Aip", e.target.value)} />
+                  </div>
                 </div>
-                <div>
-                  <label className={labelClasses}>
-                    AIP received <span className="text-slate-300 font-normal normal-case tracking-normal">— optional</span>
-                  </label>
-                  <input type="number" inputMode="numeric" placeholder="e.g. 15000" className={inputClasses}
-                    value={form.currentAip} onChange={(e) => update("currentAip", e.target.value)} />
+                <div className="space-y-4">
+                  <div className="text-[10px] font-semibold text-accent-600 uppercase tracking-[0.12em]">FY27 <span className="text-slate-300 font-normal normal-case tracking-normal">(new statement)</span></div>
+                  <div>
+                    <label className={labelClasses}>Base *</label>
+                    <input type="number" inputMode="numeric" placeholder="e.g. 145000" className={inputClasses}
+                      value={form.fy27Base} onChange={(e) => update("fy27Base", e.target.value)} />
+                  </div>
+                  <div>
+                    <label className={labelClasses}>
+                      AIP <span className="text-slate-300 font-normal normal-case tracking-normal">— optional</span>
+                    </label>
+                    <input type="number" inputMode="numeric" placeholder="e.g. 15000" className={inputClasses}
+                      value={form.fy27Aip} onChange={(e) => update("fy27Aip", e.target.value)} />
+                  </div>
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 mb-6" />
-
-              <div className="text-[10px] font-semibold text-brand-500 uppercase tracking-[0.12em] mb-5 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
-                Last Raise <span className="text-slate-300 font-normal normal-case tracking-normal">— optional, compares your June 2025 bump to peers</span>
+              <div className="border-t border-slate-100 pt-4">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded-sm border-slate-300 text-accent-600 focus:ring-accent-500 cursor-pointer"
+                    checked={form.promotedThisCycle}
+                    onChange={(e) => update("promotedThisCycle", e.target.checked)}
+                  />
+                  <span className="text-[12px] text-slate-600 font-mono">I was promoted in this cycle (FY26 &rarr; FY27)</span>
+                </label>
               </div>
-              <div>
-                <label className={labelClasses}>Raise %</label>
-                <input type="text" inputMode="decimal" placeholder="e.g. 7 or 7%" className={inputClasses}
-                  value={form.lastRaisePct} onChange={(e) => update("lastRaisePct", e.target.value)} />
-              </div>
-              <label className="flex items-center gap-2 mt-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded-sm border-slate-300 text-accent-600 focus:ring-accent-500 cursor-pointer"
-                  checked={form.promotedLastCycle}
-                  onChange={(e) => update("promotedLastCycle", e.target.checked)}
-                />
-                <span className="text-[12px] text-slate-600 font-mono">I was promoted in this cycle</span>
-              </label>
             </div>
           </div>
 
@@ -565,7 +599,7 @@ export default function DeloitteSalaryAnalyzer() {
               See My Results &rarr;
             </button>
             {!canSubmit && (
-              <span className="text-[12px] text-slate-300">Level and base salary are required</span>
+              <span className="text-[12px] text-slate-300">Level and FY27 base are required</span>
             )}
           </div>
         </main>
@@ -613,7 +647,7 @@ export default function DeloitteSalaryAnalyzer() {
 
           {/* Results header */}
           <div className="mb-8 opacity-0 animate-fade-up">
-            <div className="text-[10px] text-slate-400 uppercase tracking-[0.12em] font-semibold mb-3">Your Compensation Analysis</div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-[0.12em] font-semibold mb-3">Your FY27 Compensation Analysis</div>
             <h1 className="text-4xl sm:text-5xl text-slate-900 tracking-tight mb-3">
               {analysis.pct}<span className="text-3xl align-top">th</span>
               <span className="text-slate-300 font-sans text-2xl font-normal ml-3">percentile</span>
@@ -710,8 +744,8 @@ export default function DeloitteSalaryAnalyzer() {
           {/* Stat cards */}
           <div className="opacity-0 animate-fade-up-2 grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
             <StatCard
-              label="Current Base"
-              value={fmt(analysis.currentSal)}
+              label="FY27 Base"
+              value={fmt(analysis.fy27Base)}
               sub={`${analysis.pct}th percentile`}
               accent="#8b5cf6"
             />
@@ -722,14 +756,14 @@ export default function DeloitteSalaryAnalyzer() {
               accent={analysis.vsMedian >= 0 ? "#10b981" : "#ef4444"}
             />
             <StatCard
-              label="AIP"
-              value={analysis.currentAip > 0 ? fmt(analysis.currentAip) : "—"}
+              label={analysis.fy27Aip > 0 ? "FY27 AIP" : "AIP"}
+              value={analysis.fy27Aip > 0 ? fmt(analysis.fy27Aip) : "—"}
               sub={`Median: ${fmt(analysis.stats.aip.p50)}`}
               accent="#f59e0b"
             />
             <StatCard
-              label="Total Comp"
-              value={fmt(analysis.currentTc)}
+              label="FY27 Total Comp"
+              value={fmt(analysis.fy27Tc)}
               sub={`Median: ${fmt(analysis.stats.tc.p50)}`}
               accent="#06b6d4"
             />
@@ -742,7 +776,7 @@ export default function DeloitteSalaryAnalyzer() {
                 Salary Distribution — Your Level
               </div>
               <BenchmarkChart
-                userSalary={analysis.currentSal}
+                userSalary={analysis.fy27Base}
                 levelStats={analysis.stats}
                 groupMedian={analysis.hasFilteredStats ? analysis.stats.salary.p50 : null}
                 groupLabel={analysis.hasFilteredStats ? `${form.gpsComm} median` : null}
@@ -787,7 +821,7 @@ export default function DeloitteSalaryAnalyzer() {
                 <div
                   className="absolute w-3 h-3 bg-accent-500 rounded-sm top-1/2 -mt-1.5 border-2 border-white"
                   style={{
-                    left: `${Math.min(100, Math.max(0, ((analysis.currentSal - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100))}%`,
+                    left: `${Math.min(100, Math.max(0, ((analysis.fy27Base - analysis.stats.salary.p10) / (analysis.stats.salary.p90 - analysis.stats.salary.p10)) * 100))}%`,
                     transform: "translateX(-50%)",
                   }}
                 />
@@ -803,25 +837,25 @@ export default function DeloitteSalaryAnalyzer() {
               <div className="bg-slate-50 rounded-sm p-3">
                 <div className="text-[12px] text-slate-500">
                   Gap to P75:{" "}
-                  <span className={`font-mono font-semibold ${analysis.currentSal >= analysis.stats.salary.p75 ? "text-emerald-600" : "text-amber-600"}`}>
-                    {analysis.currentSal >= analysis.stats.salary.p75 ? "Above P75" : fmt(analysis.stats.salary.p75 - analysis.currentSal)}
+                  <span className={`font-mono font-semibold ${analysis.fy27Base >= analysis.stats.salary.p75 ? "text-emerald-600" : "text-amber-600"}`}>
+                    {analysis.fy27Base >= analysis.stats.salary.p75 ? "Above P75" : fmt(analysis.stats.salary.p75 - analysis.fy27Base)}
                   </span>
                 </div>
-                {analysis.currentSal < analysis.stats.salary.p75 && (
+                {analysis.fy27Base < analysis.stats.salary.p75 && (
                   <div className="text-[11px] text-slate-400 mt-1">
-                    Gap to P90: <span className="font-mono">{fmt(analysis.stats.salary.p90 - analysis.currentSal)}</span>
+                    Gap to P90: <span className="font-mono">{fmt(analysis.stats.salary.p90 - analysis.fy27Base)}</span>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Raise Benchmarks — consolidated */}
+          {/* Predicted vs Actual */}
           <div className="mb-6 bg-white rounded-md border border-slate-200">
             <div className="px-5 sm:px-6 py-4 border-b border-slate-200 flex items-baseline justify-between">
               <div>
                 <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.14em]">
-                  Raise Benchmarks
+                  Predicted vs Actual
                 </div>
                 <div className="text-[11px] text-slate-400 mt-0.5 font-mono">FY25 → FY26 survey · n={NON_PROMOTION_RAISE.n + Object.values(PROMOTION_RAISES).reduce((s, d) => s + d.n, 0)}</div>
               </div>
@@ -835,8 +869,45 @@ export default function DeloitteSalaryAnalyzer() {
               </div>
             </div>
 
+            {analysis.raiseAnalysis ? (
+              <div className="px-5 sm:px-6 py-5 border-b border-slate-200">
+                <div className="text-[12px] text-slate-500 mb-4">
+                  Based on FY26 trends, typical raise for {analysis.raiseAnalysis.label}: <span className="font-mono font-semibold text-slate-900">{(analysis.raiseAnalysis.median * 100).toFixed(1)}%</span>
+                </div>
+                <div className="grid grid-cols-3 gap-px bg-slate-100 rounded-sm overflow-hidden border border-slate-200">
+                  <div className="bg-white p-4">
+                    <div className="text-[9px] uppercase tracking-[0.14em] font-semibold mb-2 font-mono text-slate-400">Predicted FY27</div>
+                    <div className="text-xl sm:text-2xl font-semibold font-mono tabular-nums text-slate-900">{fmt(analysis.raiseAnalysis.predictedBase)}</div>
+                    <div className="text-[10px] mt-1 font-mono text-slate-400">FY26 × {(analysis.raiseAnalysis.median * 100).toFixed(1)}%</div>
+                  </div>
+                  <div className="bg-white p-4 relative">
+                    <div className="absolute top-0 left-0 h-full w-[2px] bg-accent-500" />
+                    <div className="text-[9px] uppercase tracking-[0.14em] font-semibold mb-2 font-mono text-accent-700">Actual FY27</div>
+                    <div className="text-xl sm:text-2xl font-semibold font-mono tabular-nums text-accent-600">{fmt(analysis.fy27Base)}</div>
+                    <div className="text-[10px] mt-1 font-mono text-accent-700">+{(analysis.raiseAnalysis.actualPct * 100).toFixed(1)}%</div>
+                  </div>
+                  <div className="bg-white p-4">
+                    <div className="text-[9px] uppercase tracking-[0.14em] font-semibold mb-2 font-mono text-slate-400">Delta</div>
+                    <div className={`text-xl sm:text-2xl font-semibold font-mono tabular-nums ${analysis.raiseAnalysis.predictedDelta >= 0 ? "text-emerald-600" : "text-amber-600"}`}>
+                      {analysis.raiseAnalysis.predictedDelta >= 0 ? "+" : ""}{fmt(analysis.raiseAnalysis.predictedDelta)}
+                    </div>
+                    <div className="text-[10px] mt-1 font-mono text-slate-400">vs prediction</div>
+                  </div>
+                </div>
+                <div className={`mt-4 text-[12px] font-mono ${analysis.raiseAnalysis.verdict === "below" ? "text-amber-700" : "text-emerald-700"}`}>
+                  Your {(analysis.raiseAnalysis.actualPct * 100).toFixed(1)}% raise is {analysis.raiseAnalysis.verdict === "in line" ? "in line with" : analysis.raiseAnalysis.verdict === "above" ? `${(analysis.raiseAnalysis.deltaPp * 100).toFixed(1)}pp above` : `${Math.abs(analysis.raiseAnalysis.deltaPp * 100).toFixed(1)}pp below`} the {(analysis.raiseAnalysis.median * 100).toFixed(1)}% typical for {analysis.raiseAnalysis.label}.
+                </div>
+              </div>
+            ) : (
+              <div className="px-5 sm:px-6 py-5 border-b border-slate-200 bg-slate-50/50">
+                <div className="text-[12px] text-slate-500">
+                  Enter your FY26 base to see how your FY27 raise compares to FY26 cohort trends.
+                </div>
+              </div>
+            )}
+
             {(() => {
-              const highlightedCohort = analysis.raiseVerdict?.cohort
+              const highlightedCohort = analysis.raiseAnalysis?.cohort
                 ?? (analysis.promoNext ? "next-promo" : null);
               const Tile = ({ k, label, value, n, sub, highlighted }) => (
                 <div key={k} className="bg-white p-4 relative">
@@ -875,18 +946,6 @@ export default function DeloitteSalaryAnalyzer() {
                 </div>
               );
             })()}
-
-            {analysis.raiseVerdict && (
-              <div className="px-5 sm:px-6 py-3 bg-slate-50 border-t border-slate-200 text-[12px] text-slate-600 font-mono">
-                Your raise: <span className="font-semibold text-slate-900">{fmtPct(analysis.raiseRate)}</span>
-                {analysis.raiseVerdict.verdict === "in line"
-                  ? <span className="text-emerald-700"> — in line with the {(analysis.raiseVerdict.median * 100).toFixed(1)}% typical for {analysis.raiseVerdict.label}.</span>
-                  : analysis.raiseVerdict.verdict === "above"
-                  ? <span className="text-emerald-700"> — {(analysis.raiseVerdict.deltaPp * 100).toFixed(1)}pp above the {(analysis.raiseVerdict.median * 100).toFixed(1)}% typical for {analysis.raiseVerdict.label}.</span>
-                  : <span className="text-amber-700"> — {(analysis.raiseVerdict.deltaPp * 100).toFixed(1)}pp below the {(analysis.raiseVerdict.median * 100).toFixed(1)}% typical for {analysis.raiseVerdict.label}.</span>
-                }
-              </div>
-            )}
 
             <div className="px-5 sm:px-6 py-3 border-t border-slate-200 bg-slate-50/50">
               <div className="text-[10px] text-slate-400 uppercase tracking-[0.14em] font-semibold mb-2 font-mono">All Promotion Paths · Reference</div>
@@ -932,7 +991,7 @@ export default function DeloitteSalaryAnalyzer() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                ["Your AIP", analysis.currentAip > 0 ? fmt(analysis.currentAip) : "—", analysis.currentAip > 0 && analysis.currentAip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-slate-400"],
+                ["Your FY27 AIP", analysis.fy27Aip > 0 ? fmt(analysis.fy27Aip) : "—", analysis.fy27Aip > 0 && analysis.fy27Aip >= analysis.stats.aip.p50 ? "text-emerald-600" : "text-slate-400"],
                 ["P25 AIP", fmt(analysis.stats.aip.p25), "text-slate-500"],
                 ["Median AIP", fmt(analysis.stats.aip.p50), "text-brand-600"],
                 ["P75 AIP", fmt(analysis.stats.aip.p75), "text-slate-500"],
@@ -943,12 +1002,17 @@ export default function DeloitteSalaryAnalyzer() {
                 </div>
               ))}
             </div>
+            {analysis.fy26Aip != null && (
+              <p className="mt-3 text-[11px] text-slate-400 font-mono">
+                FY26 AIP for context: <span className="text-slate-600 font-semibold">{fmt(analysis.fy26Aip)}</span> (median was {fmt(analysis.stats.aip.p50)})
+              </p>
+            )}
           </div>
 
           {/* Footnote */}
           <div className="p-4 border-t border-slate-100 mt-8 space-y-2">
             <p className="text-[11px] text-slate-300 leading-relaxed">
-              <strong className="text-slate-400">Source:</strong> Crowdsourced from the 2025 Deloitte compensation survey on Fishbowl &middot; {totalRespondents.toLocaleString()} US respondents &middot; Not affiliated with Deloitte
+              <strong className="text-slate-400">Source:</strong> 2025 Deloitte compensation survey (FY26) on Fishbowl &middot; {totalRespondents.toLocaleString()} US respondents &middot; Not affiliated with Deloitte. FY27 data will be incorporated once the next survey is available.
             </p>
             <p className="text-[11px] text-slate-300 leading-relaxed">
               <strong className="text-slate-400">Privacy:</strong> No data is collected, stored, or transmitted. All analysis runs entirely in your browser.
